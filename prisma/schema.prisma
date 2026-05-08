@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String     @id @default(cuid())
+  clerkId        String     @unique
+  email          String     @unique
+  telegramId     String?    @unique
+  whatsappNumber String?    @unique
+  createdAt      DateTime   @default(now())
+  purchases      Purchase[]
+  reminders      Reminder[]
+}
+
+model Purchase {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  item      String
+  quantity  Float
+  unit      String?
+  category  String?
+  price     Float?
+  source    String   @default("manual")
+  createdAt DateTime @default(now())
+}
+
+model Reminder {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  item          String
+  predictedDate DateTime
+  confidence    Float
+  active        Boolean   @default(true)
+  snoozedUntil  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
