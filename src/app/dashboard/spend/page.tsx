@@ -5,7 +5,7 @@ export default function SpendPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Spend Analytics</h1>
-        <p className="text-muted-foreground">Track your grocery spending over time.</p>
+        <p className="text-muted-foreground">Track your spending over time.</p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>

@@ -11,7 +11,7 @@ export default function SignInPage() {
           </div>
           <span className="text-[#1B3A5C] font-bold text-2xl">Restock</span>
         </div>
-        <p className="text-[#1B3A5C]/50 text-sm">Your household intelligence platform</p>
+        <p className="text-[#1B3A5C]/50 text-sm">Track anything. Restock smarter.</p>
       </div>
       <SignIn />
     </div>

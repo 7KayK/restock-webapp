@@ -6,7 +6,7 @@ export default function HistoryPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Purchase History</h1>
-        <p className="text-muted-foreground">All your logged grocery purchases.</p>
+        <p className="text-muted-foreground">All your logged purchases.</p>
       </div>
       <Card>
         <CardHeader>

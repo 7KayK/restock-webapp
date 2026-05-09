@@ -122,7 +122,7 @@ export default function DashboardPage() {
     <div className="space-y-6 max-w-7xl">
       <div>
         <h1 className="text-2xl font-bold text-[#1B3A5C]">Dashboard</h1>
-        <p className="text-sm text-[#1B3A5C]/50 mt-0.5">Your household restocking overview</p>
+        <p className="text-sm text-[#1B3A5C]/50 mt-0.5">Your restocking overview</p>
       </div>
 
       <Suspense fallback={<StatCardsSkeleton />}>

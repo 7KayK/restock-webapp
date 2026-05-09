@@ -31,7 +31,7 @@ export default function Home() {
           Never run out of anything again
         </h1>
         <p className="text-xl text-[#1B3A5C]/55 max-w-xl leading-relaxed">
-          Restock tracks your household purchases, predicts when you&apos;ll run out, and finds
+          Restock tracks your purchases, predicts when you&apos;ll run out, and finds
           the best deals near you — automatically.
         </p>
         <div className="flex gap-3 mt-4">
@@ -51,7 +51,7 @@ export default function Home() {
           </div>
           <h3 className="font-semibold text-[#1B3A5C]">Spend Analytics</h3>
           <p className="text-sm text-[#1B3A5C]/55 leading-relaxed">
-            Visualise your grocery spending by category and time period.
+            Visualise your spending by category and time period.
           </p>
         </div>
         <div className="rounded-xl border border-gray-100 bg-white p-6 flex flex-col gap-3">

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Restock — Household Intelligence',
+  title: 'Restock — Smart Purchase Tracking',
   description:
     'Track purchases, predict when you run out, and find the best deals near you.',
 }
