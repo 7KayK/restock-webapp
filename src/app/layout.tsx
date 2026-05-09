@@ -15,38 +15,25 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Restock — Smart Grocery Tracking',
-  description: 'Track purchases, predict restocks, and find the best deals with AI.',
-}
-
-const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? ''
-const hasValidClerkKey =
-  publishableKey.startsWith('pk_live_') ||
-  (publishableKey.startsWith('pk_test_') && !publishableKey.includes('placeholder'))
-
-function Providers({ children }: { children: React.ReactNode }) {
-  if (hasValidClerkKey) {
-    return <ClerkProvider>{children}</ClerkProvider>
-  }
-  return <>{children}</>
+  title: 'Restock — Household Intelligence',
+  description:
+    'Track purchases, predict when you run out, and find the best deals near you.',
 }
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <Providers>
+    <ClerkProvider>
       <html
         lang="en"
         className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       >
-        <body className="min-h-full flex flex-col bg-background text-foreground">
+        <body className="min-h-full flex flex-col bg-[#F8FAFC] text-foreground">
           {children}
           <Toaster />
         </body>
       </html>
-    </Providers>
+    </ClerkProvider>
   )
 }

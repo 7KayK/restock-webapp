@@ -1,5 +1,4 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
-import { NextRequest, NextResponse } from 'next/server'
 
 const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
@@ -9,18 +8,14 @@ const isProtectedRoute = createRouteMatcher([
   '/api/ai(.*)',
   '/api/deals(.*)',
   '/api/stores(.*)',
+  '/api/settings(.*)',
 ])
 
-const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? ''
-const hasValidClerkKey = publishableKey.startsWith('pk_live_') || publishableKey.startsWith('pk_test_') && !publishableKey.includes('placeholder')
-
-export const proxy = hasValidClerkKey
-  ? clerkMiddleware(async (auth, req) => {
-      if (isProtectedRoute(req)) {
-        await auth.protect()
-      }
-    })
-  : (_req: NextRequest) => NextResponse.next()
+export const proxy = clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) {
+    await auth.protect()
+  }
+})
 
 export const config = {
   matcher: [
