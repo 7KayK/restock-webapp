@@ -89,7 +89,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* User */}
       <div className="px-5 py-4 border-t border-gray-100 shrink-0">
-        <UserButton afterSignOutUrl="/" />
+        <UserButton />
       </div>
     </aside>
   )
