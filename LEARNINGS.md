@@ -127,6 +127,15 @@ Missing redirect URL configuration causes silent auth failures.
 
 ## Next.js Lessons
 
+[2026-05-10] [NEXTJS] Next.js 16 uses src/proxy.ts (named export `proxy`) for Clerk
+middleware — NOT src/middleware.ts. Having both files simultaneously throws an
+unhandled rejection on startup: "Both middleware file and proxy file are detected."
+Delete middleware.ts if it exists; keep only proxy.ts.
+The real auth redirect loop fix is on ClerkProvider and <SignIn />:
+  CORRECT: <ClerkProvider signInFallbackRedirectUrl="/dashboard">
+  CORRECT: <SignIn fallbackRedirectUrl="/dashboard" />
+These ensure Google OAuth lands on /dashboard instead of looping back to /sign-in.
+
 [2026-05-07] [NEXTJS] Always use `Response.json()` in App Router API routes, not
 `NextResponse.json()`, unless you need streaming. NextResponse is only needed
 for middleware or streaming responses.

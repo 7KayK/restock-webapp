@@ -2,34 +2,18 @@ import { auth } from '@clerk/nextjs/server'
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET() {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   const { userId } = await auth()
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
-  try {
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    if (!user) return Response.json({ data: [] })
-
-    const reminders = await prisma.reminder.findMany({
-      where: { userId: user.id, active: true },
-      orderBy: { predictedDate: 'asc' },
-    })
-
-    return Response.json({ data: reminders })
-  } catch {
-    return Response.json({ error: 'Failed to fetch reminders' }, { status: 500 })
-  }
-}
-
-export async function PATCH(request: NextRequest) {
-  const { userId } = await auth()
-  if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  const { id } = await params
 
   try {
     const body = await request.json()
-    const { id, active, snoozedUntil } = body
-
-    if (!id) return Response.json({ error: 'id is required' }, { status: 400 })
+    const { active, snoozedUntil } = body
 
     const user = await prisma.user.findUnique({ where: { clerkId: userId } })
     if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
@@ -47,5 +31,26 @@ export async function PATCH(request: NextRequest) {
     return Response.json({ data: reminder })
   } catch {
     return Response.json({ error: 'Failed to update reminder' }, { status: 500 })
+  }
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { userId } = await auth()
+  if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { id } = await params
+
+  try {
+    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
+    if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
+
+    await prisma.reminder.delete({ where: { id, userId: user.id } })
+
+    return Response.json({ data: { id } })
+  } catch {
+    return Response.json({ error: 'Failed to delete reminder' }, { status: 500 })
   }
 }
