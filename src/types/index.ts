@@ -31,10 +31,51 @@ export interface Reminder {
   updatedAt: Date
 }
 
-export interface SpendSummary {
+// --- Spend / analytics types ---
+
+export interface MonthlySpendPoint {
+  month: string      // 'YYYY-MM' key for sorting
+  label: string      // 'Jan 2026' for display
+  amount: number
+  isCurrentMonth: boolean
+}
+
+export interface CategorySpend {
+  category: string
   total: number
-  byCategory: Record<string, number>
-  byMonth: Array<{ month: string; amount: number }>
+  count: number
+  avg: number
+}
+
+export interface TopItem {
+  item: string
+  totalQty: number
+  totalSpend: number
+  purchaseCount: number
+  lastPurchased: string // ISO string
+}
+
+export interface SpendAnalysis {
+  byMonth: MonthlySpendPoint[]
+  byCategory: CategorySpend[]
+  topItems: TopItem[]
+  currentMonthSpend: number
+  previousMonthSpend: number
+  changePercent: number | null
+}
+
+export interface DashboardStats {
+  totalPurchases: number
+  activeReminders: number
+  monthlySpend: number
+  itemsTracked: number
+}
+
+// --- API response wrapper ---
+
+export interface ApiResponse<T> {
+  data?: T
+  error?: string
 }
 
 export interface Deal {
@@ -54,9 +95,4 @@ export interface Store {
   distance?: number
   lat?: number
   lng?: number
-}
-
-export interface ApiResponse<T> {
-  data?: T
-  error?: string
 }
