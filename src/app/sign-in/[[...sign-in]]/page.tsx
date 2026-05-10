@@ -13,7 +13,7 @@ export default function SignInPage() {
         </div>
         <p className="text-[#1B3A5C]/50 text-sm">Track anything. Restock smarter.</p>
       </div>
-      <SignIn />
+      <SignIn fallbackRedirectUrl="/dashboard" />
     </div>
   )
 }
