@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import { getOrCreateUser } from '@/lib/getOrCreateUser'
 import { format, subMonths, startOfMonth } from 'date-fns'
 import type { SpendAnalysis, MonthlySpendPoint, CategorySpend, TopItem } from '@/types'
 
@@ -8,8 +9,7 @@ export async function GET() {
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    if (!user) return Response.json({ data: emptyAnalysis() })
+    const user = await getOrCreateUser(userId)
 
     const twelveMonthsAgo = startOfMonth(subMonths(new Date(), 11))
 

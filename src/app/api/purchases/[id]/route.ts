@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOrCreateUser } from '@/lib/getOrCreateUser'
 
 export async function DELETE(
   _request: NextRequest,
@@ -12,8 +13,7 @@ export async function DELETE(
   const { id } = await params
 
   try {
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
+    const user = await getOrCreateUser(userId)
 
     await prisma.purchase.delete({ where: { id, userId: user.id } })
 

@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOrCreateUser } from '@/lib/getOrCreateUser'
 
 export async function PATCH(
   request: NextRequest,
@@ -15,8 +16,7 @@ export async function PATCH(
     const body = await request.json()
     const { active, snoozedUntil } = body
 
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
+    const user = await getOrCreateUser(userId)
 
     const reminder = await prisma.reminder.update({
       where: { id, userId: user.id },
@@ -44,8 +44,7 @@ export async function DELETE(
   const { id } = await params
 
   try {
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
+    const user = await getOrCreateUser(userId)
 
     await prisma.reminder.delete({ where: { id, userId: user.id } })
 

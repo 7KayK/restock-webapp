@@ -54,7 +54,9 @@ export function ChatInterface() {
       })
 
       if (!res.ok || !res.body) {
-        throw new Error('Request failed')
+        const errText = await res.text().catch(() => '(no body)')
+        console.error('[ChatInterface] API error:', res.status, res.statusText, errText)
+        throw new Error(`Request failed: ${res.status} ${errText}`)
       }
 
       const reader = res.body.getReader()
@@ -75,6 +77,7 @@ export function ChatInterface() {
       }
     } catch (err) {
       if ((err as Error).name === 'AbortError') return
+      console.error('[ChatInterface] Caught error:', err)
       setMessages((prev) => {
         const copy = [...prev]
         copy[copy.length - 1] = {

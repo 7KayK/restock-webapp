@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server'
 import { createTextStreamResponse } from 'ai'
 import { anthropic, DEFAULT_MODEL } from '@/lib/claude'
 import { prisma } from '@/lib/prisma'
+import { getOrCreateUser } from '@/lib/getOrCreateUser'
 
 function buildSystemPrompt(context: {
   purchases: Array<{ item: string; quantity: number; unit: string | null; category: string | null; createdAt: Date }>
@@ -67,82 +68,94 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: 'messages array is required' }, { status: 400 })
   }
 
-  const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-  if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
+  try {
+    const user = await getOrCreateUser(userId)
 
-  const now = new Date()
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    const now = new Date()
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  const [purchases, spendRows, reminders] = await Promise.all([
-    prisma.purchase.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: 'desc' },
-      take: 30,
-      select: { item: true, quantity: true, unit: true, category: true, createdAt: true },
-    }),
-    prisma.purchase.findMany({
-      where: { userId: user.id, createdAt: { gte: monthStart }, price: { not: null } },
-      select: { price: true },
-    }),
-    prisma.reminder.findMany({
-      where: { userId: user.id, active: true },
-      orderBy: { predictedDate: 'asc' },
-      take: 10,
-      select: { item: true, predictedDate: true, confidence: true },
-    }),
-  ])
+    const [purchases, spendRows, reminders] = await Promise.all([
+      prisma.purchase.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: 'desc' },
+        take: 30,
+        select: { item: true, quantity: true, unit: true, category: true, createdAt: true },
+      }),
+      prisma.purchase.findMany({
+        where: { userId: user.id, createdAt: { gte: monthStart }, price: { not: null } },
+        select: { price: true },
+      }),
+      prisma.reminder.findMany({
+        where: { userId: user.id, active: true },
+        orderBy: { predictedDate: 'asc' },
+        take: 10,
+        select: { item: true, predictedDate: true, confidence: true },
+      }),
+    ])
 
-  const monthlySpend = spendRows.reduce((sum, p) => sum + (p.price ?? 0), 0)
-  const systemPrompt = buildSystemPrompt({ purchases, monthlySpend, reminders })
+    const monthlySpend = spendRows.reduce((sum, p) => sum + (p.price ?? 0), 0)
+    const systemPrompt = buildSystemPrompt({ purchases, monthlySpend, reminders })
 
-  const validMessages = messages
-    .filter((m): m is { role: 'user' | 'assistant'; content: string } => {
-      if (typeof m !== 'object' || m === null) return false
-      const role = (m as Record<string, unknown>).role
-      return role === 'user' || role === 'assistant'
+    const allMessages = messages
+      .filter((m): m is { role: 'user' | 'assistant'; content: string } => {
+        if (typeof m !== 'object' || m === null) return false
+        const role = (m as Record<string, unknown>).role
+        return role === 'user' || role === 'assistant'
+      })
+      .map((m) => ({
+        role: m.role as 'user' | 'assistant',
+        content: String((m as Record<string, unknown>).content ?? ''),
+      }))
+
+    // Anthropic requires the first message to be from 'user'. Drop any leading assistant
+    // messages (e.g. the UI welcome bubble) before sending to the API.
+    const firstUserIdx = allMessages.findIndex((m) => m.role === 'user')
+    const validMessages = firstUserIdx >= 0 ? allMessages.slice(firstUserIdx) : []
+
+    if (validMessages.length === 0) {
+      return Response.json({ error: 'No valid messages' }, { status: 400 })
+    }
+
+    console.log('[/api/ai] Starting stream — model:', DEFAULT_MODEL, 'messages:', validMessages.length)
+
+    const stream = anthropic.messages.stream({
+      model: DEFAULT_MODEL,
+      max_tokens: 1000,
+      system: [
+        {
+          type: 'text',
+          text: systemPrompt,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+      messages: validMessages,
     })
-    .map((m) => ({
-      role: m.role as 'user' | 'assistant',
-      content: String((m as Record<string, unknown>).content ?? ''),
-    }))
 
-  if (validMessages.length === 0) {
-    return Response.json({ error: 'No valid messages' }, { status: 400 })
-  }
-
-  const stream = anthropic.messages.stream({
-    model: DEFAULT_MODEL,
-    max_tokens: 1000,
-    system: [
-      {
-        type: 'text',
-        text: systemPrompt,
-        cache_control: { type: 'ephemeral' },
-      },
-    ],
-    messages: validMessages,
-  })
-
-  const textStream = new ReadableStream<string>({
-    async start(controller) {
-      try {
-        for await (const event of stream) {
-          if (
-            event.type === 'content_block_delta' &&
-            event.delta.type === 'text_delta'
-          ) {
-            controller.enqueue(event.delta.text)
+    const textStream = new ReadableStream<string>({
+      async start(controller) {
+        try {
+          for await (const event of stream) {
+            if (
+              event.type === 'content_block_delta' &&
+              event.delta.type === 'text_delta'
+            ) {
+              controller.enqueue(event.delta.text)
+            }
           }
+          controller.close()
+        } catch (err) {
+          console.error('[/api/ai] Stream error:', err)
+          controller.error(err)
         }
-        controller.close()
-      } catch (err) {
-        controller.error(err)
-      }
-    },
-    cancel() {
-      stream.controller.abort()
-    },
-  })
+      },
+      cancel() {
+        stream.controller.abort()
+      },
+    })
 
-  return createTextStreamResponse({ textStream })
+    return createTextStreamResponse({ textStream })
+  } catch (err) {
+    console.error('[/api/ai] Handler error:', err)
+    return Response.json({ error: 'Internal server error' }, { status: 500 })
+  }
 }

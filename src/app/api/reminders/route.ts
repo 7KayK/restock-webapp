@@ -1,14 +1,14 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOrCreateUser } from '@/lib/getOrCreateUser'
 
 export async function GET() {
   const { userId } = await auth()
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    if (!user) return Response.json({ data: [] })
+    const user = await getOrCreateUser(userId)
 
     const reminders = await prisma.reminder.findMany({
       where: { userId: user.id, active: true },
@@ -31,8 +31,7 @@ export async function PATCH(request: NextRequest) {
 
     if (!id) return Response.json({ error: 'id is required' }, { status: 400 })
 
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
+    const user = await getOrCreateUser(userId)
 
     const reminder = await prisma.reminder.update({
       where: { id, userId: user.id },

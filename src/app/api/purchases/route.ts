@@ -1,14 +1,14 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getOrCreateUser } from '@/lib/getOrCreateUser'
 
 export async function GET(request: NextRequest) {
   const { userId } = await auth()
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    if (!user) return Response.json({ error: 'User not found' }, { status: 404 })
+    const user = await getOrCreateUser(userId)
 
     const { searchParams } = new URL(request.url)
     const limit = Math.min(parseInt(searchParams.get('limit') ?? '50'), 200)
@@ -42,17 +42,7 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: 'item and quantity are required' }, { status: 400 })
     }
 
-    let user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    if (!user) {
-      const { currentUser } = await import('@clerk/nextjs/server')
-      const clerkUser = await currentUser()
-      user = await prisma.user.create({
-        data: {
-          clerkId: userId,
-          email: clerkUser?.emailAddresses[0]?.emailAddress ?? '',
-        },
-      })
-    }
+    const user = await getOrCreateUser(userId)
 
     const purchase = await prisma.purchase.create({
       data: {
