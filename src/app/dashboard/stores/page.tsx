@@ -1,28 +1,18 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Store } from 'lucide-react'
+import { StoreMap } from '@/components/shared/StoreMap'
 
 export default function StoresPage() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Nearby Stores</h1>
-        <p className="text-muted-foreground">Stores near your location.</p>
+    <div className="flex flex-col h-full space-y-4">
+      <div className="shrink-0">
+        <h1 className="text-2xl font-bold text-[#1B3A5C]">Nearest Store</h1>
+        <p className="text-sm text-[#1B3A5C]/50 mt-0.5">
+          Kroger locations near you — click a marker for details
+        </p>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Store className="h-4 w-4" />
-            Stores
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-12 gap-3 text-muted-foreground">
-            <Badge variant="outline">Location not set</Badge>
-            <p className="text-sm">Enable location access in settings to find nearby stores.</p>
-          </div>
-        </CardContent>
-      </Card>
+
+      <div className="flex flex-1 min-h-0" style={{ minHeight: '500px' }}>
+        <StoreMap />
+      </div>
     </div>
   )
 }

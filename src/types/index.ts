@@ -78,21 +78,28 @@ export interface ApiResponse<T> {
   error?: string
 }
 
-export interface Deal {
-  id: string
+export interface KrogerDeal {
   item: string
-  store: string
-  originalPrice: number
-  salePrice: number
-  discount: number
-  expiresAt?: string
+  productId: string
+  productName: string
+  size: string
+  regularPrice: number
+  promoPrice: number | null
+  savings: number | null
+  imageUrl: string | null
+  hasPromo: boolean
 }
 
-export interface Store {
-  id: string
+export interface KrogerStore {
+  locationId: string
   name: string
   address: string
-  distance?: number
-  lat?: number
-  lng?: number
+  city: string
+  state: string
+  zip: string
+  lat: number
+  lng: number
+  distance: number
+  phone: string
+  hoursToday: string
 }

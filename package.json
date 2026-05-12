@@ -19,6 +19,7 @@
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@radix-ui/react-dialog": "^1.1.15",
+    "@react-google-maps/api": "^2.20.8",
     "ai": "^6.0.176",
     "axios": "^1.16.0",
     "class-variance-authority": "^0.7.1",
