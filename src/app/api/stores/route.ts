@@ -17,7 +17,8 @@ export async function GET(request: NextRequest) {
   try {
     const stores = await findNearbyKrogerStores(lat, lng)
     return Response.json({ data: stores })
-  } catch {
+  } catch (err) {
+    console.error('[/api/stores] error:', err)
     return Response.json({ error: 'Failed to fetch nearby stores' }, { status: 500 })
   }
 }

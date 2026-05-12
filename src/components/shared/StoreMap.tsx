@@ -14,6 +14,7 @@ type Status = 'idle' | 'locating' | 'loading' | 'ready' | 'denied' | 'error'
 
 export function StoreMap() {
   const [status, setStatus] = useState<Status>('idle')
+  const [errorMsg, setErrorMsg] = useState<string>('Failed to load nearby stores. Please try again later.')
   const [center, setCenter] = useState<{ lat: number; lng: number } | null>(null)
   const [stores, setStores] = useState<KrogerStore[]>([])
   const [selected, setSelected] = useState<KrogerStore | null>(null)
@@ -27,11 +28,17 @@ export function StoreMap() {
     setStatus('loading')
     try {
       const res = await fetch(`/api/stores?lat=${lat}&lng=${lng}`)
-      if (!res.ok) throw new Error('fetch failed')
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({})) as { error?: string }
+        setErrorMsg(json.error ?? 'Failed to load nearby stores. Please try again later.')
+        setStatus('error')
+        return
+      }
       const json = (await res.json()) as { data?: KrogerStore[] }
       setStores(json.data ?? [])
       setStatus('ready')
     } catch {
+      setErrorMsg('Failed to load nearby stores. Please try again later.')
       setStatus('error')
     }
   }, [])
@@ -99,7 +106,7 @@ export function StoreMap() {
   }
 
   if (status === 'error') {
-    return <MapError message="Failed to load nearby stores. Please try again later." />
+    return <MapError message={errorMsg} />
   }
 
   return (

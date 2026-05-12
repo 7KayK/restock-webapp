@@ -9,9 +9,14 @@ let _tokenExpiry = 0
 async function getToken(): Promise<string> {
   if (_token && Date.now() < _tokenExpiry) return _token
 
-  const creds = Buffer.from(
-    `${process.env.KROGER_CLIENT_ID}:${process.env.KROGER_CLIENT_SECRET}`
-  ).toString('base64')
+  const clientId = (process.env.KROGER_CLIENT_ID ?? '').trim()
+  const clientSecret = (process.env.KROGER_CLIENT_SECRET ?? '').trim()
+
+  if (!clientId || !clientSecret) {
+    throw new Error('Kroger credentials not configured (KROGER_CLIENT_ID / KROGER_CLIENT_SECRET missing)')
+  }
+
+  const creds = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
 
   const res = await fetch(`${BASE}/connect/oauth2/token`, {
     method: 'POST',
@@ -25,6 +30,7 @@ async function getToken(): Promise<string> {
 
   if (!res.ok) {
     const text = await res.text().catch(() => '')
+    console.error('[kroger] OAuth token request failed:', res.status, text)
     throw new Error(`Kroger OAuth ${res.status}: ${text}`)
   }
 
@@ -67,7 +73,10 @@ export async function searchKrogerProduct(term: string): Promise<Omit<KrogerDeal
     cache: 'no-store',
   })
 
-  if (!res.ok) return null
+  if (!res.ok) {
+    console.error('[kroger] products search failed:', res.status, term)
+    return null
+  }
 
   const data = (await res.json()) as { data?: RawProduct[] }
   const product = data.data?.[0]
@@ -105,7 +114,11 @@ export async function findNearbyKrogerStores(lat: number, lng: number): Promise<
     cache: 'no-store',
   })
 
-  if (!res.ok) return []
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    console.error('[kroger] locations fetch failed:', res.status, text)
+    return []
+  }
 
   const data = (await res.json()) as { data?: RawLocation[] }
 
