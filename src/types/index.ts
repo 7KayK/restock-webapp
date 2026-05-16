@@ -87,6 +87,13 @@ export interface FoodProduct {
   nutriscoreGrade: string | null  // 'a'|'b'|'c'|'d'|'e' or null
 }
 
+export interface UserSettings {
+  email: string
+  telegramId: string | null
+  whatsappNumber: string | null
+  createdAt: string
+}
+
 export interface GroceryStore {
   placeId: string
   name: string
