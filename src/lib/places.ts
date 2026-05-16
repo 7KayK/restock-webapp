@@ -1,20 +1,20 @@
 import type { GroceryStore } from '@/types'
 
-const NEARBY_URL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+const NEARBY_URL = 'https://places.googleapis.com/v1/places:searchNearby'
+const FIELD_MASK = 'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.currentOpeningHours,places.types'
 
-interface PlacesResult {
-  place_id: string
-  name: string
-  vicinity: string
-  geometry: { location: { lat: number; lng: number } }
+interface PlaceResult {
+  id: string
+  displayName: { text: string; languageCode?: string }
+  formattedAddress: string
+  location: { latitude: number; longitude: number }
   rating?: number
-  opening_hours?: { open_now: boolean }
+  currentOpeningHours?: { openNow: boolean }
 }
 
 interface PlacesResponse {
-  status: string
-  results: PlacesResult[]
-  error_message?: string
+  places?: PlaceResult[]
+  error?: { code: number; message: string; status: string }
 }
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -27,60 +27,60 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
-async function nearbyByType(apiKey: string, lat: number, lng: number, type: string): Promise<PlacesResult[]> {
-  const url = `${NEARBY_URL}?location=${lat},${lng}&radius=10000&type=${type}&key=${apiKey}`
-  const res = await fetch(url, { cache: 'no-store' })
-  if (!res.ok) {
-    console.error('[places] HTTP error:', res.status, 'type:', type)
-    return []
-  }
-  const data = (await res.json()) as PlacesResponse
-  if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
-    console.error('[places] API error:', data.status, data.error_message, 'type:', type)
-    return []
-  }
-  return data.results
-}
-
 export async function findNearbyGroceryStores(lat: number, lng: number): Promise<GroceryStore[]> {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''
-  if (!apiKey) throw new Error('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY not configured')
+  const apiKey = process.env.GOOGLE_PLACES_API_KEY ?? ''
+  if (!apiKey) throw new Error('GOOGLE_PLACES_API_KEY not configured')
 
-  const [groceryResults, supermarketResults] = await Promise.all([
-    nearbyByType(apiKey, lat, lng, 'grocery_or_supermarket'),
-    nearbyByType(apiKey, lat, lng, 'supermarket'),
-  ])
-
-  // Merge and deduplicate by place_id
-  const seen = new Set<string>()
-  const merged: PlacesResult[] = []
-  for (const r of [...groceryResults, ...supermarketResults]) {
-    if (!seen.has(r.place_id)) {
-      seen.add(r.place_id)
-      merged.push(r)
-    }
+  const body = {
+    includedTypes: ['grocery_store', 'supermarket', 'food_store'],
+    maxResultCount: 15,
+    locationRestriction: {
+      circle: {
+        center: { latitude: lat, longitude: lng },
+        radius: 10000.0,
+      },
+    },
   }
 
-  return merged
+  console.log('[places] POST', NEARBY_URL, '| key:', apiKey.slice(0, 8) + '…')
+
+  const res = await fetch(NEARBY_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': apiKey,
+      'X-Goog-FieldMask': FIELD_MASK,
+    },
+    body: JSON.stringify(body),
+    cache: 'no-store',
+  })
+
+  const data = (await res.json()) as PlacesResponse
+
+  if (!res.ok || data.error) {
+    console.error('[places] error:', JSON.stringify(data.error ?? { httpStatus: res.status }))
+    return []
+  }
+
+  const places = data.places ?? []
+  console.log(`[places] results: ${places.length}`)
+
+  return places
     .map((place) => {
       const distanceKm =
-        Math.round(haversineKm(lat, lng, place.geometry.location.lat, place.geometry.location.lng) * 10) / 10
-      let hoursToday = 'Hours unavailable'
-      if (place.opening_hours !== undefined) {
-        hoursToday = place.opening_hours.open_now ? 'Open now' : 'Closed'
-      }
+        Math.round(haversineKm(lat, lng, place.location.latitude, place.location.longitude) * 10) / 10
+      const openNow = place.currentOpeningHours?.openNow
       return {
-        placeId: place.place_id,
-        name: place.name,
-        address: place.vicinity,
-        lat: place.geometry.location.lat,
-        lng: place.geometry.location.lng,
+        placeId: place.id,
+        name: place.displayName.text,
+        address: place.formattedAddress,
+        lat: place.location.latitude,
+        lng: place.location.longitude,
         distanceKm,
         rating: place.rating,
-        openNow: place.opening_hours?.open_now,
-        hoursToday,
+        openNow,
+        hoursToday: openNow === undefined ? 'Hours unavailable' : openNow ? 'Open now' : 'Closed',
       }
     })
     .sort((a, b) => a.distanceKm - b.distanceKm)
-    .slice(0, 15)
 }
