@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { GoogleMap, Marker, InfoWindow, useLoadScript } from '@react-google-maps/api'
-import { MapPin, Phone, Clock, Loader2, AlertCircle } from 'lucide-react'
+import { MapPin, Clock, Star, Loader2, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import type { KrogerStore } from '@/types'
+import type { GroceryStore } from '@/types'
 
 const MAP_CONTAINER_STYLE = { width: '100%', height: '100%' }
 const DEFAULT_ZOOM = 13
@@ -16,8 +16,8 @@ export function StoreMap() {
   const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState<string>('Failed to load nearby stores. Please try again later.')
   const [center, setCenter] = useState<{ lat: number; lng: number } | null>(null)
-  const [stores, setStores] = useState<KrogerStore[]>([])
-  const [selected, setSelected] = useState<KrogerStore | null>(null)
+  const [stores, setStores] = useState<GroceryStore[]>([])
+  const [selected, setSelected] = useState<GroceryStore | null>(null)
   const [activeIdx, setActiveIdx] = useState<number | null>(null)
 
   const { isLoaded, loadError } = useLoadScript({
@@ -29,12 +29,12 @@ export function StoreMap() {
     try {
       const res = await fetch(`/api/stores?lat=${lat}&lng=${lng}`)
       if (!res.ok) {
-        const json = await res.json().catch(() => ({})) as { error?: string }
+        const json = (await res.json().catch(() => ({}))) as { error?: string }
         setErrorMsg(json.error ?? 'Failed to load nearby stores. Please try again later.')
         setStatus('error')
         return
       }
-      const json = (await res.json()) as { data?: KrogerStore[] }
+      const json = (await res.json()) as { data?: GroceryStore[] }
       setStores(json.data ?? [])
       setStatus('ready')
     } catch {
@@ -62,7 +62,7 @@ export function StoreMap() {
     if (isLoaded) requestLocation()
   }, [isLoaded, requestLocation])
 
-  function selectStore(store: KrogerStore, idx: number) {
+  function selectStore(store: GroceryStore, idx: number) {
     setSelected(store)
     setActiveIdx(idx)
     setCenter({ lat: store.lat, lng: store.lng })
@@ -121,12 +121,12 @@ export function StoreMap() {
         )}
         {status === 'ready' && stores.length === 0 && (
           <p className="text-sm text-[#1B3A5C]/45 py-4 text-center">
-            No Kroger stores found within 10 miles
+            No grocery stores found within 10 km
           </p>
         )}
         {stores.map((store, idx) => (
           <button
-            key={store.locationId}
+            key={store.placeId}
             onClick={() => selectStore(store, idx)}
             className={cn(
               'w-full text-left rounded-xl border p-3 transition-colors',
@@ -137,16 +137,22 @@ export function StoreMap() {
           >
             <div className="flex items-start justify-between gap-2">
               <p className="text-sm font-semibold text-[#1B3A5C] leading-tight">{store.name}</p>
-              <span className="shrink-0 text-xs text-[#0F7B6C] font-medium">
-                {store.distance} mi
+              <span className="shrink-0 text-xs text-[#0F7B6C] font-medium whitespace-nowrap">
+                {store.distanceKm} km
               </span>
             </div>
-            <p className="text-xs text-[#1B3A5C]/50 mt-0.5">
-              {store.address}, {store.city}
-            </p>
-            <div className="flex items-center gap-1 mt-1.5 text-xs text-[#1B3A5C]/40">
-              <Clock className="h-3 w-3 shrink-0" />
-              <span>{store.hoursToday}</span>
+            <p className="text-xs text-[#1B3A5C]/50 mt-0.5 line-clamp-1">{store.address}</p>
+            <div className="flex items-center gap-3 mt-1.5">
+              <div className="flex items-center gap-1 text-xs text-[#1B3A5C]/40">
+                <Clock className="h-3 w-3 shrink-0" />
+                <span>{store.hoursToday}</span>
+              </div>
+              {store.rating !== undefined && (
+                <div className="flex items-center gap-0.5 text-xs text-[#1B3A5C]/40">
+                  <Star className="h-3 w-3 shrink-0 fill-[#EAB308] text-[#EAB308]" />
+                  <span>{store.rating.toFixed(1)}</span>
+                </div>
+              )}
             </div>
           </button>
         ))}
@@ -188,7 +194,7 @@ export function StoreMap() {
             {/* Store markers */}
             {stores.map((store, idx) => (
               <Marker
-                key={store.locationId}
+                key={store.placeId}
                 position={{ lat: store.lat, lng: store.lng }}
                 onClick={() => selectStore(store, idx)}
                 icon={{
@@ -211,21 +217,19 @@ export function StoreMap() {
               >
                 <div className="p-1 min-w-[180px]">
                   <p className="font-semibold text-sm text-[#1B3A5C]">{selected.name}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {selected.address}, {selected.city}, {selected.state}
-                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5">{selected.address}</p>
                   <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
                     <Clock className="h-3 w-3" />
                     <span>{selected.hoursToday}</span>
                   </div>
-                  {selected.phone && (
+                  {selected.rating !== undefined && (
                     <div className="flex items-center gap-1 mt-0.5 text-xs text-gray-500">
-                      <Phone className="h-3 w-3" />
-                      <span>{selected.phone}</span>
+                      <Star className="h-3 w-3 fill-[#EAB308] text-[#EAB308]" />
+                      <span>{selected.rating.toFixed(1)} rating</span>
                     </div>
                   )}
                   <p className="text-xs font-medium text-[#0F7B6C] mt-1">
-                    {selected.distance} miles away
+                    {selected.distanceKm} km away
                   </p>
                 </div>
               </InfoWindow>

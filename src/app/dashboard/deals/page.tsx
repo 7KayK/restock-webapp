@@ -2,14 +2,22 @@ import { Suspense } from 'react'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { getOrCreateUser } from '@/lib/getOrCreateUser'
-import { searchKrogerProduct } from '@/lib/kroger'
+import { searchFoodProduct } from '@/lib/kroger'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Tag, ShoppingBag } from 'lucide-react'
-import { formatCurrency } from '@/lib/utils'
-import type { KrogerDeal } from '@/types'
+import { ShoppingBag, Package } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import type { FoodProduct } from '@/types'
 
-async function DealsContent() {
+const NUTRISCORE_STYLES: Record<string, string> = {
+  a: 'bg-green-600 text-white',
+  b: 'bg-green-400 text-white',
+  c: 'bg-yellow-400 text-gray-800',
+  d: 'bg-orange-400 text-white',
+  e: 'bg-red-500 text-white',
+}
+
+async function ProductsContent() {
   const { userId } = await auth()
   if (!userId) return null
 
@@ -29,7 +37,7 @@ async function DealsContent() {
         <CardContent className="py-16 text-center">
           <ShoppingBag className="h-8 w-8 mx-auto mb-3 text-[#1B3A5C]/20" />
           <p className="text-sm text-[#1B3A5C]/45">
-            No deals yet — log purchases via Telegram or WhatsApp to see matched deals
+            No items yet — log purchases via Telegram or WhatsApp to see product information
           </p>
         </CardContent>
       </Card>
@@ -37,56 +45,45 @@ async function DealsContent() {
   }
 
   const results = await Promise.allSettled(
-    topItems.map(async (t): Promise<KrogerDeal | null> => {
-      const product = await searchKrogerProduct(t.item)
-      if (!product || product.regularPrice === 0) return null
+    topItems.map(async (t): Promise<FoodProduct | null> => {
+      const product = await searchFoodProduct(t.item)
+      if (!product) return null
       return { item: t.item, ...product }
     })
   )
 
-  const deals: KrogerDeal[] = []
+  const products: FoodProduct[] = []
   for (const r of results) {
-    if (r.status === 'fulfilled' && r.value !== null) deals.push(r.value)
+    if (r.status === 'fulfilled' && r.value !== null) products.push(r.value)
   }
-  deals.sort((a, b) => {
-    if (a.hasPromo !== b.hasPromo) return a.hasPromo ? -1 : 1
-    return a.item.localeCompare(b.item)
-  })
+  products.sort((a, b) => a.item.localeCompare(b.item))
 
-  if (deals.length === 0) {
+  if (products.length === 0) {
     return (
       <Card className="bg-white border-gray-100 shadow-none">
         <CardContent className="py-16 text-center">
-          <Tag className="h-8 w-8 mx-auto mb-3 text-[#1B3A5C]/20" />
-          <p className="text-sm text-[#1B3A5C]/45">
-            No Kroger matches found for your items yet
-          </p>
+          <Package className="h-8 w-8 mx-auto mb-3 text-[#1B3A5C]/20" />
+          <p className="text-sm text-[#1B3A5C]/45">No product matches found for your items yet</p>
           <p className="text-xs text-[#1B3A5C]/30 mt-1">
-            Kroger availability varies by region
+            Keep logging purchases — product info improves with more data
           </p>
         </CardContent>
       </Card>
     )
   }
 
-  const promoCount = deals.filter((d) => d.hasPromo).length
-
   return (
     <Card className="bg-white border-gray-100 shadow-none">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base text-[#1B3A5C]">Matched Deals</CardTitle>
-          {promoCount > 0 && (
-            <span className="text-xs font-medium rounded-full bg-[#22C55E]/10 text-[#22C55E] px-2.5 py-0.5">
-              {promoCount} on sale
-            </span>
-          )}
+          <CardTitle className="text-base text-[#1B3A5C]">Your Items</CardTitle>
+          <span className="text-xs text-[#1B3A5C]/40">{products.length} matched</span>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {deals.map((deal) => (
-            <DealCard key={deal.productId} deal={deal} />
+          {products.map((product) => (
+            <ProductCard key={product.productId} product={product} />
           ))}
         </div>
       </CardContent>
@@ -94,58 +91,54 @@ async function DealsContent() {
   )
 }
 
-function DealCard({ deal }: { deal: KrogerDeal }) {
+function ProductCard({ product }: { product: FoodProduct }) {
+  const nutriStyle = product.nutriscoreGrade
+    ? NUTRISCORE_STYLES[product.nutriscoreGrade] ?? 'bg-gray-200 text-gray-600'
+    : null
+
   return (
     <div className="rounded-xl border border-gray-100 bg-white p-4 flex flex-col gap-3">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-xs font-medium text-[#1B3A5C]/45 uppercase tracking-wide truncate">
-            {deal.item}
-          </p>
-          <p className="text-sm font-semibold text-[#1B3A5C] leading-snug mt-0.5 line-clamp-2">
-            {deal.productName}
-          </p>
-          {deal.size && (
-            <p className="text-xs text-[#1B3A5C]/40 mt-0.5">{deal.size}</p>
-          )}
+      {/* Product image */}
+      {product.imageUrl && (
+        <div className="h-24 w-full flex items-center justify-center rounded-lg bg-gray-50 overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={product.imageUrl}
+            alt={product.productName}
+            className="max-h-full max-w-full object-contain"
+          />
         </div>
-        {deal.hasPromo && (
-          <span className="shrink-0 text-[10px] font-bold rounded-full bg-[#22C55E]/10 text-[#22C55E] px-2 py-0.5 uppercase tracking-wide">
-            Sale
-          </span>
+      )}
+
+      {/* Names */}
+      <div className="min-w-0 flex-1">
+        <p className="text-xs font-medium text-[#1B3A5C]/45 uppercase tracking-wide truncate">
+          {product.item}
+        </p>
+        <p className="text-sm font-semibold text-[#1B3A5C] leading-snug mt-0.5 line-clamp-2">
+          {product.productName}
+        </p>
+        {product.brand && (
+          <p className="text-xs text-[#1B3A5C]/50 mt-0.5">{product.brand}</p>
         )}
       </div>
 
-      {/* Pricing */}
-      <div className="flex items-end gap-2 mt-auto">
-        {deal.hasPromo && deal.promoPrice !== null ? (
-          <>
-            <span className="text-xl font-bold text-[#22C55E]">
-              {formatCurrency(deal.promoPrice)}
-            </span>
-            <span className="text-sm text-[#1B3A5C]/35 line-through mb-0.5">
-              {formatCurrency(deal.regularPrice)}
-            </span>
-            {deal.savings !== null && (
-              <span className="ml-auto text-xs font-semibold text-[#22C55E] bg-[#22C55E]/10 rounded-full px-2 py-0.5">
-                Save {formatCurrency(deal.savings)}
-              </span>
-            )}
-          </>
+      {/* Nutriscore badge */}
+      <div className="flex items-center justify-between mt-auto">
+        {nutriStyle ? (
+          <span className={cn('text-[10px] font-bold rounded px-1.5 py-0.5 uppercase tracking-wide', nutriStyle)}>
+            Nutri-Score {product.nutriscoreGrade!.toUpperCase()}
+          </span>
         ) : (
-          <span className="text-xl font-bold text-[#1B3A5C]">
-            {formatCurrency(deal.regularPrice)}
-          </span>
+          <span />
         )}
+        <p className="text-[10px] text-[#1B3A5C]/30">Open Food Facts</p>
       </div>
-
-      <p className="text-[10px] text-[#1B3A5C]/30">via Kroger</p>
     </div>
   )
 }
 
-function DealsSkeleton() {
+function ProductsSkeleton() {
   return (
     <Card className="bg-white border-gray-100 shadow-none">
       <CardHeader className="pb-3">
@@ -155,12 +148,13 @@ function DealsSkeleton() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="rounded-xl border border-gray-100 p-4 space-y-3">
+              <Skeleton className="h-24 w-full rounded-lg" />
               <div className="space-y-1.5">
                 <Skeleton className="h-3 w-16" />
                 <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-3 w-12" />
+                <Skeleton className="h-3 w-20" />
               </div>
-              <Skeleton className="h-7 w-20" />
+              <Skeleton className="h-5 w-24" />
             </div>
           ))}
         </div>
@@ -175,12 +169,12 @@ export default function DealsPage() {
       <div>
         <h1 className="text-2xl font-bold text-[#1B3A5C]">Deals</h1>
         <p className="text-sm text-[#1B3A5C]/50 mt-0.5">
-          Kroger prices matched to your most purchased items
+          Product information for your most purchased items
         </p>
       </div>
 
-      <Suspense fallback={<DealsSkeleton />}>
-        <DealsContent />
+      <Suspense fallback={<ProductsSkeleton />}>
+        <ProductsContent />
       </Suspense>
     </div>
   )

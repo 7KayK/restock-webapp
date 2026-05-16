@@ -78,28 +78,23 @@ export interface ApiResponse<T> {
   error?: string
 }
 
-export interface KrogerDeal {
-  item: string
-  productId: string
+export interface FoodProduct {
+  item: string           // user's purchase term
+  productId: string      // OFF barcode
   productName: string
-  size: string
-  regularPrice: number
-  promoPrice: number | null
-  savings: number | null
+  brand: string
   imageUrl: string | null
-  hasPromo: boolean
+  nutriscoreGrade: string | null  // 'a'|'b'|'c'|'d'|'e' or null
 }
 
-export interface KrogerStore {
-  locationId: string
+export interface GroceryStore {
+  placeId: string
   name: string
-  address: string
-  city: string
-  state: string
-  zip: string
+  address: string     // Google Places vicinity (includes city)
   lat: number
   lng: number
-  distance: number
-  phone: string
-  hoursToday: string
+  distanceKm: number
+  rating?: number
+  openNow?: boolean
+  hoursToday: string  // 'Open now' | 'Closed' | 'Hours unavailable'
 }

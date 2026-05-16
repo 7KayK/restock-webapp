@@ -6,7 +6,7 @@ export default function StoresPage() {
       <div className="shrink-0">
         <h1 className="text-2xl font-bold text-[#1B3A5C]">Nearest Store</h1>
         <p className="text-sm text-[#1B3A5C]/50 mt-0.5">
-          Kroger locations near you — click a marker for details
+          Grocery stores near you — click a marker for details
         </p>
       </div>
 

@@ -1,8 +1,8 @@
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { getOrCreateUser } from '@/lib/getOrCreateUser'
-import { searchKrogerProduct } from '@/lib/kroger'
-import type { KrogerDeal } from '@/types'
+import { searchFoodProduct } from '@/lib/kroger'
+import type { FoodProduct } from '@/types'
 
 export async function GET() {
   const { userId } = await auth()
@@ -24,28 +24,22 @@ export async function GET() {
     }
 
     const results = await Promise.allSettled(
-      topItems.map(async (t): Promise<KrogerDeal | null> => {
-        const product = await searchKrogerProduct(t.item)
-        if (!product || product.regularPrice === 0) return null
+      topItems.map(async (t): Promise<FoodProduct | null> => {
+        const product = await searchFoodProduct(t.item)
+        if (!product) return null
         return { item: t.item, ...product }
       })
     )
 
-    const deals: KrogerDeal[] = []
+    const products: FoodProduct[] = []
     for (const r of results) {
-      if (r.status === 'fulfilled' && r.value !== null) {
-        deals.push(r.value)
-      }
+      if (r.status === 'fulfilled' && r.value !== null) products.push(r.value)
     }
 
-    // Promo items first, then alphabetical
-    deals.sort((a, b) => {
-      if (a.hasPromo !== b.hasPromo) return a.hasPromo ? -1 : 1
-      return a.item.localeCompare(b.item)
-    })
+    products.sort((a, b) => a.item.localeCompare(b.item))
 
-    return Response.json({ data: deals })
+    return Response.json({ data: products })
   } catch {
-    return Response.json({ error: 'Failed to fetch deals' }, { status: 500 })
+    return Response.json({ error: 'Failed to fetch product information' }, { status: 500 })
   }
 }
