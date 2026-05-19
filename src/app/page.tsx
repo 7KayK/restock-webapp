@@ -30,7 +30,7 @@ function TelegramIcon({ size = 20, className }: { size?: number; className?: str
 // ─── Organic background texture ───────────────────────────────────────────────
 
 function OrganicTexture() {
-  const s = 'rgba(15,123,108,0.06)'
+  const s = 'rgba(15,123,108,0.12)'
   return (
     <svg
       className="fixed inset-0 w-full h-full pointer-events-none"
@@ -40,15 +40,15 @@ function OrganicTexture() {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <path d="M-200,200 C100,0 400,500 700,200 C900,0 1200,350 1600,100" fill="none" stroke={s} strokeWidth="2" />
-      <path d="M-100,450 C300,250 600,650 1000,380 C1200,220 1450,550 1700,350" fill="none" stroke={s} strokeWidth="1.5" />
-      <path d="M0,720 C250,580 550,820 850,680 C1100,560 1350,780 1650,640" fill="none" stroke={s} strokeWidth="1.5" />
-      <path d="M300,-80 C500,180 750,20 950,280 C1100,470 1250,100 1500,300" fill="none" stroke={s} strokeWidth="1" />
-      <path d="M-150,320 C200,420 500,180 800,350 C1050,480 1350,280 1700,420" fill="none" stroke={s} strokeWidth="2" />
-      <path d="M800,-100 C950,200 1150,50 1300,350 C1400,550 1250,750 1100,550 C950,350 1050,150 800,-100" fill="none" stroke={s} strokeWidth="1.5" />
-      <path d="M-100,600 C150,720 400,580 700,700 C950,800 1200,620 1500,750" fill="none" stroke={s} strokeWidth="1" />
-      <path d="M400,100 C550,300 800,100 1000,350 C1150,520 1300,300 1500,450" fill="none" stroke={s} strokeWidth="1" />
-      <path d="M100,50 C300,200 500,0 700,180 C850,310 1000,80 1200,200 C1400,310 1550,100 1700,250" fill="none" stroke={s} strokeWidth="2.5" />
+      <path d="M-200,200 C100,0 400,500 700,200 C900,0 1200,350 1600,100" fill="none" stroke={s} strokeWidth="4" />
+      <path d="M-100,450 C300,250 600,650 1000,380 C1200,220 1450,550 1700,350" fill="none" stroke={s} strokeWidth="3" />
+      <path d="M0,720 C250,580 550,820 850,680 C1100,560 1350,780 1650,640" fill="none" stroke={s} strokeWidth="3" />
+      <path d="M300,-80 C500,180 750,20 950,280 C1100,470 1250,100 1500,300" fill="none" stroke={s} strokeWidth="2" />
+      <path d="M-150,320 C200,420 500,180 800,350 C1050,480 1350,280 1700,420" fill="none" stroke={s} strokeWidth="4" />
+      <path d="M800,-100 C950,200 1150,50 1300,350 C1400,550 1250,750 1100,550 C950,350 1050,150 800,-100" fill="none" stroke={s} strokeWidth="3" />
+      <path d="M-100,600 C150,720 400,580 700,700 C950,800 1200,620 1500,750" fill="none" stroke={s} strokeWidth="2" />
+      <path d="M400,100 C550,300 800,100 1000,350 C1150,520 1300,300 1500,450" fill="none" stroke={s} strokeWidth="2" />
+      <path d="M100,50 C300,200 500,0 700,180 C850,310 1000,80 1200,200 C1400,310 1550,100 1700,250" fill="none" stroke={s} strokeWidth="5" />
     </svg>
   )
 }
@@ -147,7 +147,7 @@ export default function Home() {
       <main className="relative" style={{ zIndex: 1, background: '#FAFAF8' }}>
 
         {/* ── Hero ── */}
-        <section className="pt-24 pb-24 px-6 text-center">
+        <section className="pt-24 pb-20 px-6 text-center">
           <div className="max-w-2xl mx-auto flex flex-col items-center gap-8">
 
             {/* Icon */}
@@ -269,7 +269,7 @@ export default function Home() {
         </section>
 
         {/* ── How It Works ── */}
-        <section id="how-it-works" className="py-24 px-6">
+        <section id="how-it-works" className="pt-20 pb-24 px-6">
           <div className="max-w-4xl mx-auto">
             <FadeUp className="text-center mb-16">
               <h2 className="text-[#1B3A5C] leading-tight" style={{ ...PLAYFAIR, fontSize: '36px' }}>
