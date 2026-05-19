@@ -30,11 +30,11 @@ function TelegramIcon({ size = 20, className }: { size?: number; className?: str
 // ─── Organic background texture ───────────────────────────────────────────────
 
 function OrganicTexture() {
-  const s = 'rgba(15,123,108,0.04)'
+  const s = 'rgba(15,123,108,0.06)'
   return (
     <svg
       className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: 0 }}
+      style={{ zIndex: 2 }}
       viewBox="0 0 1440 900"
       preserveAspectRatio="xMidYMid slice"
       xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +68,7 @@ function FadeUp({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
+      viewport={{ once: true }}
       transition={{ duration: 0.5, ease: 'easeOut', delay }}
       className={className}
     >
@@ -82,8 +82,6 @@ function FadeUp({
 export default function Home() {
   return (
     <>
-      <OrganicTexture />
-
       {/* ── Navbar ── */}
       <header
         className="sticky top-0 z-50 bg-white"
@@ -91,12 +89,12 @@ export default function Home() {
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           {/* Wordmark */}
-          <div className="flex items-center gap-2.5">
+          <Link href="/" className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#0F7B6C] flex items-center justify-center">
               <ShoppingCart className="h-4 w-4 text-white" />
             </div>
             <span className="text-[#1B3A5C] font-bold text-lg tracking-tight">Restock</span>
-          </div>
+          </Link>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-6">
@@ -558,6 +556,9 @@ export default function Home() {
           </div>
         </footer>
       </main>
+
+      {/* Texture rendered after main so it sits above main (z:2 > z:1) but below header (z:50) */}
+      <OrganicTexture />
     </>
   )
 }
