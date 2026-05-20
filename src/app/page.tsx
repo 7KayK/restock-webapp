@@ -35,7 +35,7 @@ function OrganicTexture() {
   return (
     <svg
       className="fixed inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: 2 }}
+      style={{ zIndex: 0 }}
       viewBox="0 0 1440 900"
       preserveAspectRatio="xMidYMid slice"
       xmlns="http://www.w3.org/2000/svg"
@@ -148,7 +148,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="relative" style={{ zIndex: 1, background: '#FAFAF8' }}>
+      <main style={{ background: '#FAFAF8' }}>
 
         {/* ── Hero ── */}
         <section className="pt-24 pb-20 px-6 text-center">
