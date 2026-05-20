@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ShoppingCart, Brain, Bell } from 'lucide-react'
+import { Brain, Bell } from 'lucide-react'
 
 // Playfair Display via CSS variable set in layout.tsx
 const PLAYFAIR: React.CSSProperties = {
@@ -159,9 +159,16 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.45 }}
-              className="w-12 h-12 rounded-xl bg-[#0F7B6C] flex items-center justify-center"
+              className="w-12 h-12 rounded-xl bg-[#0F7B6C] flex items-center justify-center overflow-hidden"
             >
-              <ShoppingCart className="h-6 w-6 text-white" />
+              <Image
+                src="/logo.jpg"
+                alt="Restock"
+                width={36}
+                height={36}
+                className="object-contain"
+                style={{ mixBlendMode: 'multiply' }}
+              />
             </motion.div>
 
             {/* Headline */}
@@ -195,24 +202,33 @@ export default function Home() {
             >
               {[
                 {
-                  Icon: ShoppingCart,
+                  icon: (
+                    <Image
+                      src="/logo.jpg"
+                      alt="Restock"
+                      width={36}
+                      height={36}
+                      className="object-contain"
+                      style={{ mixBlendMode: 'multiply' }}
+                    />
+                  ),
                   label: 'Track purchases',
                   desc: 'Log by message, photo, or voice. No forms, no apps, no friction.',
                 },
                 {
-                  Icon: Brain,
+                  icon: <Brain className="h-4 w-4 text-white" />,
                   label: 'Predict depletion',
                   desc: 'Restock learns your consumption patterns and knows before you do.',
                 },
                 {
-                  Icon: Bell,
+                  icon: <Bell className="h-4 w-4 text-white" />,
                   label: 'Never run out',
                   desc: 'Reminders arrive before you need them. Deals and stores always nearby.',
                 },
-              ].map(({ Icon, label, desc }) => (
+              ].map(({ icon, label, desc }) => (
                 <div key={label} className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-full bg-[#0F7B6C] flex items-center justify-center shrink-0 mt-0.5">
-                    <Icon className="h-4 w-4 text-white" />
+                  <div className="w-8 h-8 rounded-full bg-[#0F7B6C] flex items-center justify-center shrink-0 mt-0.5 overflow-hidden">
+                    {icon}
                   </div>
                   <div>
                     <span className="font-semibold text-[#1B3A5C] text-sm">{label}</span>
@@ -398,8 +414,15 @@ export default function Home() {
 
               {/* Restock bubble */}
               <div className="flex justify-start items-end gap-2.5">
-                <div className="w-7 h-7 rounded-full bg-[#0F7B6C] flex items-center justify-center shrink-0">
-                  <ShoppingCart className="h-3.5 w-3.5 text-white" />
+                <div className="w-7 h-7 rounded-full bg-[#0F7B6C] flex items-center justify-center shrink-0 overflow-hidden">
+                  <Image
+                    src="/logo.jpg"
+                    alt="Restock"
+                    width={36}
+                    height={36}
+                    className="object-contain"
+                    style={{ mixBlendMode: 'multiply' }}
+                  />
                 </div>
                 <div
                   className="max-w-[72%] px-5 py-3.5 rounded-2xl rounded-bl-sm text-sm text-[#1B3A5C] text-left leading-relaxed"
@@ -487,8 +510,15 @@ export default function Home() {
               {/* Brand */}
               <div className="col-span-2 md:col-span-1 flex flex-col gap-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-[#0F7B6C] flex items-center justify-center">
-                    <ShoppingCart className="h-3.5 w-3.5 text-white" />
+                  <div className="w-7 h-7 rounded-lg bg-[#0F7B6C] flex items-center justify-center overflow-hidden">
+                    <Image
+                      src="/logo.jpg"
+                      alt="Restock"
+                      width={36}
+                      height={36}
+                      className="object-contain"
+                      style={{ mixBlendMode: 'multiply' }}
+                    />
                   </div>
                   <span className="text-[#1B3A5C] font-bold">Restock</span>
                 </div>
