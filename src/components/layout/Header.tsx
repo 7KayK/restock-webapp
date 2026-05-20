@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Menu } from 'lucide-react'
 
@@ -27,10 +28,18 @@ export function Header({ onMenuClick }: HeaderProps) {
       <button
         onClick={onMenuClick}
         aria-label="Open sidebar"
-        className="mr-4 rounded-md p-1.5 text-[#1B3A5C]/50 hover:text-[#1B3A5C] hover:bg-gray-100 transition-colors"
+        className="mr-3 rounded-md p-1.5 text-[#1B3A5C]/50 hover:text-[#1B3A5C] hover:bg-gray-100 transition-colors"
       >
         <Menu className="h-5 w-5" />
       </button>
+      <Image
+        src="/logo.jpg"
+        width={40}
+        height={40}
+        alt="Restock"
+        style={{ objectFit: 'contain', mixBlendMode: 'multiply' }}
+        className="mr-3"
+      />
       <span className="text-[#1B3A5C] font-semibold">{title}</span>
     </header>
   )

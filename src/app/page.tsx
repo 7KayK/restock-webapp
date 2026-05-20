@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ShoppingCart, Brain, Bell } from 'lucide-react'
@@ -88,12 +89,15 @@ export default function Home() {
         style={{ boxShadow: '0 1px 0 rgba(0,0,0,0.06)' }}
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          {/* Wordmark */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#0F7B6C] flex items-center justify-center">
-              <ShoppingCart className="h-4 w-4 text-white" />
-            </div>
-            <span className="text-[#1B3A5C] font-bold text-lg tracking-tight">Restock</span>
+          {/* Logo */}
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/logo.jpg"
+              width={40}
+              height={40}
+              alt="Restock"
+              style={{ objectFit: 'contain', mixBlendMode: 'multiply' }}
+            />
           </Link>
 
           {/* Desktop nav */}

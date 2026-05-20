@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { UserButton } from '@clerk/nextjs'
@@ -49,12 +50,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     >
       {/* Logo */}
       <div className="flex items-center justify-between px-5 h-16 border-b border-gray-100 shrink-0">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#0F7B6C] flex items-center justify-center shrink-0">
-            <ShoppingCart className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-[#1B3A5C] font-bold text-lg leading-none">Restock</span>
-        </div>
+        <Image
+          src="/logo.jpg"
+          width={40}
+          height={40}
+          alt="Restock"
+          style={{ objectFit: 'contain', mixBlendMode: 'multiply' }}
+        />
         <button
           onClick={onClose}
           aria-label="Close sidebar"
