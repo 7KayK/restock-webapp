@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { UserButton } from '@clerk/nextjs'
+import { motion } from 'framer-motion'
 import {
   ShoppingCart,
   BarChart3,
@@ -50,13 +51,16 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     >
       {/* Logo */}
       <div className="flex items-center justify-between px-5 h-16 border-b border-gray-100 shrink-0">
-        <Image
-          src="/logo.jpg"
-          width={40}
-          height={40}
-          alt="Restock"
-          style={{ objectFit: 'contain', mixBlendMode: 'multiply' }}
-        />
+        <div className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}>
+          <Image
+            src="/logo.jpg"
+            width={36}
+            height={36}
+            alt="Restock"
+            className="object-contain"
+            style={{ mixBlendMode: 'screen' }}
+          />
+        </div>
         <button
           onClick={onClose}
           aria-label="Close sidebar"
@@ -76,14 +80,24 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               href={href}
               onClick={onClose}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                 active
-                  ? 'bg-[#0F7B6C] text-white shadow-sm'
+                  ? 'text-white'
                   : 'text-[#1B3A5C]/65 hover:bg-[#0F7B6C]/10 hover:text-[#1B3A5C]'
               )}
             >
-              <Icon className="h-4 w-4 shrink-0" />
-              {label}
+              {active && (
+                <motion.div
+                  layoutId="sidebar-active"
+                  className="absolute inset-0 rounded-lg bg-[#0F7B6C] shadow-sm"
+                  transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                />
+              )}
+              {!active && (
+                <span className="absolute left-0 inset-y-1.5 w-[3px] rounded-r-full bg-[#0F7B6C] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+              )}
+              <Icon className="relative h-4 w-4 shrink-0 z-10" />
+              <span className="relative z-10">{label}</span>
             </Link>
           )
         })}

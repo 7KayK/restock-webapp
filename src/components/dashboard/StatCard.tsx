@@ -1,3 +1,7 @@
+'use client'
+
+import { useEffect } from 'react'
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { LucideIcon } from 'lucide-react'
@@ -9,20 +13,39 @@ interface StatCardProps {
   icon: LucideIcon
 }
 
+function CountUp({ value }: { value: number }) {
+  const count = useMotionValue(0)
+  const rounded = useTransform(count, (v) => Math.round(v))
+
+  useEffect(() => {
+    const controls = animate(count, value, { duration: 1.2, ease: 'easeOut' })
+    return controls.stop
+  }, [value, count])
+
+  return <motion.span>{rounded}</motion.span>
+}
+
 export function StatCard({ title, value, sub, icon: Icon }: StatCardProps) {
   return (
-    <Card className="bg-white border-gray-100 shadow-none">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-[#1B3A5C]/60">{title}</CardTitle>
-        <div className="w-8 h-8 rounded-lg bg-[#0F7B6C]/10 flex items-center justify-center shrink-0">
-          <Icon className="h-4 w-4 text-[#0F7B6C]" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold text-[#1B3A5C]">{value}</div>
-        <p className="text-xs text-[#1B3A5C]/45 mt-0.5">{sub}</p>
-      </CardContent>
-    </Card>
+    <motion.div
+      whileHover={{ y: -2, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
+      transition={{ duration: 0.2 }}
+    >
+      <Card className="bg-white border border-gray-100 shadow-none hover:border-[#0F7B6C] transition-colors duration-200 cursor-default">
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <CardTitle className="text-sm font-medium text-[#1B3A5C]/60">{title}</CardTitle>
+          <div className="w-8 h-8 rounded-lg bg-[#0F7B6C]/10 flex items-center justify-center shrink-0">
+            <Icon className="h-4 w-4 text-[#0F7B6C]" />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-[#1B3A5C]">
+            {typeof value === 'number' ? <CountUp value={value} /> : value}
+          </div>
+          <p className="text-xs text-[#1B3A5C]/45 mt-0.5">{sub}</p>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }
 
@@ -30,12 +53,12 @@ export function StatCardSkeleton() {
   return (
     <Card className="bg-white border-gray-100 shadow-none">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <Skeleton className="h-4 w-28" />
-        <Skeleton className="h-8 w-8 rounded-lg" />
+        <Skeleton className="h-4 w-28 bg-[#0F7B6C]/10" />
+        <Skeleton className="h-8 w-8 rounded-lg bg-[#0F7B6C]/10" />
       </CardHeader>
       <CardContent>
-        <Skeleton className="h-7 w-16" />
-        <Skeleton className="h-3 w-36 mt-1.5" />
+        <Skeleton className="h-7 w-16 bg-[#0F7B6C]/10" />
+        <Skeleton className="h-3 w-36 mt-1.5 bg-[#0F7B6C]/10" />
       </CardContent>
     </Card>
   )

@@ -63,7 +63,13 @@ export function SpendBarChart({ data }: SpendBarChartProps) {
             width={52}
           />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: '#F1F5F9' }} />
-          <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
+          <Bar
+            dataKey="amount"
+            radius={[4, 4, 0, 0]}
+            isAnimationActive={true}
+            animationDuration={800}
+            animationEasing="ease-out"
+          >
             {data.map((entry, i) => (
               <Cell
                 key={i}

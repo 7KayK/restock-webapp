@@ -69,6 +69,9 @@ export function SpendTrendChart({ data }: SpendTrendChartProps) {
             strokeWidth={2.5}
             dot={{ fill: '#0F7B6C', r: 3, strokeWidth: 0 }}
             activeDot={{ r: 5, fill: '#0F7B6C' }}
+            isAnimationActive={true}
+            animationDuration={800}
+            animationEasing="ease-out"
           />
         </LineChart>
       </ResponsiveContainer>

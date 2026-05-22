@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Trash2, Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -87,52 +88,70 @@ export function PurchaseList({ initialPurchases, categories }: PurchaseListProps
         </div>
       ) : (
         <ul className="divide-y divide-gray-50">
-          {filtered.map((p) => {
-            const sourceStyle = SOURCE_STYLES[p.source] ?? SOURCE_STYLES.manual
-            return (
-              <li key={p.id} className="flex items-center gap-4 py-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium text-[#1B3A5C]">{p.item}</span>
-                    <span className="text-sm text-[#1B3A5C]/50">
-                      × {p.quantity}
-                      {p.unit ? ` ${p.unit}` : ''}
-                    </span>
+          <AnimatePresence initial={false}>
+            {filtered.map((p, i) => {
+              const sourceStyle = SOURCE_STYLES[p.source] ?? SOURCE_STYLES.manual
+              return (
+                <motion.li
+                  key={p.id}
+                  layout
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    transition: { delay: Math.min(i * 0.05, 0.4), duration: 0.3, ease: 'easeOut' },
+                  }}
+                  exit={{
+                    opacity: 0,
+                    height: 0,
+                    overflow: 'hidden',
+                    transition: { type: 'spring', bounce: 0, duration: 0.35 },
+                  }}
+                  className="flex items-center gap-4 py-3"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-medium text-[#1B3A5C]">{p.item}</span>
+                      <span className="text-sm text-[#1B3A5C]/50">
+                        × {p.quantity}
+                        {p.unit ? ` ${p.unit}` : ''}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                      {p.category && (
+                        <span className="rounded-full bg-[#0F7B6C]/10 text-[#0F7B6C] text-[10px] font-medium px-2 py-0.5">
+                          {p.category}
+                        </span>
+                      )}
+                      <span
+                        className={`rounded-full text-[10px] font-medium px-2 py-0.5 ${sourceStyle}`}
+                      >
+                        {p.source}
+                      </span>
+                      <span className="text-[#1B3A5C]/35 text-xs">{formatDate(p.createdAt)}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 mt-1 flex-wrap">
-                    {p.category && (
-                      <span className="rounded-full bg-[#0F7B6C]/10 text-[#0F7B6C] text-[10px] font-medium px-2 py-0.5">
-                        {p.category}
+                  <div className="flex items-center gap-3 shrink-0">
+                    {p.price != null && (
+                      <span className="text-sm font-semibold text-[#1B3A5C]">
+                        {formatCurrency(p.price)}
                       </span>
                     )}
-                    <span
-                      className={`rounded-full text-[10px] font-medium px-2 py-0.5 ${sourceStyle}`}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-[#1B3A5C]/30 hover:text-[#EF4444] hover:bg-[#EF4444]/10"
+                      onClick={() => handleDelete(p.id)}
+                      disabled={deleting === p.id}
+                      aria-label={`Delete ${p.item}`}
                     >
-                      {p.source}
-                    </span>
-                    <span className="text-[#1B3A5C]/35 text-xs">{formatDate(p.createdAt)}</span>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  {p.price != null && (
-                    <span className="text-sm font-semibold text-[#1B3A5C]">
-                      {formatCurrency(p.price)}
-                    </span>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-[#1B3A5C]/30 hover:text-[#EF4444] hover:bg-[#EF4444]/10"
-                    onClick={() => handleDelete(p.id)}
-                    disabled={deleting === p.id}
-                    aria-label={`Delete ${p.item}`}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </li>
-            )
-          })}
+                </motion.li>
+              )
+            })}
+          </AnimatePresence>
         </ul>
       )}
     </div>

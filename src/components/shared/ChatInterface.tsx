@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -39,7 +40,6 @@ export function ChatInterface() {
     setInput('')
     setStreaming(true)
 
-    // Add an empty assistant message that we'll stream into
     setMessages((prev) => [...prev, { role: 'assistant', content: '' }])
 
     const abort = new AbortController()
@@ -111,30 +111,45 @@ export function ChatInterface() {
       <CardContent className="flex flex-col flex-1 gap-4 min-h-0 pt-0">
         {/* Messages */}
         <div className="flex-1 overflow-y-auto space-y-4 pr-1">
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={cn('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}
-            >
-              <div
-                className={cn(
-                  'max-w-[82%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
-                  msg.role === 'user'
-                    ? 'bg-[#0F7B6C] text-white'
-                    : 'bg-[#F8FAFC] text-[#1B3A5C] border border-gray-100'
-                )}
+          <AnimatePresence initial={false}>
+            {messages.map((msg, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: 'spring', bounce: 0.3, duration: 0.4 }}
+                className={cn('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}
               >
-                {msg.content}
-                {streaming && i === messages.length - 1 && msg.role === 'assistant' && msg.content === '' && (
-                  <span className="inline-flex gap-0.5 ml-1">
-                    <span className="animate-bounce h-1 w-1 rounded-full bg-[#1B3A5C]/40 [animation-delay:0ms]" />
-                    <span className="animate-bounce h-1 w-1 rounded-full bg-[#1B3A5C]/40 [animation-delay:150ms]" />
-                    <span className="animate-bounce h-1 w-1 rounded-full bg-[#1B3A5C]/40 [animation-delay:300ms]" />
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
+                <div
+                  className={cn(
+                    'max-w-[82%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
+                    msg.role === 'user'
+                      ? 'bg-[#0F7B6C] text-white'
+                      : 'bg-[#F8FAFC] text-[#1B3A5C] border border-gray-100'
+                  )}
+                >
+                  {msg.content}
+                  {streaming && i === messages.length - 1 && msg.role === 'assistant' && msg.content === '' && (
+                    <span className="inline-flex items-center gap-1 ml-1">
+                      {[0, 1, 2].map((dot) => (
+                        <motion.span
+                          key={dot}
+                          className="h-1.5 w-1.5 rounded-full bg-[#0F7B6C] inline-block"
+                          animate={{ scale: [1, 1.4, 1] }}
+                          transition={{
+                            repeat: Infinity,
+                            duration: 0.8,
+                            delay: dot * 0.2,
+                            ease: 'easeInOut',
+                          }}
+                        />
+                      ))}
+                    </span>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
           <div ref={bottomRef} />
         </div>
 
@@ -154,14 +169,19 @@ export function ChatInterface() {
             disabled={streaming}
             className="flex-1 text-[#1B3A5C] placeholder:text-[#1B3A5C]/35"
           />
-          <Button
-            type="submit"
-            size="icon"
-            disabled={streaming || !input.trim()}
-            className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white shrink-0"
+          <motion.div
+            whileTap={{ scale: 0.88 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
           >
-            <Send className="h-4 w-4" />
-          </Button>
+            <Button
+              type="submit"
+              size="icon"
+              disabled={streaming || !input.trim()}
+              className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white shrink-0"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </motion.div>
         </form>
       </CardContent>
     </Card>

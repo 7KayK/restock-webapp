@@ -57,6 +57,9 @@ export function CategoryChart({ data }: CategoryChartProps) {
             outerRadius={85}
             dataKey="value"
             paddingAngle={2}
+            isAnimationActive={true}
+            animationDuration={800}
+            animationEasing="ease-out"
           >
             {chartData.map((_, i) => (
               <Cell key={i} fill={BRAND_COLORS[i % BRAND_COLORS.length]} strokeWidth={0} />
