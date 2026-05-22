@@ -94,6 +94,20 @@ export interface UserSettings {
   createdAt: string
 }
 
+export interface BotActivity {
+  source: 'telegram' | 'whatsapp'
+  count: number
+  minutesAgo: number
+}
+
+export interface ChannelStatus {
+  telegramId: string | null
+  whatsappNumber: string | null
+  recentBotActivity: BotActivity | null
+  telegramLastAt: string | null
+  whatsappLastAt: string | null
+}
+
 export interface GroceryStore {
   placeId: string
   name: string

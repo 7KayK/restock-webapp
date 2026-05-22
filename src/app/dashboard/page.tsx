@@ -1,15 +1,114 @@
 import { Suspense } from 'react'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import { Globe } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ShoppingCart, Bell, DollarSign, Package } from 'lucide-react'
 import { format, startOfMonth, subMonths } from 'date-fns'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, cn } from '@/lib/utils'
 import { StatCard, StatCardSkeleton } from '@/components/dashboard/StatCard'
+import { ContinuityBanner } from '@/components/dashboard/ContinuityBanner'
 import { SpendTrendChart } from '@/components/charts/SpendTrendChart'
 import { CategoryChart } from '@/components/charts/CategoryChart'
+import { WhatsAppIcon, TelegramIcon } from '@/components/shared/ChannelIcons'
 import type { MonthlySpendPoint, CategorySpend } from '@/types'
+
+async function ChannelQuickAccess() {
+  const { userId } = await auth()
+  if (!userId) return null
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      select: { telegramId: true, whatsappNumber: true },
+    })
+    if (!user) return null
+
+    const telegramBot = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
+    const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER
+
+    const telegramConnected = !!user.telegramId
+    const whatsappConnected = !!user.whatsappNumber
+
+    const telegramHref = telegramConnected && telegramBot
+      ? `https://t.me/${telegramBot}`
+      : '/dashboard/settings'
+    const whatsappHref = whatsappConnected && whatsappPhone
+      ? `https://wa.me/${whatsappPhone}`
+      : '/dashboard/settings'
+
+    return (
+      <div className="grid grid-cols-3 gap-3">
+        {/* Telegram */}
+        <a
+          href={telegramHref}
+          target={telegramConnected && telegramBot ? '_blank' : undefined}
+          rel={telegramConnected && telegramBot ? 'noopener noreferrer' : undefined}
+          className={cn(
+            'flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all',
+            telegramConnected
+              ? 'border-[#229ED9]/25 bg-[#229ED9]/5 hover:border-[#229ED9]/50 hover:bg-[#229ED9]/10'
+              : 'border-gray-100 bg-white hover:bg-gray-50 opacity-55'
+          )}
+        >
+          <TelegramIcon size={22} className={telegramConnected ? 'text-[#229ED9]' : 'text-gray-300'} />
+          <div>
+            <p className={cn('text-xs font-semibold', telegramConnected ? 'text-[#229ED9]' : 'text-gray-400')}>
+              Telegram
+            </p>
+            <p className="text-[10px] text-gray-400 mt-0.5">{telegramConnected ? 'Connected' : 'Connect'}</p>
+          </div>
+        </a>
+
+        {/* WhatsApp */}
+        <a
+          href={whatsappHref}
+          target={whatsappConnected && whatsappPhone ? '_blank' : undefined}
+          rel={whatsappConnected && whatsappPhone ? 'noopener noreferrer' : undefined}
+          className={cn(
+            'flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all',
+            whatsappConnected
+              ? 'border-[#25D366]/25 bg-[#25D366]/5 hover:border-[#25D366]/50 hover:bg-[#25D366]/10'
+              : 'border-gray-100 bg-white hover:bg-gray-50 opacity-55'
+          )}
+        >
+          <WhatsAppIcon size={22} className={whatsappConnected ? 'text-[#25D366]' : 'text-gray-300'} />
+          <div>
+            <p className={cn('text-xs font-semibold', whatsappConnected ? 'text-[#25D366]' : 'text-gray-400')}>
+              WhatsApp
+            </p>
+            <p className="text-[10px] text-gray-400 mt-0.5">{whatsappConnected ? 'Connected' : 'Connect'}</p>
+          </div>
+        </a>
+
+        {/* Web App — always active */}
+        <div className="flex flex-col items-center gap-2 rounded-xl border border-[#0F7B6C]/25 bg-[#0F7B6C]/5 p-4 text-center">
+          <Globe className="h-[22px] w-[22px] text-[#0F7B6C]" />
+          <div>
+            <p className="text-xs font-semibold text-[#0F7B6C]">Web App</p>
+            <p className="text-[10px] text-gray-400 mt-0.5">Active now</p>
+          </div>
+        </div>
+      </div>
+    )
+  } catch {
+    return null
+  }
+}
+
+function ChannelQuickAccessSkeleton() {
+  return (
+    <div className="grid grid-cols-3 gap-3">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="rounded-xl border border-gray-100 bg-white p-4 flex flex-col items-center gap-2">
+          <Skeleton className="h-6 w-6 rounded-full" />
+          <Skeleton className="h-3 w-14" />
+          <Skeleton className="h-2.5 w-10" />
+        </div>
+      ))}
+    </div>
+  )
+}
 
 function buildMonthPoints(
   purchases: Array<{ price: number | null; createdAt: Date }>,
@@ -44,10 +143,10 @@ async function StatCards() {
       return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { title: 'Total Purchases', value: 0, sub: 'Log your first purchase', icon: ShoppingCart },
-            { title: 'This Month Spend', value: formatCurrency(0), sub: format(new Date(), 'MMMM yyyy'), icon: DollarSign },
-            { title: 'Active Reminders', value: 0, sub: 'No reminders yet', icon: Bell },
-            { title: 'Items Tracked', value: 0, sub: 'Add purchases to begin', icon: Package },
+            { title: 'Total Purchases', value: 0, sub: 'Log your first purchase', icon: 'shopping-cart' as const },
+            { title: 'This Month Spend', value: formatCurrency(0), sub: format(new Date(), 'MMMM yyyy'), icon: 'dollar-sign' as const },
+            { title: 'Active Reminders', value: 0, sub: 'No reminders yet', icon: 'bell' as const },
+            { title: 'Items Tracked', value: 0, sub: 'Add purchases to begin', icon: 'package' as const },
           ].map((c) => (
             <StatCard key={c.title} title={c.title} value={c.value} sub={c.sub} icon={c.icon} />
           ))}
@@ -76,25 +175,25 @@ async function StatCards() {
         title: 'Total Purchases',
         value: totalPurchases,
         sub: totalPurchases === 0 ? 'Log your first purchase' : 'All time',
-        icon: ShoppingCart,
+        icon: 'shopping-cart' as const,
       },
       {
         title: 'This Month Spend',
         value: formatCurrency(spend),
         sub: format(new Date(), 'MMMM yyyy'),
-        icon: DollarSign,
+        icon: 'dollar-sign' as const,
       },
       {
         title: 'Active Reminders',
         value: activeReminders,
         sub: activeReminders === 0 ? 'No reminders yet' : 'Items due for restock',
-        icon: Bell,
+        icon: 'bell' as const,
       },
       {
         title: 'Items Tracked',
         value: uniqueItems,
         sub: uniqueItems === 0 ? 'Add purchases to begin' : 'Unique items logged',
-        icon: Package,
+        icon: 'package' as const,
       },
     ]
 
@@ -333,6 +432,12 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-bold text-[#1B3A5C]">Dashboard</h1>
         <p className="text-sm text-[#1B3A5C]/50 mt-0.5">Your restocking overview</p>
       </div>
+
+      <ContinuityBanner />
+
+      <Suspense fallback={<ChannelQuickAccessSkeleton />}>
+        <ChannelQuickAccess />
+      </Suspense>
 
       <Suspense fallback={<StatCardsSkeleton />}>
         <StatCards />

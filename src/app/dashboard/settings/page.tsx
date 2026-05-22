@@ -7,7 +7,12 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle2, MessageCircle, Phone, User, Loader2, AlertCircle } from 'lucide-react'
-import type { UserSettings } from '@/types'
+import { WhatsAppIcon, TelegramIcon } from '@/components/shared/ChannelIcons'
+import { formatDate } from '@/lib/utils'
+import type { UserSettings, ChannelStatus } from '@/types'
+
+const TELEGRAM_BOT = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
+const WHATSAPP_PHONE = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<UserSettings | null>(null)
@@ -22,11 +27,25 @@ export default function SettingsPage() {
   const [telegramMsg, setTelegramMsg] = useState<{ type: 'error' | 'success'; text: string } | null>(null)
   const [whatsappMsg, setWhatsappMsg] = useState<{ type: 'error' | 'success'; text: string } | null>(null)
 
+  const [channelData, setChannelData] = useState<Pick<ChannelStatus, 'telegramLastAt' | 'whatsappLastAt'> | null>(null)
+
   useEffect(() => {
     fetch('/api/settings')
       .then((r) => r.json())
       .then((json) => { if (json.data) setSettings(json.data) })
       .finally(() => setLoading(false))
+
+    fetch('/api/channels')
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.data) {
+          setChannelData({
+            telegramLastAt: json.data.telegramLastAt,
+            whatsappLastAt: json.data.whatsappLastAt,
+          })
+        }
+      })
+      .catch(() => {})
   }, [])
 
   async function patchSettings(body: Record<string, unknown>) {
@@ -167,6 +186,20 @@ export default function SettingsPage() {
                 <span className="text-muted-foreground">Chat ID</span>
                 <span className="font-mono font-medium text-[#1B3A5C]">{settings.telegramId}</span>
               </div>
+              {channelData?.telegramLastAt && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Last activity</span>
+                  <span className="text-[#1B3A5C]/70">{formatDate(channelData.telegramLastAt)}</span>
+                </div>
+              )}
+              {TELEGRAM_BOT && (
+                <Button asChild className="w-full bg-[#229ED9] hover:bg-[#229ED9]/90 text-white">
+                  <a href={`https://t.me/${TELEGRAM_BOT}`} target="_blank" rel="noopener noreferrer">
+                    <TelegramIcon size={16} className="mr-2" />
+                    Open in Telegram
+                  </a>
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"
@@ -239,6 +272,20 @@ export default function SettingsPage() {
                 <span className="text-muted-foreground">Number</span>
                 <span className="font-mono font-medium text-[#1B3A5C]">{settings.whatsappNumber}</span>
               </div>
+              {channelData?.whatsappLastAt && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Last activity</span>
+                  <span className="text-[#1B3A5C]/70">{formatDate(channelData.whatsappLastAt)}</span>
+                </div>
+              )}
+              {WHATSAPP_PHONE && (
+                <Button asChild className="w-full bg-[#25D366] hover:bg-[#25D366]/90 text-white">
+                  <a href={`https://wa.me/${WHATSAPP_PHONE}`} target="_blank" rel="noopener noreferrer">
+                    <WhatsAppIcon size={16} className="mr-2" />
+                    Open in WhatsApp
+                  </a>
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"

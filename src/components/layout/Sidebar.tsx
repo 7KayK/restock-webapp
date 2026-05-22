@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -17,6 +18,8 @@ import {
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { WhatsAppIcon, TelegramIcon } from '@/components/shared/ChannelIcons'
+import type { ChannelStatus } from '@/types'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: ShoppingCart, exact: true },
@@ -29,6 +32,9 @@ const navItems = [
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
 
+const TELEGRAM_BOT = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
+const WHATSAPP_PHONE = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER
+
 interface SidebarProps {
   isOpen: boolean
   onClose: () => void
@@ -36,10 +42,29 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname()
+  const [channels, setChannels] = useState<Pick<ChannelStatus, 'telegramId' | 'whatsappNumber'> | null>(null)
+
+  useEffect(() => {
+    fetch('/api/channels')
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.data) {
+          setChannels({
+            telegramId: json.data.telegramId,
+            whatsappNumber: json.data.whatsappNumber,
+          })
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   function isActive(href: string, exact?: boolean) {
     return exact ? pathname === href : pathname.startsWith(href)
   }
+
+  const hasTelegram = !!channels?.telegramId && !!TELEGRAM_BOT
+  const hasWhatsApp = !!channels?.whatsappNumber && !!WHATSAPP_PHONE
+  const hasAnyBot = hasTelegram || hasWhatsApp
 
   return (
     <aside
@@ -102,6 +127,49 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           )
         })}
       </nav>
+
+      {/* Channel quick-access */}
+      {channels !== null && (
+        <div className="px-3 py-3 border-t border-gray-100 shrink-0">
+          <p className="px-3 text-[10px] font-semibold text-[#1B3A5C]/35 uppercase tracking-wider mb-1.5">
+            Quick Access
+          </p>
+          {hasAnyBot ? (
+            <div className="space-y-0.5">
+              {hasTelegram && (
+                <a
+                  href={`https://t.me/${TELEGRAM_BOT}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1B3A5C]/60 hover:bg-[#229ED9]/10 hover:text-[#229ED9] transition-colors"
+                >
+                  <TelegramIcon size={15} className="shrink-0" />
+                  Open Telegram
+                </a>
+              )}
+              {hasWhatsApp && (
+                <a
+                  href={`https://wa.me/${WHATSAPP_PHONE}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1B3A5C]/60 hover:bg-[#25D366]/10 hover:text-[#25D366] transition-colors"
+                >
+                  <WhatsAppIcon size={15} className="shrink-0" />
+                  Open WhatsApp
+                </a>
+              )}
+            </div>
+          ) : (
+            <Link
+              href="/dashboard/settings"
+              onClick={onClose}
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1B3A5C]/45 hover:bg-gray-100 hover:text-[#1B3A5C] transition-colors"
+            >
+              Connect a bot
+            </Link>
+          )}
+        </div>
+      )}
 
       {/* User */}
       <div className="px-5 py-4 border-t border-gray-100 shrink-0">
