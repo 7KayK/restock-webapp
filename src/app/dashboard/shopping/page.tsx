@@ -2,17 +2,19 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { Playfair_Display } from 'next/font/google'
 import {
-  ShoppingBag, MapPin, Tag, CalendarDays, Camera,
+  MapPin, Tag, CalendarDays, Camera, Keyboard,
   Plus, X, Check, Loader2, Bell, Sparkles, ArrowLeft,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { ImageIntelligence } from '@/components/shared/ImageIntelligence'
 import type { ShoppingItem, Purchase } from '@/types'
+
+const playfair = Playfair_Display({ subsets: ['latin'] })
 
 interface ListItem extends ShoppingItem {
   _id: string
@@ -46,12 +48,13 @@ const SOURCE_LABELS: Record<string, { label: string; icon: React.ElementType; co
 }
 
 export default function ShoppingPage() {
-  const [items, setItems]         = useState<ListItem[]>([])
-  const [loading, setLoading]     = useState(true)
-  const [addInput, setAddInput]   = useState('')
-  const [showDone, setShowDone]   = useState(false)
+  const [items, setItems]           = useState<ListItem[]>([])
+  const [loading, setLoading]       = useState(true)
+  const [loadingHistory, setLoadingHistory] = useState(false)
+  const [addInput, setAddInput]     = useState('')
+  const [showDone, setShowDone]     = useState(false)
   const [completing, setCompleting] = useState(false)
-  const [scanOpen, setScanOpen]   = useState(false)
+  const [scanOpen, setScanOpen]     = useState(false)
   const addRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -96,6 +99,25 @@ export default function ShoppingPage() {
 
   function updateQty(id: string, qty: number) {
     setItems((prev) => prev.map((it) => it._id === id ? { ...it, quantity: Math.max(1, qty), _editingQty: false } : it))
+  }
+
+  async function handleBuildFromHistory() {
+    setLoadingHistory(true)
+    try {
+      const r = await fetch('/api/shopping/list')
+      const json = await r.json()
+      if (json.data?.items?.length) {
+        setItems(json.data.items.map((it: ShoppingItem) => ({
+          ...it,
+          _id: uid(),
+          _done: false,
+          _editingName: false,
+          _editingQty: false,
+        })))
+      }
+    } finally {
+      setLoadingHistory(false)
+    }
   }
 
   const activeItems = items.filter((it) => !it._done)
@@ -170,11 +192,29 @@ export default function ShoppingPage() {
               <Loader2 className="h-6 w-6 animate-spin text-[#0F7B6C]" />
             </div>
           ) : items.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 py-16">
-              <ShoppingBag className="h-10 w-10 text-[#1B3A5C]/20" />
-              <p className="text-sm text-[#1B3A5C]/45 text-center max-w-xs">
-                No items due for restock. Add items below or log more purchases to build predictions.
+            <div className="px-4 pt-6 pb-4 space-y-4">
+              <p className={cn(playfair.className, 'text-[#1B3A5C] leading-snug')} style={{ fontSize: '22px' }}>
+                What do you need to pick up?
               </p>
+              <div className="grid grid-cols-3 gap-3">
+                <EntryCard onClick={() => setScanOpen(true)}>
+                  <Camera className="h-5 w-5 text-[#0F7B6C]" />
+                  <span className="text-sm font-semibold text-[#1B3A5C]">📷 Snap a list</span>
+                  <span className="text-[11px] text-[#1B3A5C]/50 leading-tight">Photo, screenshot or handwritten note</span>
+                </EntryCard>
+                <EntryCard onClick={() => addRef.current?.focus()}>
+                  <Keyboard className="h-5 w-5 text-[#0F7B6C]" />
+                  <span className="text-sm font-semibold text-[#1B3A5C]">⌨️ Type it in</span>
+                  <span className="text-[11px] text-[#1B3A5C]/50 leading-tight">Add items one by one</span>
+                </EntryCard>
+                <EntryCard onClick={handleBuildFromHistory} disabled={loadingHistory}>
+                  {loadingHistory
+                    ? <Loader2 className="h-5 w-5 text-[#0F7B6C] animate-spin" />
+                    : <Sparkles className="h-5 w-5 text-[#0F7B6C]" />}
+                  <span className="text-sm font-semibold text-[#1B3A5C]">✨ Build from history</span>
+                  <span className="text-[11px] text-[#1B3A5C]/50 leading-tight">We'll suggest what you're running low on</span>
+                </EntryCard>
+              </div>
             </div>
           ) : (
             <ul className="divide-y divide-gray-50">
@@ -285,6 +325,33 @@ interface ListRowProps {
   onRemove: (id: string) => void
   onUpdateName: (id: string, name: string) => void
   onUpdateQty: (id: string, qty: number) => void
+}
+
+function EntryCard({
+  children,
+  onClick,
+  disabled,
+}: {
+  children: React.ReactNode
+  onClick: () => void
+  disabled?: boolean
+}) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="flex flex-col gap-2 rounded-lg bg-white p-4 text-left cursor-pointer transition-colors disabled:opacity-60"
+      style={{
+        border: `0.5px solid ${hovered ? '#0F7B6C' : '#e5e7eb'}`,
+        transition: 'border-color 150ms ease',
+      }}
+    >
+      {children}
+    </button>
+  )
 }
 
 function ListRow({ item, onToggle, onRemove, onUpdateName, onUpdateQty }: ListRowProps) {
