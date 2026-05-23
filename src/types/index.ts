@@ -100,6 +100,14 @@ export interface BotActivity {
   minutesAgo: number
 }
 
+export interface RecentActivity {
+  found: boolean
+  source: 'telegram' | 'whatsapp' | null
+  count: number
+  lastItem: string | null
+  minutesAgo: number | null
+}
+
 export interface ChannelStatus {
   telegramId: string | null
   whatsappNumber: string | null

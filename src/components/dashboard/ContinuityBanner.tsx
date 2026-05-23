@@ -2,23 +2,23 @@
 
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
-import type { BotActivity } from '@/types'
+import type { RecentActivity } from '@/types'
 
 const DISMISSED_KEY = 'restock-continuity-dismissed'
 
 export function ContinuityBanner() {
-  const [activity, setActivity] = useState<BotActivity | null>(null)
+  const [activity, setActivity] = useState<RecentActivity | null>(null)
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined' && sessionStorage.getItem(DISMISSED_KEY)) return
 
-    fetch('/api/channels')
+    fetch('/api/activity/recent')
       .then((r) => r.json())
       .then((json) => {
-        const act = json.data?.recentBotActivity as BotActivity | null
-        if (act) {
-          setActivity(act)
+        const data = json.data as RecentActivity | undefined
+        if (data?.found) {
+          setActivity(data)
           setVisible(true)
         }
       })
@@ -35,7 +35,7 @@ export function ContinuityBanner() {
   const channelName = activity.source === 'telegram' ? 'Telegram' : 'WhatsApp'
   const purchaseLabel = activity.count === 1 ? '1 purchase' : `${activity.count} purchases`
   const timeLabel =
-    activity.minutesAgo < 1
+    activity.minutesAgo === null || activity.minutesAgo < 1
       ? 'just now'
       : `${activity.minutesAgo} min${activity.minutesAgo !== 1 ? 's' : ''} ago`
 
