@@ -42,6 +42,32 @@ export async function GET(_request: NextRequest, { params }: Params) {
   }
 }
 
+export async function DELETE(_request: NextRequest, { params }: Params) {
+  const { userId: clerkId } = await auth()
+  if (!clerkId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { id } = await params
+
+  try {
+    const user = await getOrCreateUser(clerkId)
+    const team = await prisma.team.findUnique({ where: { id }, select: { ownerId: true } })
+    if (!team) return Response.json({ error: 'Team not found' }, { status: 404 })
+    if (team.ownerId !== user.id) {
+      return Response.json({ error: 'Only the owner can delete the team' }, { status: 403 })
+    }
+
+    // Nullify team references before deleting
+    await prisma.purchase.updateMany({ where: { teamId: id }, data: { teamId: null } })
+    await prisma.reminder.updateMany({ where: { teamId: id }, data: { teamId: null } })
+    await prisma.teamMember.deleteMany({ where: { teamId: id } })
+    await prisma.team.delete({ where: { id } })
+
+    return Response.json({ data: { id } })
+  } catch {
+    return Response.json({ error: 'Failed to delete team' }, { status: 500 })
+  }
+}
+
 export async function PATCH(request: NextRequest, { params }: Params) {
   const { userId: clerkId } = await auth()
   if (!clerkId) return Response.json({ error: 'Unauthorized' }, { status: 401 })

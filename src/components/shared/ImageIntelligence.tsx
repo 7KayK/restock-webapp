@@ -22,6 +22,15 @@ interface ImageIntelligenceProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onImport: (purchases: Purchase[]) => void
+  mode?: 'import' | 'inventory'
+  teams?: { id: string; name: string }[]
+  defaultTeamId?: string | null
+}
+
+const STATUS_STYLES: Record<string, string> = {
+  out_of_stock:  'bg-[#EF4444]/10 text-[#EF4444]',
+  running_low:   'bg-[#FF6B35]/10 text-[#FF6B35]',
+  purchased:     'bg-[#22C55E]/10 text-[#22C55E]',
 }
 
 function fileToBase64(file: File): Promise<string> {
@@ -50,7 +59,12 @@ const ACTIONS: { id: ActionType; label: string; desc: string; Icon: React.Elemen
   { id: 'calendar',  label: 'Add to calendar',   desc: 'Schedule a shopping trip',      Icon: CalendarDays },
 ]
 
-export function ImageIntelligence({ open, onOpenChange, onImport }: ImageIntelligenceProps) {
+export function ImageIntelligence({
+  open, onOpenChange, onImport,
+  mode = 'import',
+  teams = [],
+  defaultTeamId = null,
+}: ImageIntelligenceProps) {
   const [step, setStep]               = useState<Step>('idle')
   const [error, setError]             = useState<string | null>(null)
   const [result, setResult]           = useState<ImageIntelligenceResult | null>(null)
@@ -60,12 +74,13 @@ export function ImageIntelligence({ open, onOpenChange, onImport }: ImageIntelli
   const [calendarUrl, setCalendarUrl] = useState<string | null>(null)
   const [isDragging, setIsDragging]   = useState(false)
   const [successCount, setSuccessCount] = useState(0)
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(defaultTeamId)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   function reset() {
     setStep('idle'); setError(null); setResult(null); setItems([])
     setAction('purchases'); setCalendarDate(''); setCalendarUrl(null)
-    setIsDragging(false); setSuccessCount(0)
+    setIsDragging(false); setSuccessCount(0); setSelectedTeamId(defaultTeamId)
   }
 
   function handleClose(open: boolean) {
@@ -120,10 +135,11 @@ export function ImageIntelligence({ open, onOpenChange, onImport }: ImageIntelli
     if (file) processFile(file)
   }, [])
 
-  async function handleSave() {
+  async function handleSave(overrideAction?: ActionType) {
     const activeItems = items.filter((it) => !it._removed)
     if (!activeItems.length) return
 
+    const saveAction = overrideAction ?? action
     setStep('saving')
     setError(null)
 
@@ -132,9 +148,10 @@ export function ImageIntelligence({ open, onOpenChange, onImport }: ImageIntelli
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action,
-          items: activeItems,
+          action:       saveAction,
+          items:        activeItems,
           calendarDate: calendarDate || undefined,
+          teamId:       selectedTeamId ?? null,
         }),
       })
       const json = await res.json()
@@ -142,9 +159,9 @@ export function ImageIntelligence({ open, onOpenChange, onImport }: ImageIntelli
 
       setSuccessCount(activeItems.length)
 
-      if (action === 'purchases') {
+      if (saveAction === 'purchases') {
         onImport(json.data.purchases ?? [])
-      } else if (action === 'calendar') {
+      } else if (saveAction === 'calendar') {
         setCalendarUrl(json.data.calendarUrl)
       }
 
@@ -171,7 +188,7 @@ export function ImageIntelligence({ open, onOpenChange, onImport }: ImageIntelli
         <DialogHeader>
           <DialogTitle className="text-[#1B3A5C] flex items-center gap-2">
             <Camera className="h-4 w-4 text-[#0F7B6C]" />
-            Smart Import
+            {mode === 'inventory' ? 'Scan Inventory' : 'Smart Import'}
           </DialogTitle>
         </DialogHeader>
 
@@ -265,6 +282,11 @@ export function ImageIntelligence({ open, onOpenChange, onImport }: ImageIntelli
                 if (item._removed) return null
                 return (
                   <div key={idx} className="flex items-center gap-2 group">
+                    {mode === 'inventory' && item.status && item.status !== 'purchased' && (
+                      <span className={`text-[10px] font-medium rounded px-1.5 py-0.5 shrink-0 ${STATUS_STYLES[item.status] ?? ''}`}>
+                        {item.status === 'out_of_stock' ? 'Out' : 'Low'}
+                      </span>
+                    )}
                     <div className="flex-1 grid grid-cols-[1fr_56px_64px] gap-1.5">
                       <Input
                         value={item.name}
@@ -321,10 +343,10 @@ export function ImageIntelligence({ open, onOpenChange, onImport }: ImageIntelli
               <Button
                 size="sm"
                 className="flex-1 bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white"
-                onClick={() => setStep('action')}
+                onClick={() => { if (mode === 'inventory') { handleSave('purchases') } else { setStep('action') } }}
                 disabled={activeItems.length === 0}
               >
-                Continue <ChevronRight className="h-3.5 w-3.5 ml-1" />
+                {mode === 'inventory' ? 'Save inventory' : <>Continue <ChevronRight className="h-3.5 w-3.5 ml-1" /></>}
               </Button>
             </div>
           </div>
@@ -376,6 +398,47 @@ export function ImageIntelligence({ open, onOpenChange, onImport }: ImageIntelli
               </div>
             )}
 
+            {/* Team selector — only for purchases and reminders */}
+            {teams.length > 0 && action !== 'calendar' && (
+              <div className="space-y-2 border-t border-gray-100 pt-3">
+                <p className="text-xs font-medium text-[#1B3A5C]/60">Save for</p>
+                <div className="space-y-1.5">
+                  <label className={cn(
+                    'flex items-center gap-2.5 rounded-lg border px-3 py-2 cursor-pointer transition-colors',
+                    selectedTeamId === null
+                      ? 'border-[#0F7B6C] bg-[#0F7B6C]/6'
+                      : 'border-gray-100 hover:border-[#0F7B6C]/30'
+                  )}>
+                    <input
+                      type="radio"
+                      name="team-select"
+                      className="accent-[#0F7B6C]"
+                      checked={selectedTeamId === null}
+                      onChange={() => setSelectedTeamId(null)}
+                    />
+                    <span className="text-sm text-[#1B3A5C]">Personal</span>
+                  </label>
+                  {teams.map((t) => (
+                    <label key={t.id} className={cn(
+                      'flex items-center gap-2.5 rounded-lg border px-3 py-2 cursor-pointer transition-colors',
+                      selectedTeamId === t.id
+                        ? 'border-[#0F7B6C] bg-[#0F7B6C]/6'
+                        : 'border-gray-100 hover:border-[#0F7B6C]/30'
+                    )}>
+                      <input
+                        type="radio"
+                        name="team-select"
+                        className="accent-[#0F7B6C]"
+                        checked={selectedTeamId === t.id}
+                        onChange={() => setSelectedTeamId(t.id)}
+                      />
+                      <span className="text-sm text-[#1B3A5C]">{t.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {error && (
               <p className="text-sm text-[#EF4444] bg-[#EF4444]/8 rounded-lg px-3 py-2">{error}</p>
             )}
@@ -392,7 +455,7 @@ export function ImageIntelligence({ open, onOpenChange, onImport }: ImageIntelli
               <Button
                 size="sm"
                 className="flex-1 bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white"
-                onClick={handleSave}
+                onClick={() => handleSave()}
                 disabled={action === 'calendar' && !calendarDate}
               >
                 Save items

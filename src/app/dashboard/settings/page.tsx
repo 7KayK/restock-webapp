@@ -6,10 +6,11 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { CheckCircle2, MessageCircle, Phone, User, Loader2, AlertCircle } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
+import { CheckCircle2, MessageCircle, Phone, User, Loader2, AlertCircle, CalendarDays } from 'lucide-react'
 import { WhatsAppIcon, TelegramIcon } from '@/components/shared/ChannelIcons'
 import { formatDate } from '@/lib/utils'
-import type { UserSettings, ChannelStatus } from '@/types'
+import type { UserSettings, ChannelStatus, Integration } from '@/types'
 
 const TELEGRAM_BOT = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
 const WHATSAPP_PHONE = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER
@@ -29,6 +30,15 @@ export default function SettingsPage() {
 
   const [channelData, setChannelData] = useState<Pick<ChannelStatus, 'telegramLastAt' | 'whatsappLastAt'> | null>(null)
 
+  const [calIntegration, setCalIntegration] = useState<Integration | null>(null)
+  const [calLoading, setCalLoading]         = useState(true)
+  const [autoCalendar, setAutoCalendar]     = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('restock_auto_calendar') === 'true'
+    }
+    return false
+  })
+
   useEffect(() => {
     fetch('/api/settings')
       .then((r) => r.json())
@@ -46,7 +56,36 @@ export default function SettingsPage() {
         }
       })
       .catch(() => {})
+
+    fetch('/api/integrations')
+      .then((r) => r.json())
+      .then((json) => {
+        const cal = json.data?.find((i: Integration) => i.provider === 'google_calendar') ?? null
+        setCalIntegration(cal)
+      })
+      .finally(() => setCalLoading(false))
   }, [])
+
+  async function disconnectCalendar() {
+    const res = await fetch('/api/integrations?provider=google_calendar', { method: 'DELETE' })
+    if (res.ok) setCalIntegration(null)
+  }
+
+  function toggleAutoCalendar(checked: boolean) {
+    setAutoCalendar(checked)
+    localStorage.setItem('restock_auto_calendar', String(checked))
+  }
+
+  // Show success/error from OAuth callback redirect
+  const [oauthMsg] = useState<{ type: 'error' | 'success'; text: string } | null>(() => {
+    if (typeof window === 'undefined') return null
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('success') === 'calendar_connected') return { type: 'success', text: 'Google Calendar connected!' }
+    if (params.get('error') === 'calendar_denied') return { type: 'error', text: 'Calendar connection was cancelled.' }
+    if (params.get('error') === 'calendar_failed') return { type: 'error', text: 'Failed to connect Google Calendar. Please try again.' }
+    if (params.get('error') === 'calendar_not_configured') return { type: 'error', text: 'Google Calendar is not configured yet.' }
+    return null
+  })
 
   async function patchSettings(body: Record<string, unknown>) {
     const res = await fetch('/api/settings', {
@@ -330,6 +369,87 @@ export default function SettingsPage() {
             </div>
           )}
           <StatusMessage msg={whatsappMsg} />
+        </CardContent>
+      </Card>
+
+      {/* Google Calendar */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CalendarDays className="h-5 w-5 text-[#0F7B6C]" />
+              <CardTitle className="text-base">Google Calendar</CardTitle>
+            </div>
+            {!calLoading && (
+              calIntegration ? (
+                <Badge className="bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20 hover:bg-[#22C55E]/10">
+                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                  Connected
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="text-muted-foreground">Not connected</Badge>
+              )
+            )}
+          </div>
+          <CardDescription>
+            Add shopping trips and restock reminders to your Google Calendar.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {calLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin text-[#0F7B6C]" />
+          ) : calIntegration ? (
+            <div className="space-y-4">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Connected since</span>
+                <span className="text-[#1B3A5C]/70">
+                  {new Date(calIntegration.connectedAt).toLocaleDateString('en-CA', {
+                    year: 'numeric', month: 'long', day: 'numeric',
+                  })}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-t border-gray-100">
+                <div>
+                  <p className="text-sm font-medium text-[#1B3A5C]">Auto-create events for reminders</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Automatically add a calendar event when a restock reminder is due
+                  </p>
+                </div>
+                <Switch
+                  checked={autoCalendar}
+                  onCheckedChange={toggleAutoCalendar}
+                />
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={disconnectCalendar}
+                className="text-[#EF4444] border-[#EF4444]/30 hover:bg-[#EF4444]/5 hover:text-[#EF4444]"
+              >
+                Disconnect Calendar
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-sm text-[#1B3A5C]/70">
+                Connect your Google Calendar to schedule shopping trips and get reminder events automatically.
+              </p>
+              <Button asChild className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white gap-2">
+                <a href="/api/auth/google-calendar">
+                  <CalendarDays className="h-4 w-4" />
+                  Connect Google Calendar
+                </a>
+              </Button>
+            </div>
+          )}
+          {oauthMsg && (
+            <p className={`flex items-center gap-1.5 text-sm ${oauthMsg.type === 'error' ? 'text-[#EF4444]' : 'text-[#22C55E]'}`}>
+              {oauthMsg.type === 'error'
+                ? <AlertCircle className="h-4 w-4 shrink-0" />
+                : <CheckCircle2 className="h-4 w-4 shrink-0" />}
+              {oauthMsg.text}
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

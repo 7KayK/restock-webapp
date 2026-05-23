@@ -8,12 +8,12 @@ type ActionType = 'purchases' | 'reminders' | 'calendar'
 
 function buildCalendarUrl(date: Date, itemNames: string[]): string {
   const pad = (n: number) => String(n).padStart(2, '0')
-  const y  = date.getFullYear()
-  const m  = pad(date.getMonth() + 1)
-  const d  = pad(date.getDate())
-  const nd = new Date(date.getTime() + 86_400_000)
-  const ny = nd.getFullYear()
-  const nm = pad(nd.getMonth() + 1)
+  const y   = date.getFullYear()
+  const m   = pad(date.getMonth() + 1)
+  const d   = pad(date.getDate())
+  const nd  = new Date(date.getTime() + 86_400_000)
+  const ny  = nd.getFullYear()
+  const nm  = pad(nd.getMonth() + 1)
   const ndd = pad(nd.getDate())
 
   const title   = encodeURIComponent('Restock Shopping Trip')
@@ -35,9 +35,10 @@ export async function POST(request: NextRequest) {
       action?: ActionType
       items?: ImageIntelligenceItem[]
       calendarDate?: string
+      teamId?: string | null
     }
 
-    const { action, items, calendarDate } = body
+    const { action, items, calendarDate, teamId } = body
 
     if (!action || !['purchases', 'reminders', 'calendar'].includes(action)) {
       return Response.json({ error: 'action must be purchases, reminders, or calendar' }, { status: 400 })
@@ -53,7 +54,8 @@ export async function POST(request: NextRequest) {
         items.map((item) =>
           prisma.purchase.create({
             data: {
-              userId: user.id,
+              userId:   user.id,
+              teamId:   teamId ?? null,
               item:     item.name.trim().toLowerCase(),
               quantity: item.quantity ?? 1,
               unit:     item.unit ?? null,
@@ -77,6 +79,7 @@ export async function POST(request: NextRequest) {
           prisma.reminder.create({
             data: {
               userId:        user.id,
+              teamId:        teamId ?? null,
               item:          item.name.trim().toLowerCase(),
               predictedDate,
               confidence:    0.8,

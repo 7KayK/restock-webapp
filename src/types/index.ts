@@ -136,6 +136,63 @@ export interface ImageIntelligenceResult {
   context: string
 }
 
+export interface TeamSummary {
+  id: string
+  name: string
+  ownerId: string
+  createdAt: Date
+  owner: { email: string }
+  _count: { members: number }
+}
+
+export interface TeamMemberWithUser {
+  id: string
+  teamId: string
+  userId: string
+  role: string
+  joinedAt: Date
+  user: { id: string; email: string }
+}
+
+export interface TeamDetail {
+  id: string
+  name: string
+  ownerId: string
+  createdAt: Date
+  owner: { id: string; email: string }
+  members: TeamMemberWithUser[]
+}
+
+export interface TeamPurchase {
+  id: string
+  item: string
+  quantity: number
+  unit: string | null
+  category: string | null
+  price: number | null
+  source: string
+  createdAt: Date
+  user: { email: string }
+}
+
+export interface InventoryEntry {
+  id: string
+  item: string
+  dueDate?: string
+  lastPurchased?: string
+}
+
+export interface TeamInventory {
+  out: InventoryEntry[]
+  low: InventoryEntry[]
+  ok: InventoryEntry[]
+}
+
+export interface Integration {
+  provider: string
+  connectedAt: string
+}
+
 export interface GroceryStore {
   placeId: string
   name: string

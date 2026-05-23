@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Trash2, Search, Camera } from 'lucide-react'
 import { Input } from '@/components/ui/input'
@@ -26,8 +26,19 @@ export function PurchaseList({ initialPurchases, categories }: PurchaseListProps
   const [purchases, setPurchases] = useState(initialPurchases)
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [deleting, setDeleting]     = useState<string | null>(null)
   const [importOpen, setImportOpen] = useState(false)
+  const [teams, setTeams]           = useState<{ id: string; name: string }[]>([])
+
+  // Fetch teams so ImageIntelligence can offer the team selector
+  useEffect(() => {
+    fetch('/api/teams')
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.data) setTeams(json.data.map((t: { id: string; name: string }) => ({ id: t.id, name: t.name })))
+      })
+      .catch(() => {})
+  }, [])
 
   const filtered = useMemo(() => {
     return purchases.filter((p) => {
@@ -89,6 +100,7 @@ export function PurchaseList({ initialPurchases, categories }: PurchaseListProps
         open={importOpen}
         onOpenChange={setImportOpen}
         onImport={(newPurchases) => setPurchases((prev) => [...newPurchases, ...prev])}
+        teams={teams}
       />
 
       {/* Count */}
