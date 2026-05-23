@@ -7,20 +7,25 @@ datasource db {
 }
 
 model User {
-  id             String     @id @default(cuid())
-  clerkId        String     @unique
-  email          String     @unique
-  telegramId     String?    @unique
-  whatsappNumber String?    @unique
-  createdAt      DateTime   @default(now())
-  purchases      Purchase[]
-  reminders      Reminder[]
+  id              String            @id @default(cuid())
+  clerkId         String            @unique
+  email           String            @unique
+  telegramId      String?           @unique
+  whatsappNumber  String?           @unique
+  createdAt       DateTime          @default(now())
+  purchases       Purchase[]
+  reminders       Reminder[]
+  teamsOwned      Team[]            @relation("TeamOwner")
+  teamMemberships TeamMember[]
+  integrations    UserIntegration[]
 }
 
 model Purchase {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
+  teamId    String?
+  team      Team?    @relation(fields: [teamId], references: [id])
   item      String
   quantity  Float
   unit      String?
@@ -34,6 +39,8 @@ model Reminder {
   id            String    @id @default(cuid())
   userId        String
   user          User      @relation(fields: [userId], references: [id])
+  teamId        String?
+  team          Team?     @relation(fields: [teamId], references: [id])
   item          String
   predictedDate DateTime
   confidence    Float
@@ -41,4 +48,41 @@ model Reminder {
   snoozedUntil  DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model Team {
+  id        String       @id @default(cuid())
+  name      String
+  ownerId   String
+  owner     User         @relation("TeamOwner", fields: [ownerId], references: [id])
+  members   TeamMember[]
+  purchases Purchase[]
+  reminders Reminder[]
+  createdAt DateTime     @default(now())
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  teamId   String
+  team     Team     @relation(fields: [teamId], references: [id])
+  userId   String
+  user     User     @relation(fields: [userId], references: [id])
+  role     String   @default("member")
+  joinedAt DateTime @default(now())
+
+  @@unique([teamId, userId])
+}
+
+model UserIntegration {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  provider     String
+  accessToken  String
+  refreshToken String?
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([userId, provider])
 }
