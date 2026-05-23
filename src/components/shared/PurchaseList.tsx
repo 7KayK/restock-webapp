@@ -2,16 +2,18 @@
 
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Trash2, Search } from 'lucide-react'
+import { Trash2, Search, Camera } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import type { Purchase } from '@/types'
+import { ImageIntelligence } from './ImageIntelligence'
 
 const SOURCE_STYLES: Record<string, string> = {
   telegram: 'bg-blue-50 text-blue-600',
   whatsapp: 'bg-green-50 text-green-700',
   receipt: 'bg-orange-50 text-orange-600',
+  image: 'bg-teal-50 text-[#0F7B6C]',
   manual: 'bg-gray-100 text-gray-500',
 }
 
@@ -25,6 +27,7 @@ export function PurchaseList({ initialPurchases, categories }: PurchaseListProps
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [deleting, setDeleting] = useState<string | null>(null)
+  const [importOpen, setImportOpen] = useState(false)
 
   const filtered = useMemo(() => {
     return purchases.filter((p) => {
@@ -71,7 +74,22 @@ export function PurchaseList({ initialPurchases, categories }: PurchaseListProps
             </option>
           ))}
         </select>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 gap-1.5 border-[#0F7B6C]/30 text-[#0F7B6C] hover:bg-[#0F7B6C]/5 hover:border-[#0F7B6C] shrink-0"
+          onClick={() => setImportOpen(true)}
+        >
+          <Camera className="h-3.5 w-3.5" />
+          Smart Import
+        </Button>
       </div>
+
+      <ImageIntelligence
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onImport={(newPurchases) => setPurchases((prev) => [...newPurchases, ...prev])}
+      />
 
       {/* Count */}
       <p className="text-xs text-[#1B3A5C]/45">
@@ -116,6 +134,9 @@ export function PurchaseList({ initialPurchases, categories }: PurchaseListProps
                         × {p.quantity}
                         {p.unit ? ` ${p.unit}` : ''}
                       </span>
+                      {p.source === 'image' && (
+                        <Camera className="h-3 w-3 text-[#0F7B6C]" aria-label="Imported from image" />
+                      )}
                     </div>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                       {p.category && (

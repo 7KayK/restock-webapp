@@ -116,6 +116,26 @@ export interface ChannelStatus {
   whatsappLastAt: string | null
 }
 
+export interface ImageIntelligenceItem {
+  name: string
+  quantity: number
+  unit: string | null
+  price: number | null
+  category: string
+  status: string
+  notes: string | null
+}
+
+export interface ImageIntelligenceResult {
+  type: 'receipt' | 'shopping_bag' | 'pantry' | 'product_label' | 'unknown'
+  confidence: number
+  store: string | null
+  date: string | null
+  totalAmount: number | null
+  items: ImageIntelligenceItem[]
+  context: string
+}
+
 export interface GroceryStore {
   placeId: string
   name: string
