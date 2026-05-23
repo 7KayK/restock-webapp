@@ -196,22 +196,22 @@ export default function ShoppingPage() {
               <p className={cn(playfair.className, 'text-[#1B3A5C] leading-snug')} style={{ fontSize: '22px' }}>
                 What do you need to pick up?
               </p>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-3 items-stretch">
                 <EntryCard onClick={() => setScanOpen(true)}>
-                  <Camera className="h-5 w-5 text-[#0F7B6C]" />
-                  <span className="text-sm font-semibold text-[#1B3A5C]">📷 Snap a list</span>
+                  <Camera className="h-6 w-6 text-[#0F7B6C]" />
+                  <span className="text-sm font-semibold text-[#1B3A5C]">Snap a list</span>
                   <span className="text-[11px] text-[#1B3A5C]/50 leading-tight">Photo, screenshot or handwritten note</span>
                 </EntryCard>
                 <EntryCard onClick={() => addRef.current?.focus()}>
-                  <Keyboard className="h-5 w-5 text-[#0F7B6C]" />
-                  <span className="text-sm font-semibold text-[#1B3A5C]">⌨️ Type it in</span>
+                  <Keyboard className="h-6 w-6 text-[#0F7B6C]" />
+                  <span className="text-sm font-semibold text-[#1B3A5C]">Type it in</span>
                   <span className="text-[11px] text-[#1B3A5C]/50 leading-tight">Add items one by one</span>
                 </EntryCard>
                 <EntryCard onClick={handleBuildFromHistory} disabled={loadingHistory}>
                   {loadingHistory
-                    ? <Loader2 className="h-5 w-5 text-[#0F7B6C] animate-spin" />
-                    : <Sparkles className="h-5 w-5 text-[#0F7B6C]" />}
-                  <span className="text-sm font-semibold text-[#1B3A5C]">✨ Build from history</span>
+                    ? <Loader2 className="h-6 w-6 text-[#0F7B6C] animate-spin" />
+                    : <Sparkles className="h-6 w-6 text-[#0F7B6C]" />}
+                  <span className="text-sm font-semibold text-[#1B3A5C]">Build from history</span>
                   <span className="text-[11px] text-[#1B3A5C]/50 leading-tight">We'll suggest what you're running low on</span>
                 </EntryCard>
               </div>
@@ -343,7 +343,7 @@ function EntryCard({
       disabled={disabled}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="flex flex-col gap-2 rounded-lg bg-white p-4 text-left cursor-pointer transition-colors disabled:opacity-60"
+      className="flex flex-col gap-2 rounded-lg bg-white p-4 pb-5 text-left cursor-pointer transition-colors disabled:opacity-60 w-full h-full"
       style={{
         border: `0.5px solid ${hovered ? '#0F7B6C' : '#e5e7eb'}`,
         transition: 'border-color 150ms ease',
