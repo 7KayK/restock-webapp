@@ -1,11 +1,13 @@
 import { Suspense } from 'react'
+import Link from 'next/link'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-import { Globe } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 import { format, startOfMonth, subMonths } from 'date-fns'
 import { formatCurrency, cn } from '@/lib/utils'
+import { ShoppingBag } from 'lucide-react'
 import { StatCard, StatCardSkeleton } from '@/components/dashboard/StatCard'
 import { ContinuityBanner } from '@/components/dashboard/ContinuityBanner'
 import { SpendTrendChart } from '@/components/charts/SpendTrendChart'
@@ -14,96 +16,92 @@ import { WhatsAppIcon, TelegramIcon } from '@/components/shared/ChannelIcons'
 import type { MonthlySpendPoint, CategorySpend } from '@/types'
 
 async function ChannelQuickAccess() {
-  const { userId } = await auth()
-  if (!userId) return null
+  const telegramBot = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
+  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER
+
+  let telegramConnected = false
+  let whatsappConnected = false
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { clerkId: userId },
-      select: { telegramId: true, whatsappNumber: true },
-    })
-    if (!user) return null
-
-    const telegramBot = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
-    const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER
-
-    const telegramConnected = !!user.telegramId
-    const whatsappConnected = !!user.whatsappNumber
-
-    const telegramHref = telegramConnected && telegramBot
-      ? `https://t.me/${telegramBot}`
-      : '/dashboard/settings'
-    const whatsappHref = whatsappConnected && whatsappPhone
-      ? `https://wa.me/${whatsappPhone}`
-      : '/dashboard/settings'
-
-    return (
-      <div className="grid grid-cols-3 gap-3">
-        {/* Telegram */}
-        <a
-          href={telegramHref}
-          target={telegramConnected && telegramBot ? '_blank' : undefined}
-          rel={telegramConnected && telegramBot ? 'noopener noreferrer' : undefined}
-          className={cn(
-            'flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all',
-            telegramConnected
-              ? 'border-[#229ED9]/25 bg-[#229ED9]/5 hover:border-[#229ED9]/50 hover:bg-[#229ED9]/10'
-              : 'border-gray-100 bg-white hover:bg-gray-50 opacity-55'
-          )}
-        >
-          <TelegramIcon size={22} className={telegramConnected ? 'text-[#229ED9]' : 'text-gray-300'} />
-          <div>
-            <p className={cn('text-xs font-semibold', telegramConnected ? 'text-[#229ED9]' : 'text-gray-400')}>
-              Telegram
-            </p>
-            <p className="text-[10px] text-gray-400 mt-0.5">{telegramConnected ? 'Connected' : 'Connect'}</p>
-          </div>
-        </a>
-
-        {/* WhatsApp */}
-        <a
-          href={whatsappHref}
-          target={whatsappConnected && whatsappPhone ? '_blank' : undefined}
-          rel={whatsappConnected && whatsappPhone ? 'noopener noreferrer' : undefined}
-          className={cn(
-            'flex flex-col items-center gap-2 rounded-xl border p-4 text-center transition-all',
-            whatsappConnected
-              ? 'border-[#25D366]/25 bg-[#25D366]/5 hover:border-[#25D366]/50 hover:bg-[#25D366]/10'
-              : 'border-gray-100 bg-white hover:bg-gray-50 opacity-55'
-          )}
-        >
-          <WhatsAppIcon size={22} className={whatsappConnected ? 'text-[#25D366]' : 'text-gray-300'} />
-          <div>
-            <p className={cn('text-xs font-semibold', whatsappConnected ? 'text-[#25D366]' : 'text-gray-400')}>
-              WhatsApp
-            </p>
-            <p className="text-[10px] text-gray-400 mt-0.5">{whatsappConnected ? 'Connected' : 'Connect'}</p>
-          </div>
-        </a>
-
-        {/* Web App — always active */}
-        <div className="flex flex-col items-center gap-2 rounded-xl border border-[#0F7B6C]/25 bg-[#0F7B6C]/5 p-4 text-center">
-          <Globe className="h-[22px] w-[22px] text-[#0F7B6C]" />
-          <div>
-            <p className="text-xs font-semibold text-[#0F7B6C]">Web App</p>
-            <p className="text-[10px] text-gray-400 mt-0.5">Active now</p>
-          </div>
-        </div>
-      </div>
-    )
+    const { userId } = await auth()
+    if (userId) {
+      const user = await prisma.user.findUnique({
+        where: { clerkId: userId },
+        select: { telegramId: true, whatsappNumber: true },
+      })
+      if (user) {
+        telegramConnected = !!user.telegramId
+        whatsappConnected = !!user.whatsappNumber
+      }
+    }
   } catch {
-    return null
+    // render as unconnected
   }
+
+  const telegramHref = telegramConnected && telegramBot
+    ? `https://t.me/${telegramBot}`
+    : '/dashboard/settings'
+  const whatsappHref = whatsappConnected && whatsappPhone
+    ? `https://wa.me/${whatsappPhone}`
+    : '/dashboard/settings'
+
+  return (
+    <div className="flex gap-3 mb-6">
+      {/* Telegram */}
+      <a
+        href={telegramHref}
+        target={telegramConnected && telegramBot ? '_blank' : undefined}
+        rel={telegramConnected && telegramBot ? 'noopener noreferrer' : undefined}
+        className={cn(
+          'flex items-center gap-3 rounded-xl border px-5 py-3.5 transition-all',
+          telegramConnected
+            ? 'border-[#229ED9]/25 bg-[#229ED9]/5 hover:border-[#229ED9]/50 hover:bg-[#229ED9]/10'
+            : 'border-gray-100 bg-white hover:bg-gray-50 opacity-55'
+        )}
+      >
+        <TelegramIcon size={20} className={telegramConnected ? 'text-[#229ED9]' : 'text-gray-300'} />
+        <div>
+          <p className={cn('text-sm font-semibold leading-none', telegramConnected ? 'text-[#229ED9]' : 'text-gray-400')}>
+            Telegram
+          </p>
+          <p className="text-[11px] text-gray-400 mt-1">{telegramConnected ? 'Connected' : 'Connect'}</p>
+        </div>
+      </a>
+
+      {/* WhatsApp */}
+      <a
+        href={whatsappHref}
+        target={whatsappConnected && whatsappPhone ? '_blank' : undefined}
+        rel={whatsappConnected && whatsappPhone ? 'noopener noreferrer' : undefined}
+        className={cn(
+          'flex items-center gap-3 rounded-xl border px-5 py-3.5 transition-all',
+          whatsappConnected
+            ? 'border-[#25D366]/25 bg-[#25D366]/5 hover:border-[#25D366]/50 hover:bg-[#25D366]/10'
+            : 'border-gray-100 bg-white hover:bg-gray-50 opacity-55'
+        )}
+      >
+        <WhatsAppIcon size={20} className={whatsappConnected ? 'text-[#25D366]' : 'text-gray-300'} />
+        <div>
+          <p className={cn('text-sm font-semibold leading-none', whatsappConnected ? 'text-[#25D366]' : 'text-gray-400')}>
+            WhatsApp
+          </p>
+          <p className="text-[11px] text-gray-400 mt-1">{whatsappConnected ? 'Connected' : 'Connect'}</p>
+        </div>
+      </a>
+    </div>
+  )
 }
 
 function ChannelQuickAccessSkeleton() {
   return (
-    <div className="grid grid-cols-3 gap-3">
-      {[0, 1, 2].map((i) => (
-        <div key={i} className="rounded-xl border border-gray-100 bg-white p-4 flex flex-col items-center gap-2">
-          <Skeleton className="h-6 w-6 rounded-full" />
-          <Skeleton className="h-3 w-14" />
-          <Skeleton className="h-2.5 w-10" />
+    <div className="flex gap-3 mb-6">
+      {[0, 1].map((i) => (
+        <div key={i} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white px-5 py-3.5">
+          <Skeleton className="h-5 w-5 rounded-full shrink-0" />
+          <div className="space-y-1.5">
+            <Skeleton className="h-3 w-14" />
+            <Skeleton className="h-2.5 w-10" />
+          </div>
         </div>
       ))}
     </div>
@@ -434,6 +432,17 @@ export default function DashboardPage() {
       </div>
 
       <ContinuityBanner />
+
+      <Button
+        variant="outline"
+        className="gap-2 border-[#0F7B6C] text-[#0F7B6C] hover:bg-[#0F7B6C]/5"
+        asChild
+      >
+        <Link href="/dashboard/shopping">
+          <ShoppingBag className="h-4 w-4" />
+          Start Shopping Trip
+        </Link>
+      </Button>
 
       <Suspense fallback={<ChannelQuickAccessSkeleton />}>
         <ChannelQuickAccess />

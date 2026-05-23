@@ -193,6 +193,15 @@ export interface Integration {
   connectedAt: string
 }
 
+export interface ShoppingItem {
+  name: string
+  quantity: number
+  unit: string | null
+  category: string | null
+  source: 'reminder' | 'predicted' | 'manual'
+  reminderId?: string
+}
+
 export interface GroceryStore {
   placeId: string
   name: string
