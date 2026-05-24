@@ -24,6 +24,10 @@ export const metadata: Metadata = {
   title: 'Restock — Smart Purchase Tracking',
   description:
     'Track purchases, predict when you run out, and find the best deals near you.',
+  icons: {
+    icon: '/logo.jpg',
+    apple: '/logo.jpg',
+  },
 }
 
 export default function RootLayout({
