@@ -84,19 +84,17 @@ export default function Home() {
   return (
     <>
       {/* ── Navbar ── */}
-      <header
-        className="sticky top-0 z-50 bg-white"
-        style={{ boxShadow: '0 1px 0 rgba(0,0,0,0.06)' }}
-      >
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-200" style={{ isolation: 'isolate' }}>
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
               src="/logo.jpg"
-              width={40}
-              height={40}
               alt="Restock"
-              style={{ objectFit: 'contain', mixBlendMode: 'multiply' }}
+              width={36}
+              height={36}
+              className="object-contain"
+              style={{ mixBlendMode: 'multiply' }}
             />
           </Link>
 
@@ -131,7 +129,7 @@ export default function Home() {
               </a>
             </div>
             <Link
-              href="/sign-up"
+              href="/dashboard"
               className="bg-[#0F7B6C] hover:bg-[#0A6459] text-white text-sm font-medium px-4 py-2 rounded-full transition-colors"
             >
               Get Started
@@ -139,12 +137,20 @@ export default function Home() {
           </nav>
 
           {/* Mobile CTA only */}
-          <Link
-            href="/sign-up"
-            className="md:hidden bg-[#0F7B6C] hover:bg-[#0A6459] text-white text-sm font-medium px-4 py-2 rounded-full transition-colors"
-          >
-            Get Started
-          </Link>
+          <div className="md:hidden flex items-center gap-3">
+            <Link
+              href="/sign-in"
+              className="text-sm font-medium text-[#0F7B6C] hover:text-[#0A6459] transition-colors"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/dashboard"
+              className="bg-[#0F7B6C] hover:bg-[#0A6459] text-white text-sm font-medium px-4 py-2 rounded-full transition-colors"
+            >
+              Get Started
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -256,7 +262,7 @@ export default function Home() {
               className="flex flex-col items-center gap-4 w-full max-w-[400px]"
             >
               <Link
-                href="/sign-up"
+                href="/dashboard"
                 className="w-full bg-[#0F7B6C] hover:bg-[#0A6459] text-white font-semibold text-[17px] py-4 rounded-full text-center transition-colors"
               >
                 Start for free
@@ -494,7 +500,7 @@ export default function Home() {
 
             <FadeUp delay={0.12}>
               <Link
-                href="/sign-up"
+                href="/dashboard"
                 className="inline-block bg-white text-[#0F7B6C] hover:text-[#1B3A5C] font-semibold text-[17px] px-12 py-4 rounded-full transition-colors"
               >
                 Start for free
@@ -509,18 +515,17 @@ export default function Home() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
               {/* Brand */}
               <div className="col-span-2 md:col-span-1 flex flex-col gap-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-[#0F7B6C] flex items-center justify-center overflow-hidden">
+                <div className="flex items-center">
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.15)' }}>
                     <Image
                       src="/logo.jpg"
                       alt="Restock"
                       width={36}
                       height={36}
                       className="object-contain"
-                      style={{ mixBlendMode: 'multiply' }}
+                      style={{ mixBlendMode: 'screen' }}
                     />
                   </div>
-                  <span className="text-[#1B3A5C] font-bold">Restock</span>
                 </div>
                 <p className="text-xs text-[#9CA3AF] leading-relaxed max-w-[160px]">
                   Smart household purchase tracking.
