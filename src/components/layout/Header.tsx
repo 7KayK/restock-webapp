@@ -2,45 +2,35 @@
 
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu } from 'lucide-react'
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/dashboard/spend': 'Spend Analysis',
   '/dashboard/history': 'History',
   '/dashboard/reminders': 'Reminders',
+  '/dashboard/shopping': 'Shopping Trip',
   '/dashboard/deals': 'Deals',
+  '/dashboard/teams': 'Teams',
   '/dashboard/stores': 'Nearest Store',
   '/dashboard/assistant': 'AI Assistant',
   '/dashboard/settings': 'Settings',
 }
 
-interface HeaderProps {
-  onMenuClick: () => void
-}
-
-export function Header({ onMenuClick }: HeaderProps) {
+export function Header() {
   const pathname = usePathname()
   const title = pageTitles[pathname] ?? 'Dashboard'
 
   return (
-    <header className="h-16 border-b border-gray-100 bg-white flex items-center px-4 shrink-0 md:hidden">
-      <button
-        onClick={onMenuClick}
-        aria-label="Open sidebar"
-        className="mr-3 rounded-md p-1.5 text-[#1B3A5C]/50 hover:text-[#1B3A5C] hover:bg-gray-100 transition-colors"
-      >
-        <Menu className="h-5 w-5" />
-      </button>
+    <header className="h-14 border-b border-gray-100 bg-white flex items-center px-4 shrink-0 md:hidden">
       <Image
         src="/logo.jpg"
-        width={40}
-        height={40}
         alt="Restock"
-        style={{ objectFit: 'contain', mixBlendMode: 'multiply' }}
-        className="mr-3"
+        width={30}
+        height={30}
+        className="object-contain mr-3 shrink-0"
+        style={{ mixBlendMode: 'multiply' }}
       />
-      <span className="text-[#1B3A5C] font-semibold">{title}</span>
+      <span className="text-[#1B3A5C] font-semibold text-sm">{title}</span>
     </header>
   )
 }

@@ -56,15 +56,15 @@ export default function TeamsPage() {
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#1B3A5C]">Teams</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Teams</h1>
           <p className="text-sm text-[#1B3A5C]/50 mt-0.5">
             Collaborate with household members on shared purchases
           </p>
         </div>
         <Button
-          className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white gap-2"
+          className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white gap-2 min-h-[44px] self-start sm:self-auto"
           onClick={() => setCreating(true)}
         >
           <Plus className="h-4 w-4" />
@@ -132,7 +132,7 @@ export default function TeamsPage() {
 
       {/* Create team dialog */}
       <Dialog open={creating} onOpenChange={(o) => { setCreating(o); if (!o) { setNewName(''); setCreateErr(null) } }}>
-        <DialogContent className="sm:max-w-sm bg-white">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-sm bg-white">
           <DialogHeader>
             <DialogTitle className="text-[#1B3A5C]">Create a team</DialogTitle>
           </DialogHeader>

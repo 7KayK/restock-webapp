@@ -1,31 +1,20 @@
 'use client'
 
-import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Sidebar } from './Sidebar'
+import { Sidebar, BottomNav } from './Sidebar'
 import { Header } from './Header'
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
 
   return (
     <div className="flex h-screen bg-[#F8FAFC] overflow-hidden">
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/40 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar />
 
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 overflow-y-auto p-6">
+        <Header />
+        <main className="flex-1 overflow-y-auto p-4 pb-24 md:p-6 md:pb-6">
           <motion.div
             key={pathname}
             initial={{ opacity: 0, y: 20 }}
@@ -36,6 +25,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
           </motion.div>
         </main>
       </div>
+
+      <BottomNav />
     </div>
   )
 }

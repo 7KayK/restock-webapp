@@ -46,7 +46,7 @@ async function ChannelQuickAccess() {
     : '/dashboard/settings'
 
   return (
-    <div className="flex gap-3 mb-6">
+    <div className="flex flex-col sm:flex-row gap-3 mb-6">
       {/* Telegram */}
       <a
         href={telegramHref}
@@ -94,7 +94,7 @@ async function ChannelQuickAccess() {
 
 function ChannelQuickAccessSkeleton() {
   return (
-    <div className="flex gap-3 mb-6">
+    <div className="flex flex-col sm:flex-row gap-3 mb-6">
       {[0, 1].map((i) => (
         <div key={i} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white px-5 py-3.5">
           <Skeleton className="h-5 w-5 rounded-full shrink-0" />
@@ -427,7 +427,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 max-w-7xl">
       <div>
-        <h1 className="text-2xl font-bold text-[#1B3A5C]">Dashboard</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Dashboard</h1>
         <p className="text-sm text-[#1B3A5C]/50 mt-0.5">Your restocking overview</p>
       </div>
 

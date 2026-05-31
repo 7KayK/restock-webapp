@@ -135,7 +135,8 @@ async function SpendAnalysisContent() {
               {byCategory.length === 0 ? (
                 <p className="text-sm text-[#1B3A5C]/50 py-6 text-center">No priced purchases yet</p>
               ) : (
-                <table className="w-full text-sm">
+                <div className="overflow-x-auto -mx-1">
+                <table className="w-full text-sm min-w-[300px]">
                   <thead>
                     <tr className="text-[#1B3A5C]/40 text-xs">
                       <th className="text-left py-2 font-medium">Category</th>
@@ -170,6 +171,7 @@ async function SpendAnalysisContent() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -182,7 +184,8 @@ async function SpendAnalysisContent() {
               {topItems.length === 0 ? (
                 <p className="text-sm text-[#1B3A5C]/50 py-6 text-center">No purchases yet</p>
               ) : (
-                <table className="w-full text-sm">
+                <div className="overflow-x-auto -mx-1">
+                <table className="w-full text-sm min-w-[300px]">
                   <thead>
                     <tr className="text-[#1B3A5C]/40 text-xs">
                       <th className="text-left py-2 font-medium">Item</th>
@@ -208,6 +211,7 @@ async function SpendAnalysisContent() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -346,7 +350,7 @@ export default function SpendPage() {
   return (
     <div className="space-y-6 max-w-7xl">
       <div>
-        <h1 className="text-2xl font-bold text-[#1B3A5C]">Spend Analysis</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Spend Analysis</h1>
         <p className="text-sm text-[#1B3A5C]/50 mt-0.5">Track your spending patterns over time</p>
       </div>
 

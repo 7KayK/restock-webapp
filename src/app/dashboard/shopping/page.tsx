@@ -151,7 +151,7 @@ export default function ShoppingPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#1B3A5C]">Shopping Trip</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Shopping Trip</h1>
           <p className="text-sm text-[#1B3A5C]/50 mt-0.5">
             {loading ? 'Building your smart list…' : `${activeItems.length} item${activeItems.length !== 1 ? 's' : ''} to buy`}
           </p>
@@ -196,7 +196,7 @@ export default function ShoppingPage() {
               <p className={cn(playfair.className, 'text-[#1B3A5C] leading-snug')} style={{ fontSize: '22px' }}>
                 What do you need to pick up?
               </p>
-              <div className="grid grid-cols-3 gap-3 items-stretch">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-stretch">
                 <EntryCard onClick={() => setScanOpen(true)}>
                   <Camera className="h-6 w-6 text-[#0F7B6C]" />
                   <span className="text-sm font-semibold text-[#1B3A5C]">Snap a list</span>

@@ -91,7 +91,7 @@ export default function RemindersPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-2xl font-bold text-[#1B3A5C]">Reminders</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Reminders</h1>
         <p className="text-sm text-[#1B3A5C]/50 mt-0.5">
           AI-predicted restock dates based on your purchase history
         </p>

@@ -90,7 +90,7 @@ export default function HistoryPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-2xl font-bold text-[#1B3A5C]">Purchase History</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Purchase History</h1>
         <p className="text-sm text-[#1B3A5C]/50 mt-0.5">
           Every item logged across all channels
         </p>
