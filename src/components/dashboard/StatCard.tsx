@@ -2,15 +2,23 @@
 
 import { useEffect } from 'react'
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion'
+import { ShoppingCart, Bell, DollarSign, Package } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { LucideIcon } from 'lucide-react'
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  'shopping-cart': ShoppingCart,
+  'bell': Bell,
+  'dollar-sign': DollarSign,
+  'package': Package,
+}
 
 interface StatCardProps {
   title: string
   value: string | number
   sub: string
-  icon: LucideIcon
+  icon: keyof typeof ICON_MAP
 }
 
 function CountUp({ value }: { value: number }) {
@@ -25,7 +33,9 @@ function CountUp({ value }: { value: number }) {
   return <motion.span>{rounded}</motion.span>
 }
 
-export function StatCard({ title, value, sub, icon: Icon }: StatCardProps) {
+export function StatCard({ title, value, sub, icon }: StatCardProps) {
+  const Icon = ICON_MAP[icon]
+
   return (
     <motion.div
       whileHover={{ y: -2, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
@@ -35,7 +45,7 @@ export function StatCard({ title, value, sub, icon: Icon }: StatCardProps) {
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-[#1B3A5C]/60">{title}</CardTitle>
           <div className="w-8 h-8 rounded-lg bg-[#0F7B6C]/10 flex items-center justify-center shrink-0">
-            <Icon className="h-4 w-4 text-[#0F7B6C]" />
+            {Icon && <Icon className="h-4 w-4 text-[#0F7B6C]" />}
           </div>
         </CardHeader>
         <CardContent>

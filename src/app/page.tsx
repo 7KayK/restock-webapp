@@ -1,9 +1,11 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Brain, Bell } from 'lucide-react'
+import { WaitlistModal } from '@/components/shared/WaitlistModal'
 
 // Playfair Display via CSS variable set in layout.tsx
 const PLAYFAIR: React.CSSProperties = {
@@ -81,6 +83,19 @@ function FadeUp({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Home() {
+  const [modalOpen, setModalOpen] = useState(false)
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    fetch('/api/waitlist/count')
+      .then((r) => r.json())
+      .then((data: unknown) => {
+        const json = data as Record<string, unknown>
+        if (typeof json.count === 'number') setWaitlistCount(json.count)
+      })
+      .catch(() => {})
+  }, [])
+
   return (
     <>
       {/* ── Navbar ── */}
@@ -128,12 +143,12 @@ export default function Home() {
                 <TelegramIcon size={18} />
               </a>
             </div>
-            <Link
-              href="/dashboard"
+            <button
+              onClick={() => setModalOpen(true)}
               className="bg-[#0F7B6C] hover:bg-[#0A6459] text-white text-sm font-medium px-4 py-2 rounded-full transition-colors"
             >
               Get Started
-            </Link>
+            </button>
           </nav>
 
           {/* Mobile CTA only */}
@@ -144,12 +159,12 @@ export default function Home() {
             >
               Sign In
             </Link>
-            <Link
-              href="/dashboard"
+            <button
+              onClick={() => setModalOpen(true)}
               className="bg-[#0F7B6C] hover:bg-[#0A6459] text-white text-sm font-medium px-4 py-2 rounded-full transition-colors"
             >
               Get Started
-            </Link>
+            </button>
           </div>
         </div>
       </header>
@@ -198,6 +213,18 @@ export default function Home() {
               Restock tracks what you buy, predicts when you&apos;ll run out, and reminds you before it
               happens.
             </motion.p>
+
+            {/* Live waitlist counter */}
+            {waitlistCount !== null && waitlistCount > 0 && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4 }}
+                className="text-sm text-[#0F7B6C] font-medium"
+              >
+                {waitlistCount.toLocaleString()} {waitlistCount === 1 ? 'person' : 'people'} on the waitlist
+              </motion.p>
+            )}
 
             {/* Feature bullets */}
             <motion.div
@@ -261,12 +288,12 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.4 }}
               className="flex flex-col items-center gap-4 w-full max-w-[400px]"
             >
-              <Link
-                href="/dashboard"
+              <button
+                onClick={() => setModalOpen(true)}
                 className="w-full bg-[#0F7B6C] hover:bg-[#0A6459] text-white font-semibold text-[17px] py-4 rounded-full text-center transition-colors"
               >
                 Start for free
-              </Link>
+              </button>
 
               <div className="flex items-center gap-3 w-full">
                 <div className="flex-1 h-px bg-[#E5E7EB]" />
@@ -499,12 +526,12 @@ export default function Home() {
             </FadeUp>
 
             <FadeUp delay={0.12}>
-              <Link
-                href="/dashboard"
+              <button
+                onClick={() => setModalOpen(true)}
                 className="inline-block bg-white text-[#0F7B6C] hover:text-[#1B3A5C] font-semibold text-[17px] px-12 py-4 rounded-full transition-colors"
               >
                 Start for free
-              </Link>
+              </button>
             </FadeUp>
           </div>
         </section>
@@ -598,6 +625,9 @@ export default function Home() {
 
       {/* Texture rendered after main so it sits above main (z:2 > z:1) but below header (z:50) */}
       <OrganicTexture />
+
+      {/* Waitlist modal */}
+      <WaitlistModal open={modalOpen} onOpenChange={setModalOpen} />
     </>
   )
 }

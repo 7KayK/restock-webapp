@@ -86,3 +86,11 @@ model UserIntegration {
 
   @@unique([userId, provider])
 }
+
+model Waitlist {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  country   String
+  createdAt DateTime @default(now())
+}
