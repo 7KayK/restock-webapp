@@ -1,5 +1,11 @@
 import { DashboardShell } from '@/components/layout/DashboardShell'
+import { WelcomeOnboarding } from '@/components/dashboard/WelcomeOnboarding'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return <DashboardShell>{children}</DashboardShell>
+  return (
+    <>
+      <WelcomeOnboarding />
+      <DashboardShell>{children}</DashboardShell>
+    </>
+  )
 }
