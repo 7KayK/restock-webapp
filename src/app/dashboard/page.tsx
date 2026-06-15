@@ -17,21 +17,18 @@ import type { MonthlySpendPoint, CategorySpend } from '@/types'
 
 async function ChannelQuickAccess() {
   const telegramBot = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
-  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER
 
   let telegramConnected = false
-  let whatsappConnected = false
 
   try {
     const { userId } = await auth()
     if (userId) {
       const user = await prisma.user.findUnique({
         where: { clerkId: userId },
-        select: { telegramId: true, whatsappNumber: true },
+        select: { telegramId: true },
       })
       if (user) {
         telegramConnected = !!user.telegramId
-        whatsappConnected = !!user.whatsappNumber
       }
     }
   } catch {
@@ -40,9 +37,6 @@ async function ChannelQuickAccess() {
 
   const telegramHref = telegramConnected && telegramBot
     ? `https://t.me/${telegramBot}`
-    : '/dashboard/settings'
-  const whatsappHref = whatsappConnected && whatsappPhone
-    ? `https://wa.me/${whatsappPhone}`
     : '/dashboard/settings'
 
   return (
@@ -68,26 +62,17 @@ async function ChannelQuickAccess() {
         </div>
       </a>
 
-      {/* WhatsApp */}
-      <a
-        href={whatsappHref}
-        target={whatsappConnected && whatsappPhone ? '_blank' : undefined}
-        rel={whatsappConnected && whatsappPhone ? 'noopener noreferrer' : undefined}
-        className={cn(
-          'flex items-center gap-3 rounded-xl border px-5 py-3.5 transition-all',
-          whatsappConnected
-            ? 'border-[#25D366]/25 bg-[#25D366]/5 hover:border-[#25D366]/50 hover:bg-[#25D366]/10'
-            : 'border-gray-100 bg-white hover:bg-gray-50 opacity-55'
-        )}
+      {/* WhatsApp — pending Meta verification */}
+      <div
+        className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white px-5 py-3.5 opacity-40 cursor-not-allowed select-none"
+        title="WhatsApp coming soon"
       >
-        <WhatsAppIcon size={20} className={whatsappConnected ? 'text-[#25D366]' : 'text-gray-300'} />
+        <WhatsAppIcon size={20} className="text-gray-300" />
         <div>
-          <p className={cn('text-sm font-semibold leading-none', whatsappConnected ? 'text-[#25D366]' : 'text-gray-400')}>
-            WhatsApp
-          </p>
-          <p className="text-[11px] text-gray-400 mt-1">{whatsappConnected ? 'Connected' : 'Connect'}</p>
+          <p className="text-sm font-semibold leading-none text-gray-400">WhatsApp</p>
+          <p className="text-[11px] text-gray-400 mt-1">Coming soon</p>
         </div>
-      </a>
+      </div>
     </div>
   )
 }

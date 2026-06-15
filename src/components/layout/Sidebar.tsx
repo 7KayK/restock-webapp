@@ -138,9 +138,8 @@ export function Sidebar() {
           <p className="px-3 text-[10px] font-semibold text-[#1B3A5C]/35 uppercase tracking-wider mb-1.5">
             Quick Access
           </p>
-          {hasAnyBot ? (
-            <div className="space-y-0.5">
-              {hasTelegram && (
+          <div className="space-y-0.5">
+              {hasTelegram ? (
                 <a
                   href={`https://t.me/${TELEGRAM_BOT}`}
                   target="_blank"
@@ -150,27 +149,21 @@ export function Sidebar() {
                   <TelegramIcon size={15} className="shrink-0" />
                   Open Telegram
                 </a>
-              )}
-              {hasWhatsApp && (
-                <a
-                  href={`https://wa.me/${WHATSAPP_PHONE}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1B3A5C]/60 hover:bg-[#25D366]/10 hover:text-[#25D366] transition-colors"
+              ) : (
+                <Link
+                  href="/dashboard/settings"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1B3A5C]/45 hover:bg-gray-100 hover:text-[#1B3A5C] transition-colors"
                 >
-                  <WhatsAppIcon size={15} className="shrink-0" />
-                  Open WhatsApp
-                </a>
+                  Connect Telegram
+                </Link>
               )}
+              {/* WhatsApp pending Meta verification */}
+              <div className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1B3A5C]/25 cursor-not-allowed select-none">
+                <WhatsAppIcon size={15} className="shrink-0" />
+                <span>WhatsApp</span>
+                <span className="text-[10px] font-normal text-[#1B3A5C]/20">(coming soon)</span>
+              </div>
             </div>
-          ) : (
-            <Link
-              href="/dashboard/settings"
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1B3A5C]/45 hover:bg-gray-100 hover:text-[#1B3A5C] transition-colors"
-            >
-              Connect a bot
-            </Link>
-          )}
         </div>
       )}
 

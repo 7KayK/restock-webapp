@@ -8,26 +8,19 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { CheckCircle2, MessageCircle, Phone, User, Loader2, AlertCircle, CalendarDays } from 'lucide-react'
-import { WhatsAppIcon, TelegramIcon } from '@/components/shared/ChannelIcons'
+import { TelegramIcon } from '@/components/shared/ChannelIcons'
 import { formatDate } from '@/lib/utils'
 import type { UserSettings, ChannelStatus, Integration } from '@/types'
 
 const TELEGRAM_BOT = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
-const WHATSAPP_PHONE = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<UserSettings | null>(null)
   const [loading, setLoading] = useState(true)
 
   const [telegramInput, setTelegramInput] = useState('')
-  const [whatsappInput, setWhatsappInput] = useState('')
-
   const [telegramSaving, setTelegramSaving] = useState(false)
-  const [whatsappSaving, setWhatsappSaving] = useState(false)
-
   const [telegramMsg, setTelegramMsg] = useState<{ type: 'error' | 'success'; text: string } | null>(null)
-  const [whatsappMsg, setWhatsappMsg] = useState<{ type: 'error' | 'success'; text: string } | null>(null)
-
   const [channelData, setChannelData] = useState<Pick<ChannelStatus, 'telegramLastAt' | 'whatsappLastAt'> | null>(null)
 
   const [calIntegration, setCalIntegration] = useState<Integration | null>(null)
@@ -124,35 +117,6 @@ export default function SettingsPage() {
       setTelegramMsg({ type: 'error', text: err instanceof Error ? err.message : 'Failed to disconnect' })
     } finally {
       setTelegramSaving(false)
-    }
-  }
-
-  async function connectWhatsApp() {
-    setWhatsappMsg(null)
-    setWhatsappSaving(true)
-    try {
-      const updated = await patchSettings({ whatsappNumber: whatsappInput.trim() })
-      setSettings(updated)
-      setWhatsappInput('')
-      setWhatsappMsg({ type: 'success', text: 'WhatsApp linked successfully' })
-    } catch (err) {
-      setWhatsappMsg({ type: 'error', text: err instanceof Error ? err.message : 'Failed to save' })
-    } finally {
-      setWhatsappSaving(false)
-    }
-  }
-
-  async function disconnectWhatsApp() {
-    setWhatsappMsg(null)
-    setWhatsappSaving(true)
-    try {
-      const updated = await patchSettings({ whatsappNumber: null })
-      setSettings(updated)
-      setWhatsappMsg({ type: 'success', text: 'WhatsApp disconnected' })
-    } catch (err) {
-      setWhatsappMsg({ type: 'error', text: err instanceof Error ? err.message : 'Failed to disconnect' })
-    } finally {
-      setWhatsappSaving(false)
     }
   }
 
@@ -285,90 +249,23 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* WhatsApp */}
-      <Card>
+      {/* WhatsApp — pending Meta verification */}
+      <Card className="opacity-70">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Phone className="h-5 w-5 text-[#0F7B6C]" />
-              <CardTitle className="text-base">WhatsApp</CardTitle>
+              <Phone className="h-5 w-5 text-[#6B7280]" />
+              <CardTitle className="text-base text-[#6B7280]">WhatsApp</CardTitle>
             </div>
-            {settings?.whatsappNumber ? (
-              <Badge className="bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20 hover:bg-[#22C55E]/10">
-                <CheckCircle2 className="h-3 w-3 mr-1" />
-                Connected
-              </Badge>
-            ) : (
-              <Badge variant="outline" className="text-muted-foreground">Not connected</Badge>
-            )}
+            <Badge variant="outline" className="text-[#9CA3AF] border-gray-200">Coming soon</Badge>
           </div>
           <CardDescription>Log purchases and receive reminders on WhatsApp.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {settings?.whatsappNumber ? (
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Number</span>
-                <span className="font-mono font-medium text-[#1B3A5C]">{settings.whatsappNumber}</span>
-              </div>
-              {channelData?.whatsappLastAt && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Last activity</span>
-                  <span className="text-[#1B3A5C]/70">{formatDate(channelData.whatsappLastAt)}</span>
-                </div>
-              )}
-              {WHATSAPP_PHONE && (
-                <Button asChild className="w-full bg-[#25D366] hover:bg-[#25D366]/90 text-white">
-                  <a href={`https://wa.me/${WHATSAPP_PHONE}`} target="_blank" rel="noopener noreferrer">
-                    <WhatsAppIcon size={16} className="mr-2" />
-                    Open in WhatsApp
-                  </a>
-                </Button>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={disconnectWhatsApp}
-                disabled={whatsappSaving}
-                className="text-[#EF4444] border-[#EF4444]/30 hover:bg-[#EF4444]/5 hover:text-[#EF4444]"
-              >
-                {whatsappSaving && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                Disconnect WhatsApp
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="rounded-lg bg-[#0F7B6C]/5 border border-[#0F7B6C]/10 p-3 text-sm space-y-2">
-                <p className="font-medium text-[#1B3A5C]">How to link your number</p>
-                <ol className="list-decimal list-inside space-y-1 text-[#1B3A5C]/70">
-                  <li>Enter your number in E.164 format</li>
-                  <li>Example: <span className="font-mono">+15551234567</span></li>
-                  <li>The bot will recognise you on your next message</li>
-                </ol>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="whatsapp-number">WhatsApp Number</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="whatsapp-number"
-                    placeholder="+15551234567"
-                    type="tel"
-                    value={whatsappInput}
-                    onChange={(e) => setWhatsappInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' && whatsappInput.trim()) connectWhatsApp() }}
-                  />
-                  <Button
-                    onClick={connectWhatsApp}
-                    disabled={!whatsappInput.trim() || whatsappSaving}
-                    className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 shrink-0"
-                  >
-                    {whatsappSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Connect'}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-          <StatusMessage msg={whatsappMsg} />
+        <CardContent>
+          <div className="rounded-lg bg-gray-50 border border-gray-100 p-4 text-sm text-[#6B7280] leading-relaxed">
+            Coming soon — pending Meta Business Verification. WhatsApp will be available once our
+            business account is approved. Use Telegram in the meantime — it works identically.
+          </div>
         </CardContent>
       </Card>
 
