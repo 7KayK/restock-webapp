@@ -15,6 +15,7 @@ export function MarketingNav() {
       style={{ isolation: 'isolate' }}
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        {/* Left: Logo */}
         <Link href="/" className="shrink-0">
           <Image
             src="/logo.jpg"
@@ -26,7 +27,7 @@ export function MarketingNav() {
           />
         </Link>
 
-        {/* Desktop */}
+        {/* Right: Nav links + Telegram icon */}
         <nav className="hidden md:flex items-center gap-7">
           <Link
             href="/how-it-works"
@@ -96,6 +97,13 @@ export function MarketingNav() {
               >
                 How it works
               </Link>
+              <Link
+                href="/blog"
+                onClick={() => setMenuOpen(false)}
+                className="text-sm font-medium text-[#1B3A5C] hover:text-[#0F7B6C] transition-colors"
+              >
+                Blog
+              </Link>
               <a
                 href="https://t.me/restockchatbot"
                 target="_blank"
@@ -106,15 +114,8 @@ export function MarketingNav() {
                 <div className="w-7 h-7 rounded-full bg-[#0088cc] flex items-center justify-center text-white shrink-0">
                   <TelegramIcon size={14} />
                 </div>
-                Telegram
+                Try on Telegram
               </a>
-              <Link
-                href="/blog"
-                onClick={() => setMenuOpen(false)}
-                className="text-sm font-medium text-[#1B3A5C] hover:text-[#0F7B6C] transition-colors"
-              >
-                Blog
-              </Link>
             </nav>
           </div>
         </>

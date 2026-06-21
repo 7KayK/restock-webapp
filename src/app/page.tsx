@@ -1,11 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Camera, Brain, Bell } from 'lucide-react'
-import { SignIn } from '@clerk/nextjs'
+import Link from 'next/link'
 import { MarketingNav } from '@/components/shared/MarketingNav'
 import { MarketingFooter } from '@/components/shared/MarketingFooter'
-import { TelegramIcon, WhatsAppIcon } from '@/components/shared/ChannelIcons'
 
 const PLAYFAIR: React.CSSProperties = {
   fontFamily: 'var(--font-playfair), "Playfair Display", Georgia, serif',
@@ -31,23 +29,16 @@ function OrganicTexture() {
   )
 }
 
-const FEATURES = [
-  {
-    icon: <Camera className="h-4 w-4 text-white" />,
-    label: 'Snap a receipt',
-    desc: 'Photo, screenshot, or handwritten note — Restock reads it and logs everything automatically.',
-  },
-  {
-    icon: <Brain className="h-4 w-4 text-white" />,
-    label: 'Predict depletion',
-    desc: "Restock learns your consumption patterns and knows when you'll run out before you do.",
-  },
-  {
-    icon: <Bell className="h-4 w-4 text-white" />,
-    label: 'Never run out',
-    desc: 'Reminders arrive before you need them. Deals and your nearest store always nearby.',
-  },
-]
+function GoogleIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+      <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+      <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+      <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+    </svg>
+  )
+}
 
 export default function Home() {
   return (
@@ -57,113 +48,48 @@ export default function Home() {
       <div className="relative z-10 flex flex-col min-h-screen">
         <MarketingNav />
 
-        <main className="flex-1 flex items-center">
-          <div className="w-full max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
-
-            {/* ── Left: Product Pitch ── */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.55, ease: 'easeOut' }}
-              className="flex flex-col gap-8"
+        <main className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center">
+          <motion.div
+            className="flex flex-col items-center gap-6 w-full max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, ease: 'easeOut' }}
+          >
+            {/* Headline */}
+            <h1
+              className="text-[#1B3A5C] leading-[1.15] tracking-tight"
+              style={{ ...PLAYFAIR, fontSize: 'clamp(34px, 5vw, 56px)' }}
             >
-              <div className="flex flex-col gap-5">
-                <h1
-                  className="text-[#1B3A5C] leading-[1.15] tracking-tight"
-                  style={{ ...PLAYFAIR, fontSize: 'clamp(30px, 4vw, 46px)' }}
-                >
-                  Never run out of anything again
-                </h1>
-                <p className="text-[17px] text-[#4A5568] leading-relaxed max-w-md">
-                  AI-powered restocking intelligence that tracks what you buy, learns how fast you
-                  use it, and reminds you before you run out.
-                </p>
-              </div>
+              Never run out of anything again
+            </h1>
 
-              {/* Feature rows */}
-              <div className="flex flex-col gap-4">
-                {FEATURES.map(({ icon, label, desc }, i) => (
-                  <motion.div
-                    key={label}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: 0.18 + i * 0.09 }}
-                    className="flex items-start gap-4"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-[#0F7B6C] flex items-center justify-center shrink-0 mt-0.5">
-                      {icon}
-                    </div>
-                    <div>
-                      <span className="font-semibold text-[#1B3A5C] text-sm">{label}</span>
-                      <span className="text-[#4A5568] text-sm"> — {desc}</span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
+            {/* Subtitle */}
+            <p className="text-[17px] text-[#4A5568] leading-relaxed max-w-lg">
+              AI-powered restocking intelligence that tracks what you buy, learns how fast
+              you use it, and reminds you before you run out.
+            </p>
 
-              {/* Channel line */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4, delay: 0.5 }}
-                className="flex flex-wrap items-center gap-5 pt-1"
+            {/* Auth buttons */}
+            <div className="flex flex-col items-center gap-3 mt-2 w-full max-w-xs">
+              <Link
+                href="/sign-in"
+                className="flex items-center justify-center gap-2.5 w-full px-5 py-2.5 bg-white border border-gray-200 rounded-full text-sm font-medium text-[#1B3A5C] hover:border-gray-300 hover:shadow-sm transition-all"
               >
-                <a
-                  href="https://t.me/restockchatbot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm font-medium text-[#0088cc] hover:text-[#006faa] transition-colors"
-                >
-                  <div className="w-6 h-6 rounded-full bg-[#0088cc] flex items-center justify-center text-white shrink-0">
-                    <TelegramIcon size={13} />
-                  </div>
-                  Telegram
-                </a>
+                <GoogleIcon />
+                Continue with Google
+              </Link>
 
-                <div className="flex items-center gap-2 text-sm text-[#C8CACF] cursor-not-allowed select-none">
-                  <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[#C8CACF] shrink-0">
-                    <WhatsAppIcon size={13} />
-                  </div>
-                  WhatsApp (coming soon)
-                </div>
+              <span className="text-sm text-[#9CA3AF]">or</span>
 
-                <span className="text-sm text-[#9CA3AF]">Web</span>
-              </motion.div>
-            </motion.div>
+              <Link
+                href="/sign-up"
+                className="flex items-center justify-center gap-2 w-full px-5 py-2.5 bg-[#1B3A5C] text-white rounded-full text-sm font-medium hover:bg-[#0F7B6C] transition-colors"
+              >
+                Sign up with email
+              </Link>
+            </div>
 
-            {/* ── Right: Auth Card ── */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.55, ease: 'easeOut', delay: 0.1 }}
-            >
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-7 flex flex-col gap-5">
-                <div>
-                  <h2 className="text-[#1B3A5C] text-xl font-semibold" style={PLAYFAIR}>
-                    Start your restock journey
-                  </h2>
-                  <p className="text-sm text-[#4A5568] mt-1.5">Sign in to begin.</p>
-                </div>
-
-                <SignIn
-                  routing="hash"
-                  fallbackRedirectUrl="/dashboard"
-                  appearance={{
-                    variables: {
-                      colorPrimary: '#0F7B6C',
-                      borderRadius: '0.5rem',
-                    },
-                    elements: {
-                      rootBox: 'w-full',
-                      card: '!shadow-none !border-0 !p-0 !bg-transparent !w-full',
-                      header: '!hidden',
-                      formButtonPrimary: '!bg-[#0F7B6C] hover:!bg-[#0A6459] !text-white',
-                    },
-                  }}
-                />
-              </div>
-            </motion.div>
-          </div>
+          </motion.div>
         </main>
 
         <MarketingFooter />
