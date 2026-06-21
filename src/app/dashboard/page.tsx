@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { format, startOfMonth, subMonths } from 'date-fns'
 import { formatCurrency, cn } from '@/lib/utils'
-import { ShoppingBag } from 'lucide-react'
+import { ShoppingBag, Warehouse, AlertTriangle } from 'lucide-react'
 import { StatCard, StatCardSkeleton } from '@/components/dashboard/StatCard'
 import { ContinuityBanner } from '@/components/dashboard/ContinuityBanner'
 import { SpendTrendChart } from '@/components/charts/SpendTrendChart'
@@ -408,6 +408,110 @@ function RecentSkeleton() {
   )
 }
 
+async function PantrySummary() {
+  const { userId } = await auth()
+  if (!userId) return null
+
+  try {
+    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
+    if (!user) return null
+
+    const purchases = await prisma.purchase.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: 'asc' },
+      select: { item: true, quantity: true, createdAt: true },
+    })
+
+    if (!purchases.length) return null
+
+    // Group by item, estimate status
+    const grouped = new Map<string, typeof purchases>()
+    for (const p of purchases) {
+      const key = p.item.trim().toLowerCase()
+      if (!grouped.has(key)) grouped.set(key, [])
+      grouped.get(key)!.push(p)
+    }
+
+    const now = new Date()
+    let stocked = 0, low = 0, out = 0
+
+    for (const [, group] of grouped) {
+      const sorted = [...group].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+      const last = sorted[sorted.length - 1]
+      const count = sorted.length
+      let avgFrequencyDays = 30
+      if (count >= 2) {
+        let totalGap = 0
+        for (let i = 1; i < sorted.length; i++) {
+          totalGap += (sorted[i].createdAt.getTime() - sorted[i - 1].createdAt.getTime()) / 86400000
+        }
+        avgFrequencyDays = Math.max(1, totalGap / (count - 1))
+      }
+      const dailyRate = last.quantity / avgFrequencyDays
+      const daysSinceLast = (now.getTime() - last.createdAt.getTime()) / 86400000
+      const remaining = Math.min(100, Math.max(0, ((last.quantity - dailyRate * daysSinceLast) / last.quantity) * 100))
+      if (remaining <= 10) out++
+      else if (remaining <= 50) low++
+      else stocked++
+    }
+
+    return (
+      <Link href="/dashboard/pantry">
+        <Card className="bg-white border-gray-100 shadow-none hover:shadow-sm transition-shadow cursor-pointer">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base text-[#1B3A5C] flex items-center gap-2">
+                <Warehouse className="h-4 w-4 text-[#0F7B6C]" />
+                Pantry Status
+              </CardTitle>
+              {(out > 0 || low > 0) && (
+                <AlertTriangle className="h-4 w-4 text-[#FF6B35]" />
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="flex items-center gap-5">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#22C55E]" />
+                <span className="text-sm text-[#1B3A5C]/70">{stocked} stocked</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#FF6B35]" />
+                <span className="text-sm text-[#1B3A5C]/70">{low} low</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
+                <span className="text-sm text-[#1B3A5C]/70">{out} out</span>
+              </div>
+            </div>
+            <p className="text-xs text-[#0F7B6C] mt-3 font-medium">View full pantry →</p>
+          </CardContent>
+        </Card>
+      </Link>
+    )
+  } catch {
+    return null
+  }
+}
+
+function PantrySummarySkeleton() {
+  return (
+    <Card className="bg-white border-gray-100 shadow-none">
+      <CardHeader className="pb-2">
+        <Skeleton className="h-5 w-32" />
+      </CardHeader>
+      <CardContent className="pt-0 space-y-3">
+        <div className="flex gap-5">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-4 w-14" />
+          <Skeleton className="h-4 w-10" />
+        </div>
+        <Skeleton className="h-3 w-28" />
+      </CardContent>
+    </Card>
+  )
+}
+
 export default function DashboardPage() {
   return (
     <div className="space-y-6 max-w-7xl">
@@ -435,6 +539,10 @@ export default function DashboardPage() {
 
       <Suspense fallback={<StatCardsSkeleton />}>
         <StatCards />
+      </Suspense>
+
+      <Suspense fallback={<PantrySummarySkeleton />}>
+        <PantrySummary />
       </Suspense>
 
       <Suspense fallback={<ChartsSkeleton />}>

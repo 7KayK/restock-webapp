@@ -18,6 +18,7 @@ import {
   MessageSquare,
   Settings,
   MoreHorizontal,
+  Warehouse,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { WhatsAppIcon, TelegramIcon } from '@/components/shared/ChannelIcons'
@@ -25,6 +26,7 @@ import type { ChannelStatus } from '@/types'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: ShoppingCart, exact: true },
+  { href: '/dashboard/pantry', label: 'Pantry', icon: Warehouse },
   { href: '/dashboard/spend', label: 'Spend Analysis', icon: BarChart3 },
   { href: '/dashboard/history', label: 'History', icon: History },
   { href: '/dashboard/reminders', label: 'Reminders', icon: Bell },
@@ -45,6 +47,7 @@ const BOTTOM_NAV_ITEMS = [
 ]
 
 const MORE_ITEMS = [
+  { href: '/dashboard/pantry', label: 'Pantry', icon: Warehouse },
   { href: '/dashboard/spend', label: 'Spend Analysis', icon: BarChart3 },
   { href: '/dashboard/deals', label: 'Deals', icon: Tag },
   { href: '/dashboard/teams', label: 'Teams', icon: Users },

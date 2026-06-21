@@ -71,6 +71,29 @@ export interface DashboardStats {
   itemsTracked: number
 }
 
+// --- Pantry types ---
+
+export type PantryStatus = 'stocked' | 'low' | 'out'
+export type PantryConfidence = 'high' | 'medium' | 'low'
+
+export interface PantryItem {
+  name: string
+  category: string | null
+  lastPurchasedAt: string     // ISO string
+  quantity: number
+  unit: string | null
+  avgFrequencyDays: number
+  estimatedRemaining: number  // percentage 0–100
+  predictedDepletionDate: string // ISO string
+  status: PantryStatus
+  confidence: PantryConfidence
+}
+
+export interface PantryResponse {
+  items: PantryItem[]
+  counts: { stocked: number; low: number; out: number }
+}
+
 // --- API response wrapper ---
 
 export interface ApiResponse<T> {
