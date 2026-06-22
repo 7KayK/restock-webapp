@@ -52,6 +52,7 @@ export default function ShoppingPage() {
   const [loading, setLoading]       = useState(true)
   const [loadingHistory, setLoadingHistory] = useState(false)
   const [addInput, setAddInput]     = useState('')
+  const [phase, setPhase]           = useState<'building' | 'shopping'>('building')
   const [showDone, setShowDone]     = useState(false)
   const [completing, setCompleting] = useState(false)
   const [scanOpen, setScanOpen]     = useState(false)
@@ -153,7 +154,11 @@ export default function ShoppingPage() {
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Shopping Trip</h1>
           <p className="text-sm text-[#1B3A5C]/50 mt-0.5">
-            {loading ? 'Building your smart list…' : `${activeItems.length} item${activeItems.length !== 1 ? 's' : ''} to buy`}
+            {loading
+              ? 'Building your smart list…'
+              : phase === 'building'
+                ? `${items.length} item${items.length !== 1 ? 's' : ''} — building list`
+                : `${activeItems.length} item${activeItems.length !== 1 ? 's' : ''} left to buy`}
           </p>
         </div>
       </div>
@@ -271,42 +276,63 @@ export default function ShoppingPage() {
         </CardContent>
       </Card>
 
-      {/* Done Shopping */}
-      <div className="space-y-3">
-        <Button
-          className="w-full bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white gap-2"
-          onClick={() => setShowDone((v) => !v)}
-        >
-          <Check className="h-4 w-4" />
-          Done Shopping
-        </Button>
-
-        {showDone && (
-          <Card className="bg-white border-[#0F7B6C]/20 shadow-none">
-            <CardContent className="p-4 space-y-3">
-              <p className="text-sm font-medium text-[#1B3A5C]">How would you like to log this trip?</p>
-              <Button
-                className="w-full bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white gap-2"
-                onClick={() => { setShowDone(false); setScanOpen(true) }}
-              >
-                <Camera className="h-4 w-4" />
-                Scan receipt
-              </Button>
+      {/* Phase-aware bottom actions */}
+      {items.length > 0 && (
+        <div className="space-y-3">
+          {phase === 'building' ? (
+            <Button
+              className="w-full bg-[#1B3A5C] hover:bg-[#1B3A5C]/90 text-white gap-2"
+              onClick={() => setPhase('shopping')}
+            >
+              <Check className="h-4 w-4" />
+              My list is ready — start shopping
+            </Button>
+          ) : (
+            <>
               <Button
                 variant="outline"
                 className="w-full gap-2 border-gray-200 text-[#1B3A5C]/70"
-                onClick={markAllComplete}
-                disabled={completing || items.length === 0}
+                onClick={() => { setPhase('building'); setShowDone(false) }}
               >
-                {completing
-                  ? <Loader2 className="h-4 w-4 animate-spin" />
-                  : <Check className="h-4 w-4" />}
-                Mark as purchased (no receipt)
+                ← Edit list
               </Button>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+              <Button
+                className="w-full bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white gap-2"
+                onClick={() => setShowDone((v) => !v)}
+              >
+                <Check className="h-4 w-4" />
+                Done Shopping
+              </Button>
+
+              {showDone && (
+                <Card className="bg-white border-[#0F7B6C]/20 shadow-none">
+                  <CardContent className="p-4 space-y-3">
+                    <p className="text-sm font-medium text-[#1B3A5C]">How would you like to log this trip?</p>
+                    <Button
+                      className="w-full bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white gap-2"
+                      onClick={() => { setShowDone(false); setScanOpen(true) }}
+                    >
+                      <Camera className="h-4 w-4" />
+                      Scan receipt
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full gap-2 border-gray-200 text-[#1B3A5C]/70"
+                      onClick={markAllComplete}
+                      disabled={completing || items.length === 0}
+                    >
+                      {completing
+                        ? <Loader2 className="h-4 w-4 animate-spin" />
+                        : <Check className="h-4 w-4" />}
+                      Mark as purchased (no receipt)
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          )}
+        </div>
+      )}
 
       <ImageIntelligence
         open={scanOpen}
