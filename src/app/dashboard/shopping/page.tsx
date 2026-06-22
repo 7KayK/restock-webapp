@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Playfair_Display } from 'next/font/google'
 import {
   MapPin, Tag, CalendarDays, Camera, Keyboard,
-  Plus, X, Check, Loader2, Bell, Sparkles, ArrowLeft,
+  Plus, X, Check, Loader2, Bell, Sparkles, ArrowLeft, Bookmark, BookmarkCheck,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -56,13 +56,15 @@ export default function ShoppingPage() {
   const [showDone, setShowDone]     = useState(false)
   const [completing, setCompleting] = useState(false)
   const [scanOpen, setScanOpen]     = useState(false)
+  const [savedToast, setSavedToast] = useState(false)
   const addRef = useRef<HTMLInputElement>(null)
 
+  // Load saved list from localStorage on mount (after API list, so API wins if non-empty)
   useEffect(() => {
     fetch('/api/shopping/list')
       .then((r) => r.json())
       .then((json) => {
-        if (json.data?.items) {
+        if (json.data?.items?.length) {
           setItems(json.data.items.map((it: ShoppingItem) => ({
             ...it,
             _id: uid(),
@@ -70,6 +72,17 @@ export default function ShoppingPage() {
             _editingName: false,
             _editingQty: false,
           })))
+        } else {
+          // Fall back to saved list if no smart suggestions
+          try {
+            const saved = localStorage.getItem('restock-saved-list')
+            if (saved) {
+              const parsed: ShoppingItem[] = JSON.parse(saved)
+              if (parsed.length) {
+                setItems(parsed.map((it) => ({ ...it, _id: uid(), _done: false, _editingName: false, _editingQty: false })))
+              }
+            }
+          } catch { /* ignore */ }
         }
       })
       .finally(() => setLoading(false))
@@ -119,6 +132,15 @@ export default function ShoppingPage() {
     } finally {
       setLoadingHistory(false)
     }
+  }
+
+  function saveListForLater() {
+    try {
+      const toSave = items.map(({ name, quantity, unit, category, source }) => ({ name, quantity, unit, category, source }))
+      localStorage.setItem('restock-saved-list', JSON.stringify(toSave))
+      setSavedToast(true)
+      setTimeout(() => setSavedToast(false), 2500)
+    } catch { /* ignore */ }
   }
 
   const activeItems = items.filter((it) => !it._done)
@@ -280,13 +302,25 @@ export default function ShoppingPage() {
       {items.length > 0 && (
         <div className="space-y-3">
           {phase === 'building' ? (
-            <Button
-              className="w-full bg-[#1B3A5C] hover:bg-[#1B3A5C]/90 text-white gap-2"
-              onClick={() => setPhase('shopping')}
-            >
-              <Check className="h-4 w-4" />
-              My list is ready — start shopping
-            </Button>
+            <>
+              <Button
+                className="w-full bg-[#1B3A5C] hover:bg-[#1B3A5C]/90 text-white gap-2"
+                onClick={() => setPhase('shopping')}
+              >
+                <Check className="h-4 w-4" />
+                My list is ready — start shopping
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full gap-2 border-gray-200 text-[#1B3A5C]/70"
+                onClick={saveListForLater}
+              >
+                {savedToast
+                  ? <><BookmarkCheck className="h-4 w-4 text-[#22C55E]" /><span className="text-[#22C55E]">List saved!</span></>
+                  : <><Bookmark className="h-4 w-4" />Save list for next shopping</>
+                }
+              </Button>
+            </>
           ) : (
             <>
               <Button
