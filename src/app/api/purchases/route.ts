@@ -56,6 +56,12 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // Fire-and-forget: refresh reminders for this item now that there's new data
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.restock.chat'}/api/reminders/sync`, {
+      method: 'POST',
+      headers: { Cookie: request.headers.get('cookie') ?? '' },
+    }).catch(() => { /* non-critical */ })
+
     return Response.json({ data: purchase }, { status: 201 })
   } catch {
     return Response.json({ error: 'Failed to create purchase' }, { status: 500 })

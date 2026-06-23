@@ -3,35 +3,91 @@ export const dynamic = 'force-dynamic'
 import { Suspense } from 'react'
 import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
+import { getOrCreateUser } from '@/lib/getOrCreateUser'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ReminderList } from '@/components/shared/ReminderList'
 import type { Reminder } from '@/types'
+
+async function syncReminders(userId: string) {
+  const user = await getOrCreateUser(userId)
+
+  const purchases = await prisma.purchase.findMany({
+    where: { userId: user.id, quantity: { gt: 0 } },
+    orderBy: { createdAt: 'asc' },
+    select: { item: true, quantity: true, createdAt: true },
+  })
+
+  const grouped = new Map<string, typeof purchases>()
+  for (const p of purchases) {
+    const key = p.item.trim().toLowerCase()
+    if (!grouped.has(key)) grouped.set(key, [])
+    grouped.get(key)!.push(p)
+  }
+
+  const now = new Date()
+
+  for (const [key, group] of grouped) {
+    if (group.length < 2) continue
+
+    const sorted = [...group].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+    const last = sorted[sorted.length - 1]
+    const count = sorted.length
+
+    let totalGap = 0
+    for (let i = 1; i < sorted.length; i++) {
+      totalGap += (sorted[i].createdAt.getTime() - sorted[i - 1].createdAt.getTime()) / 86_400_000
+    }
+    const avgFrequencyDays = Math.max(1, totalGap / (count - 1))
+    const daysSinceLast = (now.getTime() - last.createdAt.getTime()) / 86_400_000
+    const daysRemaining = Math.max(0, avgFrequencyDays - daysSinceLast)
+    const predictedDate = new Date(now.getTime() + daysRemaining * 86_400_000)
+    const confidence = count >= 5 ? 0.9 : count >= 3 ? 0.75 : 0.55
+
+    // Only upsert if no active reminder exists for this item, or if prediction changed significantly
+    const existing = await prisma.reminder.findFirst({
+      where: { userId: user.id, item: key, active: true },
+    })
+
+    const diffDays = existing
+      ? Math.abs((existing.predictedDate.getTime() - predictedDate.getTime()) / 86_400_000)
+      : null
+
+    if (!existing || diffDays! > 2) {
+      await prisma.reminder.updateMany({
+        where: { userId: user.id, item: key, active: true },
+        data: { active: false },
+      })
+      await prisma.reminder.create({
+        data: { userId: user.id, item: key, predictedDate, confidence, active: true },
+      })
+    }
+  }
+
+  return user.id
+}
 
 async function ActiveReminders() {
   const { userId } = await auth()
   if (!userId) return null
 
   try {
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } })
+    // Auto-generate/refresh predictions from purchase history on every page load
+    const internalUserId = await syncReminders(userId)
 
-    let reminders: Reminder[] = []
+    const rows = await prisma.reminder.findMany({
+      where: { userId: internalUserId, active: true },
+      orderBy: { predictedDate: 'asc' },
+    })
 
-    if (user) {
-      const rows = await prisma.reminder.findMany({
-        where: { userId: user.id, active: true },
-        orderBy: { predictedDate: 'asc' },
-      })
-
-      reminders = rows.map((r) => ({
-        ...r,
-        snoozedUntil: r.snoozedUntil ?? null,
-      }))
-    }
+    const reminders: Reminder[] = rows.map((r) => ({
+      ...r,
+      snoozedUntil: r.snoozedUntil ?? null,
+    }))
 
     const activeCount = reminders.filter((r) => {
-      const snoozedUntil = r.snoozedUntil ? new Date(r.snoozedUntil) : null
-      return !snoozedUntil || snoozedUntil <= new Date()
+      const snoozed = r.snoozedUntil ? new Date(r.snoozedUntil) : null
+      return !snoozed || snoozed <= new Date()
     }).length
 
     return (
@@ -51,7 +107,8 @@ async function ActiveReminders() {
         </CardContent>
       </Card>
     )
-  } catch {
+  } catch (err) {
+    console.error('[reminders page]', err)
     return (
       <Card className="bg-white border-gray-100 shadow-none">
         <CardContent className="py-12 text-center text-sm text-[#1B3A5C]/45">
@@ -80,6 +137,7 @@ function RemindersSkeleton() {
               <div className="flex gap-1.5">
                 <Skeleton className="h-7 w-16" />
                 <Skeleton className="h-7 w-16" />
+                <Skeleton className="h-7 w-16" />
               </div>
             </div>
           </div>
@@ -95,7 +153,7 @@ export default function RemindersPage() {
       <div>
         <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Reminders</h1>
         <p className="text-sm text-[#1B3A5C]/50 mt-0.5">
-          AI-predicted restock dates based on your purchase history
+          Restock dates predicted from your purchase history — updates each time you visit
         </p>
       </div>
 
