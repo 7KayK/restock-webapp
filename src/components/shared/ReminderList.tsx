@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BellOff, Clock } from 'lucide-react'
+import { BellOff, Clock, PackageX } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { formatDate, formatRelativeDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
@@ -82,6 +82,27 @@ export function ReminderList({ initialReminders }: ReminderListProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ active: false }),
       })
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  async function ranOut(id: string, item: string) {
+    setLoading(id)
+    setReminders((prev) => prev.filter((r) => r.id !== id))
+    try {
+      await Promise.all([
+        fetch('/api/items/ran-out', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ item }),
+        }),
+        fetch(`/api/reminders/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ active: false }),
+        }),
+      ])
     } finally {
       setLoading(null)
     }
@@ -176,6 +197,17 @@ export function ReminderList({ initialReminders }: ReminderListProps) {
                   variant="ghost"
                   size="sm"
                   className="h-7 px-2.5 text-xs text-[#1B3A5C]/60 hover:text-[#EF4444] hover:bg-[#EF4444]/10"
+                  onClick={() => ranOut(r.id, r.item)}
+                  disabled={isBusy}
+                  title="I ran out of this item"
+                >
+                  <PackageX className="h-3 w-3 mr-1" />
+                  Ran out
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2.5 text-xs text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:bg-gray-100"
                   onClick={() => dismiss(r.id)}
                   disabled={isBusy}
                   title="Dismiss reminder"

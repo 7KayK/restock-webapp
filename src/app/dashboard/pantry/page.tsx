@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { format, differenceInDays } from 'date-fns'
-import { Package, Camera } from 'lucide-react'
+import { Package, Camera, PackageX } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { PantryItem, PantryStatus, PantryResponse } from '@/types'
 
@@ -80,7 +80,26 @@ function DepletionLabel({ isoDate }: { isoDate: string }) {
   return <span className={cn('text-[11px]', color)}>{label}</span>
 }
 
-function PantryCard({ item }: { item: PantryItem }) {
+function PantryCard({ item, onRanOut }: { item: PantryItem; onRanOut: (name: string, category: string | null) => void }) {
+  const [confirming, setConfirming] = useState(false)
+  const [done, setDone] = useState(false)
+
+  async function handleRanOut() {
+    if (done) return
+    setConfirming(true)
+    try {
+      await fetch('/api/items/ran-out', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ item: item.name, category: item.category }),
+      })
+      setDone(true)
+      onRanOut(item.name, item.category ?? null)
+    } finally {
+      setConfirming(false)
+    }
+  }
+
   return (
     <div className="bg-white border border-gray-100 rounded-lg p-4 flex flex-col gap-3 hover:shadow-sm transition-shadow">
       {/* Top row: progress ring + name/category */}
@@ -111,6 +130,21 @@ function PantryCard({ item }: { item: PantryItem }) {
         </span>
         <DepletionLabel isoDate={item.predictedDepletionDate} />
       </div>
+
+      {/* Ran out button */}
+      <button
+        onClick={handleRanOut}
+        disabled={confirming || done}
+        className={cn(
+          'w-full flex items-center justify-center gap-1.5 rounded-md py-1.5 text-[11px] font-medium transition-colors border',
+          done
+            ? 'border-[#EF4444]/20 bg-[#EF4444]/5 text-[#EF4444] cursor-default'
+            : 'border-gray-100 text-[#1B3A5C]/50 hover:border-[#EF4444]/30 hover:text-[#EF4444] hover:bg-[#EF4444]/5'
+        )}
+      >
+        <PackageX className="h-3 w-3" />
+        {done ? 'Logged — ran out' : confirming ? 'Logging…' : 'Ran out'}
+      </button>
     </div>
   )
 }
@@ -138,6 +172,25 @@ export default function PantryPage() {
   const [data, setData] = useState<PantryResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<Filter>('all')
+
+  const handleRanOut = useCallback((name: string, category: string | null) => {
+    // Update counts optimistically — move the item toward "out" status
+    setData((prev) => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        items: prev.items.map((i) =>
+          i.name === name ? { ...i, status: 'out' as const, estimatedRemaining: 0 } : i
+        ),
+        counts: {
+          ...prev.counts,
+          out: prev.counts.out + 1,
+          stocked: Math.max(0, prev.counts.stocked - (prev.items.find(i => i.name === name)?.status === 'stocked' ? 1 : 0)),
+          low: Math.max(0, prev.counts.low - (prev.items.find(i => i.name === name)?.status === 'low' ? 1 : 0)),
+        },
+      }
+    })
+  }, [])
 
   useEffect(() => {
     fetch('/api/pantry')
@@ -253,7 +306,7 @@ export default function PantryPage() {
       {!loading && filtered.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((item) => (
-            <PantryCard key={item.name} item={item} />
+            <PantryCard key={item.name} item={item} onRanOut={handleRanOut} />
           ))}
         </div>
       )}
