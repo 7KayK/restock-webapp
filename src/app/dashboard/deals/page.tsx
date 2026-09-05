@@ -35,8 +35,8 @@ async function ProductsContent() {
     return (
       <Card className="bg-white border-gray-100 shadow-none">
         <CardContent className="py-16 text-center">
-          <ShoppingBag className="h-8 w-8 mx-auto mb-3 text-[#1B3A5C]/20" />
-          <p className="text-sm text-[#1B3A5C]/45">
+          <ShoppingBag className="h-8 w-8 mx-auto mb-3 text-[#132B22]/20" />
+          <p className="text-sm text-[#132B22]/45">
             No items yet — log purchases via Telegram or WhatsApp to see product information
           </p>
         </CardContent>
@@ -62,9 +62,9 @@ async function ProductsContent() {
     return (
       <Card className="bg-white border-gray-100 shadow-none">
         <CardContent className="py-16 text-center">
-          <Package className="h-8 w-8 mx-auto mb-3 text-[#1B3A5C]/20" />
-          <p className="text-sm text-[#1B3A5C]/45">No product matches found for your items yet</p>
-          <p className="text-xs text-[#1B3A5C]/30 mt-1">
+          <Package className="h-8 w-8 mx-auto mb-3 text-[#132B22]/20" />
+          <p className="text-sm text-[#132B22]/45">No product matches found for your items yet</p>
+          <p className="text-xs text-[#132B22]/30 mt-1">
             Keep logging purchases — product info improves with more data
           </p>
         </CardContent>
@@ -76,8 +76,8 @@ async function ProductsContent() {
     <Card className="bg-white border-gray-100 shadow-none">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base text-[#1B3A5C]">Your Items</CardTitle>
-          <span className="text-xs text-[#1B3A5C]/40">{products.length} matched</span>
+          <CardTitle className="text-base text-[#132B22]">Your Items</CardTitle>
+          <span className="text-xs text-[#132B22]/40">{products.length} matched</span>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
@@ -112,14 +112,14 @@ function ProductCard({ product }: { product: FoodProduct }) {
 
       {/* Names */}
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium text-[#1B3A5C]/45 uppercase tracking-wide truncate">
+        <p className="text-xs font-medium text-[#132B22]/45 uppercase tracking-wide truncate">
           {product.item}
         </p>
-        <p className="text-sm font-semibold text-[#1B3A5C] leading-snug mt-0.5 line-clamp-2">
+        <p className="text-sm font-semibold text-[#132B22] leading-snug mt-0.5 line-clamp-2">
           {product.productName}
         </p>
         {product.brand && (
-          <p className="text-xs text-[#1B3A5C]/50 mt-0.5">{product.brand}</p>
+          <p className="text-xs text-[#132B22]/50 mt-0.5">{product.brand}</p>
         )}
       </div>
 
@@ -132,7 +132,7 @@ function ProductCard({ product }: { product: FoodProduct }) {
         ) : (
           <span />
         )}
-        <p className="text-[10px] text-[#1B3A5C]/30">Open Food Facts</p>
+        <p className="text-[10px] text-[#132B22]/30">Open Food Facts</p>
       </div>
     </div>
   )
@@ -167,8 +167,8 @@ export default function DealsPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Deals</h1>
-        <p className="text-sm text-[#1B3A5C]/50 mt-0.5">
+        <h1 className="text-xl md:text-2xl font-bold text-[#132B22]">Deals</h1>
+        <p className="text-sm text-[#132B22]/50 mt-0.5">
           Product information for your most purchased items
         </p>
       </div>

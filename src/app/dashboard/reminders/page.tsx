@@ -94,9 +94,9 @@ async function ActiveReminders() {
       <Card className="bg-white border-gray-100 shadow-none">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base text-[#1B3A5C]">Active Reminders</CardTitle>
+            <CardTitle className="text-base text-[#132B22]">Active Reminders</CardTitle>
             {activeCount > 0 && (
-              <span className="text-xs font-medium rounded-full bg-[#0F7B6C]/10 text-[#0F7B6C] px-2.5 py-0.5">
+              <span className="text-xs font-medium rounded-full bg-[#132B22]/10 text-[#132B22] px-2.5 py-0.5">
                 {activeCount} active
               </span>
             )}
@@ -111,7 +111,7 @@ async function ActiveReminders() {
     console.error('[reminders page]', err)
     return (
       <Card className="bg-white border-gray-100 shadow-none">
-        <CardContent className="py-12 text-center text-sm text-[#1B3A5C]/45">
+        <CardContent className="py-12 text-center text-sm text-[#132B22]/45">
           Failed to load reminders
         </CardContent>
       </Card>
@@ -151,8 +151,8 @@ export default function RemindersPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Reminders</h1>
-        <p className="text-sm text-[#1B3A5C]/50 mt-0.5">
+        <h1 className="text-xl md:text-2xl font-bold text-[#132B22]">Reminders</h1>
+        <p className="text-sm text-[#132B22]/50 mt-0.5">
           Restock dates predicted from your purchase history — updates each time you visit
         </p>
       </div>

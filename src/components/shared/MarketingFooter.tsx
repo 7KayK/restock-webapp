@@ -4,21 +4,26 @@ import { TelegramIcon, WhatsAppIcon } from '@/components/shared/ChannelIcons'
 
 export function MarketingFooter() {
   return (
-    <footer className="py-16 px-6" style={{ background: '#FAFAF8' }}>
+    <footer className="bg-[#132B22] text-white/65 px-6 pt-14 pb-8">
       <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-9">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
-            <Image
-              src="/logo.jpg"
-              alt="Restock"
-              width={36}
-              height={36}
-              className="object-contain"
-              style={{ mixBlendMode: 'multiply' }}
-            />
-            <p className="text-xs text-[#9CA3AF] leading-relaxed max-w-[160px]">
-              Smart household purchase tracking.
+            <div className="flex items-center gap-2">
+              <Image
+                src="/logo.jpg"
+                alt="Restock"
+                width={32}
+                height={32}
+                className="object-contain"
+                style={{ mixBlendMode: 'screen' }}
+              />
+              <span className="text-white font-semibold text-base" style={{ fontFamily: 'var(--font-playfair), "Fraunces", serif' }}>
+                restock
+              </span>
+            </div>
+            <p className="text-xs text-white/55 leading-relaxed max-w-[220px]">
+              AI-powered restocking for households and the small businesses that supply them.
             </p>
             <div className="flex items-center gap-3">
               <a
@@ -31,58 +36,54 @@ export function MarketingFooter() {
                 <TelegramIcon size={15} />
               </a>
               <div className="flex items-center gap-2" title="WhatsApp coming soon">
-                <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-[#C8CACF] shrink-0">
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/30 shrink-0">
                   <WhatsAppIcon size={15} />
                 </div>
-                <span className="text-[10px] text-[#C0C4CC]">coming soon</span>
+                <span className="text-[10px] text-white/35">coming soon</span>
               </div>
             </div>
           </div>
 
           {/* Product */}
           <div className="flex flex-col gap-3">
-            <h4 className="text-[#1B3A5C] font-semibold text-sm">Product</h4>
-            {['Dashboard', 'Spend analysis', 'Reminders', 'AI assistant', 'Deals'].map((item) => (
-              <Link
-                key={item}
-                href="/dashboard"
-                className="text-[#6B7280] text-sm hover:text-[#1B3A5C] transition-colors"
-              >
-                {item}
-              </Link>
-            ))}
+            <h4 className="text-white font-semibold text-xs uppercase tracking-wide">Product</h4>
+            <Link href="/dashboard" className="text-white/60 text-sm hover:text-white transition-colors">Dashboard</Link>
+            <Link href="/dashboard/spend" className="text-white/60 text-sm hover:text-white transition-colors">Spend analysis</Link>
+            <Link href="/dashboard/reminders" className="text-white/60 text-sm hover:text-white transition-colors">Reminders</Link>
+            <Link href="/dashboard/assistant" className="text-white/60 text-sm hover:text-white transition-colors">AI assistant</Link>
           </div>
 
           {/* For */}
           <div className="flex flex-col gap-3">
-            <h4 className="text-[#1B3A5C] font-semibold text-sm">For</h4>
-            <span className="text-[#6B7280] text-sm">Households</span>
-            <span className="text-[#6B7280] text-sm">Individuals</span>
-            <span className="text-[#9CA3AF] text-sm">Teams (coming soon)</span>
+            <h4 className="text-white font-semibold text-xs uppercase tracking-wide">For</h4>
+            <span className="text-white/60 text-sm">Households</span>
+            <Link href="/dashboard/teams" className="text-white/60 text-sm hover:text-white transition-colors">Small business / Teams</Link>
           </div>
 
           {/* Company */}
           <div className="flex flex-col gap-3">
-            <h4 className="text-[#1B3A5C] font-semibold text-sm">Company</h4>
+            <h4 className="text-white font-semibold text-xs uppercase tracking-wide">Company</h4>
             {[
               { label: 'About', href: '#' },
               { label: 'Privacy', href: '#' },
               { label: 'Terms', href: '#' },
               { label: 'Blog', href: '/blog' },
             ].map(({ label, href }) => (
-              <Link
-                key={label}
-                href={href}
-                className="text-[#6B7280] text-sm hover:text-[#1B3A5C] transition-colors"
-              >
+              <Link key={label} href={href} className="text-white/60 text-sm hover:text-white transition-colors">
                 {label}
               </Link>
             ))}
           </div>
         </div>
 
-        <div className="border-t border-[#E5E7EB] pt-6">
-          <p className="text-xs text-[#9CA3AF]">© 2026 Restock Hub Solutions</p>
+        <div className="border-t border-white/15 pt-5 flex justify-between items-center flex-wrap gap-3">
+          <p className="text-xs text-white/45">&copy; 2026 Restock Hub Solutions</p>
+          <Link
+            href="/sign-up"
+            className="text-[13.5px] font-semibold px-4 py-2 rounded-full bg-[#E4C07D] text-[#132B22] hover:bg-[#C9A15A] transition-colors"
+          >
+            Get started
+          </Link>
         </div>
       </div>
     </footer>

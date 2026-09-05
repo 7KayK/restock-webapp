@@ -22,8 +22,8 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-md text-sm">
-      <p className="text-[#1B3A5C]/60 text-xs mb-0.5">{label}</p>
-      <p className="text-[#1B3A5C] font-semibold">{formatCurrency(payload[0].value)}</p>
+      <p className="text-[#132B22]/60 text-xs mb-0.5">{label}</p>
+      <p className="text-[#132B22] font-semibold">{formatCurrency(payload[0].value)}</p>
     </div>
   )
 }
@@ -37,7 +37,7 @@ export function SpendTrendChart({ data }: SpendTrendChartProps) {
 
   if (!hasData) {
     return (
-      <div className="h-[220px] flex items-center justify-center text-[#1B3A5C]/35 text-sm">
+      <div className="h-[220px] flex items-center justify-center text-[#132B22]/35 text-sm">
         No spend data yet — log your first purchase
       </div>
     )
@@ -50,13 +50,13 @@ export function SpendTrendChart({ data }: SpendTrendChartProps) {
           <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 11, fill: '#1B3A5C', opacity: 0.5 }}
+            tick={{ fontSize: 11, fill: '#132B22', opacity: 0.5 }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
             tickFormatter={(v) => `$${v}`}
-            tick={{ fontSize: 11, fill: '#1B3A5C', opacity: 0.5 }}
+            tick={{ fontSize: 11, fill: '#132B22', opacity: 0.5 }}
             axisLine={false}
             tickLine={false}
             width={48}
@@ -65,10 +65,10 @@ export function SpendTrendChart({ data }: SpendTrendChartProps) {
           <Line
             type="monotone"
             dataKey="amount"
-            stroke="#0F7B6C"
+            stroke="#132B22"
             strokeWidth={2.5}
-            dot={{ fill: '#0F7B6C', r: 3, strokeWidth: 0 }}
-            activeDot={{ r: 5, fill: '#0F7B6C' }}
+            dot={{ fill: '#132B22', r: 3, strokeWidth: 0 }}
+            activeDot={{ r: 5, fill: '#132B22' }}
             isAnimationActive={true}
             animationDuration={800}
             animationEasing="ease-out"

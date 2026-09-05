@@ -74,9 +74,9 @@ export function StoreMap() {
 
   if (!isLoaded || status === 'idle' || status === 'locating') {
     return (
-      <div className="flex-1 flex items-center justify-center text-[#1B3A5C]/45">
+      <div className="flex-1 flex items-center justify-center text-[#132B22]/45">
         <div className="text-center space-y-2">
-          <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#0F7B6C]" />
+          <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#132B22]" />
           <p className="text-sm">{status === 'locating' ? 'Getting your location…' : 'Loading map…'}</p>
         </div>
       </div>
@@ -88,14 +88,14 @@ export function StoreMap() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="text-center space-y-3 max-w-xs">
           <AlertCircle className="h-8 w-8 mx-auto text-[#EF4444]/60" />
-          <p className="text-sm font-medium text-[#1B3A5C]">Location access denied</p>
-          <p className="text-xs text-[#1B3A5C]/45">
+          <p className="text-sm font-medium text-[#132B22]">Location access denied</p>
+          <p className="text-xs text-[#132B22]/45">
             Enable location in your browser settings and try again.
           </p>
           <Button
             size="sm"
             variant="outline"
-            className="text-[#0F7B6C] border-[#0F7B6C]/30 hover:bg-[#0F7B6C]/5"
+            className="text-[#132B22] border-[#132B22]/30 hover:bg-[#132B22]/5"
             onClick={requestLocation}
           >
             Try again
@@ -114,13 +114,13 @@ export function StoreMap() {
       {/* Store list sidebar */}
       <div className="w-72 shrink-0 overflow-y-auto space-y-2 pr-1">
         {status === 'loading' && (
-          <div className="flex items-center gap-2 text-xs text-[#1B3A5C]/45 py-2">
+          <div className="flex items-center gap-2 text-xs text-[#132B22]/45 py-2">
             <Loader2 className="h-3 w-3 animate-spin" />
             Finding nearby stores…
           </div>
         )}
         {status === 'ready' && stores.length === 0 && (
-          <p className="text-sm text-[#1B3A5C]/45 py-4 text-center">
+          <p className="text-sm text-[#132B22]/45 py-4 text-center">
             No grocery stores found within 10 km
           </p>
         )}
@@ -131,24 +131,24 @@ export function StoreMap() {
             className={cn(
               'w-full text-left rounded-xl border p-3 transition-colors',
               activeIdx === idx
-                ? 'border-[#0F7B6C] bg-[#0F7B6C]/5'
-                : 'border-gray-100 bg-white hover:border-[#0F7B6C]/30 hover:bg-[#0F7B6C]/5'
+                ? 'border-[#132B22] bg-[#132B22]/5'
+                : 'border-gray-100 bg-white hover:border-[#132B22]/30 hover:bg-[#132B22]/5'
             )}
           >
             <div className="flex items-start justify-between gap-2">
-              <p className="text-sm font-semibold text-[#1B3A5C] leading-tight">{store.name}</p>
-              <span className="shrink-0 text-xs text-[#0F7B6C] font-medium whitespace-nowrap">
+              <p className="text-sm font-semibold text-[#132B22] leading-tight">{store.name}</p>
+              <span className="shrink-0 text-xs text-[#132B22] font-medium whitespace-nowrap">
                 {store.distanceKm} km
               </span>
             </div>
-            <p className="text-xs text-[#1B3A5C]/50 mt-0.5 line-clamp-1">{store.address}</p>
+            <p className="text-xs text-[#132B22]/50 mt-0.5 line-clamp-1">{store.address}</p>
             <div className="flex items-center gap-3 mt-1.5">
-              <div className="flex items-center gap-1 text-xs text-[#1B3A5C]/40">
+              <div className="flex items-center gap-1 text-xs text-[#132B22]/40">
                 <Clock className="h-3 w-3 shrink-0" />
                 <span>{store.hoursToday}</span>
               </div>
               {store.rating !== undefined && (
-                <div className="flex items-center gap-0.5 text-xs text-[#1B3A5C]/40">
+                <div className="flex items-center gap-0.5 text-xs text-[#132B22]/40">
                   <Star className="h-3 w-3 shrink-0 fill-[#EAB308] text-[#EAB308]" />
                   <span>{store.rating.toFixed(1)}</span>
                 </div>
@@ -181,7 +181,7 @@ export function StoreMap() {
               position={center}
               icon={{
                 path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-                fillColor: '#1B3A5C',
+                fillColor: '#132B22',
                 fillOpacity: 1,
                 strokeColor: '#ffffff',
                 strokeWeight: 2,
@@ -199,7 +199,7 @@ export function StoreMap() {
                 onClick={() => selectStore(store, idx)}
                 icon={{
                   path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z',
-                  fillColor: activeIdx === idx ? '#0F7B6C' : '#22C55E',
+                  fillColor: activeIdx === idx ? '#132B22' : '#22C55E',
                   fillOpacity: 1,
                   strokeColor: '#ffffff',
                   strokeWeight: 2,
@@ -216,7 +216,7 @@ export function StoreMap() {
                 onCloseClick={() => { setSelected(null); setActiveIdx(null) }}
               >
                 <div className="p-1 min-w-[180px]">
-                  <p className="font-semibold text-sm text-[#1B3A5C]">{selected.name}</p>
+                  <p className="font-semibold text-sm text-[#132B22]">{selected.name}</p>
                   <p className="text-xs text-gray-500 mt-0.5">{selected.address}</p>
                   <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
                     <Clock className="h-3 w-3" />
@@ -228,7 +228,7 @@ export function StoreMap() {
                       <span>{selected.rating.toFixed(1)} rating</span>
                     </div>
                   )}
-                  <p className="text-xs font-medium text-[#0F7B6C] mt-1">
+                  <p className="text-xs font-medium text-[#132B22] mt-1">
                     {selected.distanceKm} km away
                   </p>
                 </div>
@@ -245,8 +245,8 @@ function MapError({ message }: { message: string }) {
   return (
     <div className="flex-1 flex items-center justify-center p-6">
       <div className="text-center space-y-2 max-w-xs">
-        <MapPin className="h-8 w-8 mx-auto text-[#1B3A5C]/20" />
-        <p className="text-sm text-[#1B3A5C]/60">{message}</p>
+        <MapPin className="h-8 w-8 mx-auto text-[#132B22]/20" />
+        <p className="text-sm text-[#132B22]/60">{message}</p>
       </div>
     </div>
   )

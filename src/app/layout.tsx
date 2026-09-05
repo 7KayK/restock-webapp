@@ -1,23 +1,24 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono, Playfair_Display } from 'next/font/google'
+import { Inter, JetBrains_Mono, Fraunces } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
-const geistSans = Geist({
+const geistSans = Inter({
   variable: '--font-geist-sans',
   subsets: ['latin'],
 })
 
-const geistMono = Geist_Mono({
+const geistMono = JetBrains_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
+  weight: ['400', '500'],
 })
 
-const playfairDisplay = Playfair_Display({
+const playfairDisplay = Fraunces({
   variable: '--font-playfair',
   subsets: ['latin'],
-  weight: ['400', '600', '700'],
+  weight: ['400', '500', '600'],
 })
 
 export const metadata: Metadata = {
@@ -42,7 +43,7 @@ export default function RootLayout({
         lang="en"
         className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} h-full antialiased`}
       >
-        <body className="min-h-full flex flex-col bg-[#F8FAFC] text-foreground">
+        <body className="min-h-full flex flex-col bg-[#F7F2E7] text-foreground">
           {children}
           <Toaster />
         </body>

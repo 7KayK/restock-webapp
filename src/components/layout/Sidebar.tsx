@@ -115,18 +115,18 @@ export function Sidebar() {
                 'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
                 active
                   ? 'text-white'
-                  : 'text-[#1B3A5C]/65 hover:bg-[#0F7B6C]/10 hover:text-[#1B3A5C]'
+                  : 'text-[#132B22]/65 hover:bg-[#132B22]/10 hover:text-[#132B22]'
               )}
             >
               {active && (
                 <motion.div
                   layoutId="sidebar-active"
-                  className="absolute inset-0 rounded-lg bg-[#0F7B6C] shadow-sm"
+                  className="absolute inset-0 rounded-lg bg-[#132B22] shadow-sm"
                   transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
                 />
               )}
               {!active && (
-                <span className="absolute left-0 inset-y-1.5 w-[3px] rounded-r-full bg-[#0F7B6C] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                <span className="absolute left-0 inset-y-1.5 w-[3px] rounded-r-full bg-[#132B22] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
               )}
               <Icon className="relative h-4 w-4 shrink-0 z-10" />
               <span className="relative z-10">{label}</span>
@@ -138,7 +138,7 @@ export function Sidebar() {
       {/* Channel quick-access */}
       {channels !== null && (
         <div className="px-3 py-3 border-t border-gray-100 shrink-0">
-          <p className="px-3 text-[10px] font-semibold text-[#1B3A5C]/35 uppercase tracking-wider mb-1.5">
+          <p className="px-3 text-[10px] font-semibold text-[#132B22]/35 uppercase tracking-wider mb-1.5">
             Quick Access
           </p>
           <div className="space-y-0.5">
@@ -147,7 +147,7 @@ export function Sidebar() {
                   href={`https://t.me/${TELEGRAM_BOT}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1B3A5C]/60 hover:bg-[#229ED9]/10 hover:text-[#229ED9] transition-colors"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#132B22]/60 hover:bg-[#229ED9]/10 hover:text-[#229ED9] transition-colors"
                 >
                   <TelegramIcon size={15} className="shrink-0" />
                   Open Telegram
@@ -155,16 +155,16 @@ export function Sidebar() {
               ) : (
                 <Link
                   href="/dashboard/settings"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1B3A5C]/45 hover:bg-gray-100 hover:text-[#1B3A5C] transition-colors"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#132B22]/45 hover:bg-gray-100 hover:text-[#132B22] transition-colors"
                 >
                   Connect Telegram
                 </Link>
               )}
               {/* WhatsApp pending Meta verification */}
-              <div className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#1B3A5C]/25 cursor-not-allowed select-none">
+              <div className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#132B22]/25 cursor-not-allowed select-none">
                 <WhatsAppIcon size={15} className="shrink-0" />
                 <span>WhatsApp</span>
-                <span className="text-[10px] font-normal text-[#1B3A5C]/20">(coming soon)</span>
+                <span className="text-[10px] font-normal text-[#132B22]/20">(coming soon)</span>
               </div>
             </div>
         </div>
@@ -203,7 +203,7 @@ export function BottomNav() {
       {moreOpen && (
         <div className="fixed bottom-16 inset-x-0 z-50 md:hidden bg-white border-t border-gray-100 rounded-t-2xl shadow-xl">
           <div className="px-4 pt-4 pb-3">
-            <p className="text-[10px] font-semibold text-[#1B3A5C]/35 uppercase tracking-wider mb-2">
+            <p className="text-[10px] font-semibold text-[#132B22]/35 uppercase tracking-wider mb-2">
               More
             </p>
             <div className="space-y-0.5">
@@ -217,8 +217,8 @@ export function BottomNav() {
                     className={cn(
                       'flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors min-h-[44px]',
                       active
-                        ? 'bg-[#0F7B6C] text-white'
-                        : 'text-[#1B3A5C]/65 hover:bg-[#0F7B6C]/10 hover:text-[#1B3A5C]'
+                        ? 'bg-[#132B22] text-white'
+                        : 'text-[#132B22]/65 hover:bg-[#132B22]/10 hover:text-[#132B22]'
                     )}
                   >
                     <Icon className="h-5 w-5 shrink-0" />
@@ -241,7 +241,7 @@ export function BottomNav() {
               href={href}
               className={cn(
                 'flex-1 flex flex-col items-center justify-center gap-1 min-h-[44px] transition-colors',
-                active ? 'text-[#0F7B6C]' : 'text-[#1B3A5C]/45'
+                active ? 'text-[#132B22]' : 'text-[#132B22]/45'
               )}
             >
               <Icon className="h-5 w-5" />
@@ -254,7 +254,7 @@ export function BottomNav() {
           aria-label="More navigation items"
           className={cn(
             'flex-1 flex flex-col items-center justify-center gap-1 min-h-[44px] transition-colors',
-            isMoreActive || moreOpen ? 'text-[#0F7B6C]' : 'text-[#1B3A5C]/45'
+            isMoreActive || moreOpen ? 'text-[#132B22]' : 'text-[#132B22]/45'
           )}
         >
           <MoreHorizontal className="h-5 w-5" />

@@ -51,17 +51,25 @@ and lets users chat with their household data via AI.
 ---
 
 ## Colour System — Always Use These
+**Updated 2026-09-05 — rebrand from teal/navy/orange to forest/gold/cream. Do not reintroduce #0F7B6C, #1B3A5C, #FF6B35, or #F8FAFC/#FAFAF8 anywhere in the app.**
 
 | Name | Hex | Usage |
 |---|---|---|
-| Primary teal | #0F7B6C | Primary actions, links, active states |
-| Navy | #1B3A5C | Headings, body text |
-| Orange accent | #FF6B35 | CTAs, alerts, overdue reminders |
+| Forest (primary) | #132B22 | Headings, body text, primary actions, nav/footer surfaces |
+| Forest-2 | #1F3F31 | Secondary dark surfaces |
+| Forest-3 | #2E5744 | Kickers, secondary interactive text |
+| Gold (accent) | #C9A15A | CTA buttons, links, active/ring states |
+| Gold-2 | #E4C07D | Button fills, tags/badges, highlights |
+| Cream | #F7F2E7 | Page background |
+| Cream-2 | #EFE7D6 | Secondary/muted surfaces, alternate section backgrounds |
+| Paper | #FBF7EE | Receipt/paper-texture surfaces |
+| Ink | #16211B | Body copy on light backgrounds |
 | Success green | #22C55E | Positive states, linked accounts |
 | Warning yellow | #EAB308 | Due soon reminders |
 | Error red | #EF4444 | Overdue, destructive actions |
-| Background | #F8FAFC | Page background |
 | Card white | #FFFFFF | Card backgrounds |
+
+**Typography:** Fraunces (serif, headings/display — via `--font-playfair` CSS var, kept for minimal diff) + Inter (body/UI — via `--font-geist-sans` CSS var) + JetBrains Mono (receipts/mono UI — via `--font-geist-mono` CSS var). Variable names were kept as-is when the fonts were swapped so existing references didn't need touching.
 
 ---
 

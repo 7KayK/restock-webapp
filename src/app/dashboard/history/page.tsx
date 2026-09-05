@@ -41,8 +41,8 @@ async function PurchaseHistory() {
       <Card className="bg-white border-gray-100 shadow-none">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base text-[#1B3A5C]">All Purchases</CardTitle>
-            <span className="text-xs text-[#1B3A5C]/40 font-normal">
+            <CardTitle className="text-base text-[#132B22]">All Purchases</CardTitle>
+            <span className="text-xs text-[#132B22]/40 font-normal">
               {purchases.length} total
             </span>
           </div>
@@ -55,7 +55,7 @@ async function PurchaseHistory() {
   } catch {
     return (
       <Card className="bg-white border-gray-100 shadow-none">
-        <CardContent className="py-12 text-center text-sm text-[#1B3A5C]/45">
+        <CardContent className="py-12 text-center text-sm text-[#132B22]/45">
           Failed to load purchase history
         </CardContent>
       </Card>
@@ -92,8 +92,8 @@ export default function HistoryPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Purchase History</h1>
-        <p className="text-sm text-[#1B3A5C]/50 mt-0.5">
+        <h1 className="text-xl md:text-2xl font-bold text-[#132B22]">Purchase History</h1>
+        <p className="text-sm text-[#132B22]/50 mt-0.5">
           Every item logged across all channels
         </p>
       </div>

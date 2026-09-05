@@ -101,7 +101,7 @@ export default function TeamSettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-48">
-        <Loader2 className="h-6 w-6 animate-spin text-[#0F7B6C]" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#132B22]" />
       </div>
     )
   }
@@ -110,7 +110,7 @@ export default function TeamSettingsPage() {
     return (
       <div className="flex flex-col items-center justify-center h-48 gap-3">
         <AlertCircle className="h-6 w-6 text-[#EF4444]" />
-        <p className="text-sm text-[#1B3A5C]/60">
+        <p className="text-sm text-[#132B22]/60">
           {!team ? 'Team not found' : 'Only the team owner can access settings'}
         </p>
         <Link href={`/dashboard/teams/${id}`}>
@@ -124,13 +124,13 @@ export default function TeamSettingsPage() {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-3">
         <Link href={`/dashboard/teams/${id}`}>
-          <Button variant="ghost" size="icon" className="h-8 w-8 text-[#1B3A5C]/50">
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-[#132B22]/50">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#1B3A5C]">Team Settings</h1>
-          <p className="text-sm text-[#1B3A5C]/50 mt-0.5">{team.name}</p>
+          <h1 className="text-2xl font-bold text-[#132B22]">Team Settings</h1>
+          <p className="text-sm text-[#132B22]/50 mt-0.5">{team.name}</p>
         </div>
       </div>
 
@@ -148,11 +148,11 @@ export default function TeamSettingsPage() {
                 value={nameInput}
                 onChange={(e) => setNameInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') saveName() }}
-                className="text-[#1B3A5C]"
+                className="text-[#132B22]"
               />
               <Button
                 size="sm"
-                className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white shrink-0"
+                className="bg-[#132B22] hover:bg-[#132B22]/90 text-white shrink-0"
                 onClick={saveName}
                 disabled={!nameInput.trim() || nameInput === team.name || nameSaving}
               >
@@ -176,7 +176,7 @@ export default function TeamSettingsPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CalendarDays className="h-5 w-5 text-[#0F7B6C]" />
+              <CalendarDays className="h-5 w-5 text-[#132B22]" />
               <CardTitle className="text-base">Shared Google Calendar</CardTitle>
             </div>
             {!calLoading && (
@@ -196,12 +196,12 @@ export default function TeamSettingsPage() {
         </CardHeader>
         <CardContent>
           {calLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin text-[#0F7B6C]" />
+            <Loader2 className="h-4 w-4 animate-spin text-[#132B22]" />
           ) : calIntegration ? (
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Connected since</span>
-                <span className="text-[#1B3A5C]/70">
+                <span className="text-[#132B22]/70">
                   {new Date(calIntegration.connectedAt).toLocaleDateString('en-CA', {
                     year: 'numeric', month: 'long', day: 'numeric',
                   })}
@@ -217,7 +217,7 @@ export default function TeamSettingsPage() {
               </Button>
             </div>
           ) : (
-            <Button asChild className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white gap-2">
+            <Button asChild className="bg-[#132B22] hover:bg-[#132B22]/90 text-white gap-2">
               <a href="/api/auth/google-calendar">
                 <CalendarDays className="h-4 w-4" />
                 Connect Google Calendar
@@ -231,22 +231,22 @@ export default function TeamSettingsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-[#0F7B6C]" />
+            <CreditCard className="h-5 w-5 text-[#132B22]" />
             <CardTitle className="text-base">Billing</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="rounded-lg bg-[#0F7B6C]/5 border border-[#0F7B6C]/10 p-4 space-y-2">
+          <div className="rounded-lg bg-[#132B22]/5 border border-[#132B22]/10 p-4 space-y-2">
             <div className="flex items-center justify-between">
-              <p className="font-medium text-[#1B3A5C]">Teams plan</p>
+              <p className="font-medium text-[#132B22]">Teams plan</p>
               <Badge className="bg-[#EAB308]/10 text-[#EAB308] border border-[#EAB308]/20">
                 Coming soon
               </Badge>
             </div>
-            <p className="text-2xl font-bold text-[#1B3A5C]">
-              $30<span className="text-sm font-normal text-[#1B3A5C]/50">/month per team</span>
+            <p className="text-2xl font-bold text-[#132B22]">
+              $30<span className="text-sm font-normal text-[#132B22]/50">/month per team</span>
             </p>
-            <ul className="text-sm text-[#1B3A5C]/60 space-y-1">
+            <ul className="text-sm text-[#132B22]/60 space-y-1">
               <li>· Unlimited team members</li>
               <li>· Shared inventory tracking</li>
               <li>· Google Calendar sync</li>
@@ -268,8 +268,8 @@ export default function TeamSettingsPage() {
         <CardContent>
           <div className="flex items-center justify-between py-1">
             <div>
-              <p className="text-sm font-medium text-[#1B3A5C]">Delete team</p>
-              <p className="text-xs text-[#1B3A5C]/50 mt-0.5">
+              <p className="text-sm font-medium text-[#132B22]">Delete team</p>
+              <p className="text-xs text-[#132B22]/50 mt-0.5">
                 Removes all members. Existing purchases are kept in personal history.
               </p>
             </div>
@@ -293,7 +293,7 @@ export default function TeamSettingsPage() {
             <DialogTitle className="text-[#EF4444]">Delete team?</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-[#1B3A5C]/70">
+            <p className="text-sm text-[#132B22]/70">
               This will permanently delete <strong>{team.name}</strong> and remove all members.
               Existing purchases will remain in each member's personal history.
             </p>

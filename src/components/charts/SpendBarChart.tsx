@@ -23,8 +23,8 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-md text-sm">
-      <p className="text-[#1B3A5C]/60 text-xs mb-0.5">{label}</p>
-      <p className="text-[#1B3A5C] font-semibold">{formatCurrency(payload[0].value)}</p>
+      <p className="text-[#132B22]/60 text-xs mb-0.5">{label}</p>
+      <p className="text-[#132B22] font-semibold">{formatCurrency(payload[0].value)}</p>
     </div>
   )
 }
@@ -38,7 +38,7 @@ export function SpendBarChart({ data }: SpendBarChartProps) {
 
   if (!hasData) {
     return (
-      <div className="h-[280px] flex items-center justify-center text-[#1B3A5C]/35 text-sm">
+      <div className="h-[280px] flex items-center justify-center text-[#132B22]/35 text-sm">
         No spend data yet — log your first purchase
       </div>
     )
@@ -51,13 +51,13 @@ export function SpendBarChart({ data }: SpendBarChartProps) {
           <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 11, fill: '#1B3A5C', opacity: 0.5 }}
+            tick={{ fontSize: 11, fill: '#132B22', opacity: 0.5 }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
             tickFormatter={(v) => `$${v}`}
-            tick={{ fontSize: 11, fill: '#1B3A5C', opacity: 0.5 }}
+            tick={{ fontSize: 11, fill: '#132B22', opacity: 0.5 }}
             axisLine={false}
             tickLine={false}
             width={52}
@@ -73,7 +73,7 @@ export function SpendBarChart({ data }: SpendBarChartProps) {
             {data.map((entry, i) => (
               <Cell
                 key={i}
-                fill="#0F7B6C"
+                fill="#132B22"
                 fillOpacity={entry.isCurrentMonth ? 1 : 0.45}
               />
             ))}

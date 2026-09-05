@@ -120,7 +120,7 @@ async function SpendAnalysisContent() {
         {/* 12-month bar chart */}
         <Card className="bg-white border-gray-100 shadow-none">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base text-[#1B3A5C]">Monthly Spend — Last 12 Months</CardTitle>
+            <CardTitle className="text-base text-[#132B22]">Monthly Spend — Last 12 Months</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <SpendBarChart data={byMonth} />
@@ -131,16 +131,16 @@ async function SpendAnalysisContent() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card className="bg-white border-gray-100 shadow-none">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base text-[#1B3A5C]">Spend by Category</CardTitle>
+              <CardTitle className="text-base text-[#132B22]">Spend by Category</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               {byCategory.length === 0 ? (
-                <p className="text-sm text-[#1B3A5C]/50 py-6 text-center">No priced purchases yet</p>
+                <p className="text-sm text-[#132B22]/50 py-6 text-center">No priced purchases yet</p>
               ) : (
                 <div className="overflow-x-auto -mx-1">
                 <table className="w-full text-sm min-w-[300px]">
                   <thead>
-                    <tr className="text-[#1B3A5C]/40 text-xs">
+                    <tr className="text-[#132B22]/40 text-xs">
                       <th className="text-left py-2 font-medium">Category</th>
                       <th className="text-right py-2 font-medium">Purchases</th>
                       <th className="text-right py-2 font-medium">Avg</th>
@@ -153,20 +153,20 @@ async function SpendAnalysisContent() {
                         <td className="py-2.5">
                           <div className="flex items-center gap-2">
                             <div
-                              className="h-1.5 rounded-full bg-[#0F7B6C]"
+                              className="h-1.5 rounded-full bg-[#132B22]"
                               style={{
                                 width: `${Math.max(4, (c.total / (totalCategorySpend || 1)) * 60)}px`,
                                 opacity: 0.7,
                               }}
                             />
-                            <span className="text-[#1B3A5C] font-medium truncate max-w-[120px]">
+                            <span className="text-[#132B22] font-medium truncate max-w-[120px]">
                               {c.category}
                             </span>
                           </div>
                         </td>
-                        <td className="text-right text-[#1B3A5C]/60 py-2.5">{c.count}</td>
-                        <td className="text-right text-[#1B3A5C]/60 py-2.5">{formatCurrency(c.avg)}</td>
-                        <td className="text-right font-semibold text-[#1B3A5C] py-2.5">
+                        <td className="text-right text-[#132B22]/60 py-2.5">{c.count}</td>
+                        <td className="text-right text-[#132B22]/60 py-2.5">{formatCurrency(c.avg)}</td>
+                        <td className="text-right font-semibold text-[#132B22] py-2.5">
                           {formatCurrency(c.total)}
                         </td>
                       </tr>
@@ -180,16 +180,16 @@ async function SpendAnalysisContent() {
 
           <Card className="bg-white border-gray-100 shadow-none">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base text-[#1B3A5C]">Top Items</CardTitle>
+              <CardTitle className="text-base text-[#132B22]">Top Items</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               {topItems.length === 0 ? (
-                <p className="text-sm text-[#1B3A5C]/50 py-6 text-center">No purchases yet</p>
+                <p className="text-sm text-[#132B22]/50 py-6 text-center">No purchases yet</p>
               ) : (
                 <div className="overflow-x-auto -mx-1">
                 <table className="w-full text-sm min-w-[300px]">
                   <thead>
-                    <tr className="text-[#1B3A5C]/40 text-xs">
+                    <tr className="text-[#132B22]/40 text-xs">
                       <th className="text-left py-2 font-medium">Item</th>
                       <th className="text-right py-2 font-medium">Times</th>
                       <th className="text-right py-2 font-medium">Last</th>
@@ -199,14 +199,14 @@ async function SpendAnalysisContent() {
                   <tbody className="divide-y divide-gray-50">
                     {topItems.map((item) => (
                       <tr key={item.item}>
-                        <td className="py-2.5 font-medium text-[#1B3A5C] truncate max-w-[140px]">
+                        <td className="py-2.5 font-medium text-[#132B22] truncate max-w-[140px]">
                           {item.item}
                         </td>
-                        <td className="text-right text-[#1B3A5C]/60 py-2.5">{item.purchaseCount}×</td>
-                        <td className="text-right text-[#1B3A5C]/60 py-2.5 text-xs">
+                        <td className="text-right text-[#132B22]/60 py-2.5">{item.purchaseCount}×</td>
+                        <td className="text-right text-[#132B22]/60 py-2.5 text-xs">
                           {format(new Date(item.lastPurchased), 'MMM d')}
                         </td>
-                        <td className="text-right font-semibold text-[#1B3A5C] py-2.5">
+                        <td className="text-right font-semibold text-[#132B22] py-2.5">
                           {item.totalSpend > 0 ? formatCurrency(item.totalSpend) : '—'}
                         </td>
                       </tr>
@@ -229,9 +229,9 @@ function MoMCard({ label, amount, sub }: { label: string; amount: number; sub: s
   return (
     <Card className="bg-white border-gray-100 shadow-none">
       <CardContent className="pt-5">
-        <p className="text-xs text-[#1B3A5C]/50 mb-1">{sub}</p>
-        <p className="text-2xl font-bold text-[#1B3A5C]">{formatCurrency(amount)}</p>
-        <p className="text-xs text-[#1B3A5C]/40 mt-0.5">{label}</p>
+        <p className="text-xs text-[#132B22]/50 mb-1">{sub}</p>
+        <p className="text-2xl font-bold text-[#132B22]">{formatCurrency(amount)}</p>
+        <p className="text-xs text-[#132B22]/40 mt-0.5">{label}</p>
       </CardContent>
     </Card>
   )
@@ -242,12 +242,12 @@ function ChangeCard({ changePercent }: { changePercent: number | null }) {
     return (
       <Card className="bg-white border-gray-100 shadow-none">
         <CardContent className="pt-5">
-          <p className="text-xs text-[#1B3A5C]/50 mb-1">Month-over-month</p>
+          <p className="text-xs text-[#132B22]/50 mb-1">Month-over-month</p>
           <div className="flex items-center gap-2">
-            <Minus className="h-5 w-5 text-[#1B3A5C]/30" />
-            <p className="text-2xl font-bold text-[#1B3A5C]/30">—</p>
+            <Minus className="h-5 w-5 text-[#132B22]/30" />
+            <p className="text-2xl font-bold text-[#132B22]/30">—</p>
           </div>
-          <p className="text-xs text-[#1B3A5C]/40 mt-0.5">No prior month data</p>
+          <p className="text-xs text-[#132B22]/40 mt-0.5">No prior month data</p>
         </CardContent>
       </Card>
     )
@@ -259,10 +259,10 @@ function ChangeCard({ changePercent }: { changePercent: number | null }) {
   return (
     <Card className="bg-white border-gray-100 shadow-none">
       <CardContent className="pt-5">
-        <p className="text-xs text-[#1B3A5C]/50 mb-1">Month-over-month</p>
+        <p className="text-xs text-[#132B22]/50 mb-1">Month-over-month</p>
         <div className="flex items-center gap-2">
           {isFlat ? (
-            <Minus className="h-5 w-5 text-[#1B3A5C]/50" />
+            <Minus className="h-5 w-5 text-[#132B22]/50" />
           ) : isUp ? (
             <TrendingUp className="h-5 w-5 text-[#EF4444]" />
           ) : (
@@ -271,7 +271,7 @@ function ChangeCard({ changePercent }: { changePercent: number | null }) {
           <p
             className={`text-2xl font-bold ${
               isFlat
-                ? 'text-[#1B3A5C]/50'
+                ? 'text-[#132B22]/50'
                 : isUp
                 ? 'text-[#EF4444]'
                 : 'text-[#22C55E]'
@@ -280,7 +280,7 @@ function ChangeCard({ changePercent }: { changePercent: number | null }) {
             {isUp ? '+' : ''}{changePercent}%
           </p>
         </div>
-        <p className="text-xs text-[#1B3A5C]/40 mt-0.5">vs previous month</p>
+        <p className="text-xs text-[#132B22]/40 mt-0.5">vs previous month</p>
       </CardContent>
     </Card>
   )
@@ -290,7 +290,7 @@ function EmptyState() {
   return (
     <Card className="bg-white border-gray-100 shadow-none">
       <CardContent className="py-16 text-center">
-        <p className="text-[#1B3A5C]/50 text-sm">
+        <p className="text-[#132B22]/50 text-sm">
           No spend data yet — log purchases via Telegram or WhatsApp to see your analysis
         </p>
       </CardContent>
@@ -302,7 +302,7 @@ function ErrorState() {
   return (
     <Card className="bg-white border-gray-100 shadow-none">
       <CardContent className="py-16 text-center">
-        <p className="text-[#1B3A5C]/50 text-sm">Failed to load spend data</p>
+        <p className="text-[#132B22]/50 text-sm">Failed to load spend data</p>
       </CardContent>
     </Card>
   )
@@ -352,8 +352,8 @@ export default function SpendPage() {
   return (
     <div className="space-y-6 max-w-7xl">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Spend Analysis</h1>
-        <p className="text-sm text-[#1B3A5C]/50 mt-0.5">Track your spending patterns over time</p>
+        <h1 className="text-xl md:text-2xl font-bold text-[#132B22]">Spend Analysis</h1>
+        <p className="text-sm text-[#132B22]/50 mt-0.5">Track your spending patterns over time</p>
       </div>
 
       <Suspense fallback={<SpendSkeleton />}>

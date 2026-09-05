@@ -5,9 +5,9 @@ import type { CategorySpend } from '@/types'
 import { formatCurrency } from '@/lib/utils'
 
 const BRAND_COLORS = [
-  '#0F7B6C',
-  '#1B3A5C',
-  '#FF6B35',
+  '#132B22',
+  '#132B22',
+  '#C9A15A',
   '#22C55E',
   '#EAB308',
   '#EF4444',
@@ -24,8 +24,8 @@ function CustomTooltip({ active, payload }: TooltipProps) {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-md text-sm">
-      <p className="text-[#1B3A5C]/60 text-xs mb-0.5">{payload[0].name}</p>
-      <p className="text-[#1B3A5C] font-semibold">{formatCurrency(payload[0].value)}</p>
+      <p className="text-[#132B22]/60 text-xs mb-0.5">{payload[0].name}</p>
+      <p className="text-[#132B22] font-semibold">{formatCurrency(payload[0].value)}</p>
     </div>
   )
 }
@@ -37,7 +37,7 @@ interface CategoryChartProps {
 export function CategoryChart({ data }: CategoryChartProps) {
   if (!data.length) {
     return (
-      <div className="h-[220px] flex items-center justify-center text-[#1B3A5C]/35 text-sm">
+      <div className="h-[220px] flex items-center justify-center text-[#132B22]/35 text-sm">
         No category data yet
       </div>
     )
@@ -70,7 +70,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
             iconType="circle"
             iconSize={8}
             formatter={(value) => (
-              <span style={{ color: '#1B3A5C', fontSize: 12, opacity: 0.7 }}>{value}</span>
+              <span style={{ color: '#132B22', fontSize: 12, opacity: 0.7 }}>{value}</span>
             )}
           />
         </PieChart>

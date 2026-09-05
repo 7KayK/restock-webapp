@@ -30,7 +30,7 @@ export function Header() {
         className="object-contain mr-3 shrink-0"
         style={{ mixBlendMode: 'multiply' }}
       />
-      <span className="text-[#1B3A5C] font-semibold text-sm">{title}</span>
+      <span className="text-[#132B22] font-semibold text-sm">{title}</span>
     </header>
   )
 }

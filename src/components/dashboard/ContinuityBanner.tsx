@@ -40,8 +40,8 @@ export function ContinuityBanner() {
       : `${activity.minutesAgo} min${activity.minutesAgo !== 1 ? 's' : ''} ago`
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-lg border-l-4 border-[#0F7B6C] bg-[#0F7B6C]/5 px-4 py-3">
-      <p className="text-sm text-[#1B3A5C]">
+    <div className="flex items-center justify-between gap-4 rounded-lg border-l-4 border-[#132B22] bg-[#132B22]/5 px-4 py-3">
+      <p className="text-sm text-[#132B22]">
         <span className="font-semibold">Continuing from {channelName}</span>
         {' — '}
         {purchaseLabel} logged {timeLabel}
@@ -49,7 +49,7 @@ export function ContinuityBanner() {
       <button
         onClick={dismiss}
         aria-label="Dismiss banner"
-        className="shrink-0 text-[#1B3A5C]/40 hover:text-[#1B3A5C] transition-colors"
+        className="shrink-0 text-[#132B22]/40 hover:text-[#132B22] transition-colors"
       >
         <X className="h-4 w-4" />
       </button>

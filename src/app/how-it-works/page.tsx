@@ -25,7 +25,7 @@ const STEPS = [
 
 export default function HowItWorksPage() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#FAFAF8' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: '#F7F2E7' }}>
       <MarketingNav />
 
       <main className="flex-1 px-6 py-20">
@@ -33,7 +33,7 @@ export default function HowItWorksPage() {
           {/* Header */}
           <div className="text-center mb-20">
             <h1
-              className="text-[#1B3A5C] leading-tight mb-4"
+              className="text-[#132B22] leading-tight mb-4"
               style={{ ...PLAYFAIR, fontSize: 'clamp(32px, 4vw, 48px)' }}
             >
               How it works
@@ -51,14 +51,14 @@ export default function HowItWorksPage() {
                 className="grid md:grid-cols-[auto_1fr] gap-6 md:gap-10 items-start"
               >
                 {/* Number */}
-                <div className="w-12 h-12 rounded-full bg-[#0F7B6C] flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 rounded-full bg-[#132B22] flex items-center justify-center shrink-0">
                   <span className="text-white font-bold text-lg">{num}</span>
                 </div>
 
                 {/* Content */}
                 <div className="pt-1.5">
                   <h2
-                    className="text-[#1B3A5C] font-semibold mb-3"
+                    className="text-[#132B22] font-semibold mb-3"
                     style={{ fontSize: '20px' }}
                   >
                     {title}
@@ -80,7 +80,7 @@ export default function HowItWorksPage() {
             style={{ background: '#F0FBF9', border: '1px solid rgba(15,123,108,0.12)' }}
           >
             <h3
-              className="text-[#1B3A5C] mb-2"
+              className="text-[#132B22] mb-2"
               style={{ ...PLAYFAIR, fontSize: '24px' }}
             >
               Ready to try it?
@@ -90,7 +90,7 @@ export default function HowItWorksPage() {
             </p>
             <a
               href="/"
-              className="inline-block bg-[#0F7B6C] hover:bg-[#0A6459] text-white font-semibold text-sm px-8 py-3 rounded-full transition-colors"
+              className="inline-block bg-[#132B22] hover:bg-[#0A6459] text-white font-semibold text-sm px-8 py-3 rounded-full transition-colors"
             >
               Get started
             </a>

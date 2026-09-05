@@ -13,7 +13,7 @@ const SOURCE_STYLES: Record<string, string> = {
   telegram: 'bg-blue-50 text-blue-600',
   whatsapp: 'bg-green-50 text-green-700',
   receipt: 'bg-orange-50 text-orange-600',
-  image: 'bg-teal-50 text-[#0F7B6C]',
+  image: 'bg-teal-50 text-[#132B22]',
   manual: 'bg-gray-100 text-gray-500',
 }
 
@@ -65,18 +65,18 @@ export function PurchaseList({ initialPurchases, categories }: PurchaseListProps
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#1B3A5C]/35 pointer-events-none" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#132B22]/35 pointer-events-none" />
           <Input
             placeholder="Search items…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-8 text-[#1B3A5C] placeholder:text-[#1B3A5C]/35"
+            className="pl-8 text-[#132B22] placeholder:text-[#132B22]/35"
           />
         </div>
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm text-[#1B3A5C] focus:outline-none focus:ring-2 focus:ring-[#0F7B6C]/30 focus:border-[#0F7B6C] min-w-[160px]"
+          className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm text-[#132B22] focus:outline-none focus:ring-2 focus:ring-[#132B22]/30 focus:border-[#132B22] min-w-[160px]"
         >
           <option value="">All categories</option>
           {categories.map((cat) => (
@@ -88,7 +88,7 @@ export function PurchaseList({ initialPurchases, categories }: PurchaseListProps
         <Button
           variant="outline"
           size="sm"
-          className="h-8 gap-1.5 border-[#0F7B6C]/30 text-[#0F7B6C] hover:bg-[#0F7B6C]/5 hover:border-[#0F7B6C] shrink-0"
+          className="h-8 gap-1.5 border-[#132B22]/30 text-[#132B22] hover:bg-[#132B22]/5 hover:border-[#132B22] shrink-0"
           onClick={() => setImportOpen(true)}
         >
           <Camera className="h-3.5 w-3.5" />
@@ -104,14 +104,14 @@ export function PurchaseList({ initialPurchases, categories }: PurchaseListProps
       />
 
       {/* Count */}
-      <p className="text-xs text-[#1B3A5C]/45">
+      <p className="text-xs text-[#132B22]/45">
         {filtered.length} {filtered.length === 1 ? 'purchase' : 'purchases'}
         {(search || categoryFilter) && ' matching filters'}
       </p>
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div className="py-12 text-center text-sm text-[#1B3A5C]/40">
+        <div className="py-12 text-center text-sm text-[#132B22]/40">
           {purchases.length === 0
             ? 'No purchases yet — log your first via Telegram or WhatsApp'
             : 'No purchases match your filters'}
@@ -141,18 +141,18 @@ export function PurchaseList({ initialPurchases, categories }: PurchaseListProps
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-medium text-[#1B3A5C]">{p.item}</span>
-                      <span className="text-sm text-[#1B3A5C]/50">
+                      <span className="text-sm font-medium text-[#132B22]">{p.item}</span>
+                      <span className="text-sm text-[#132B22]/50">
                         × {p.quantity}
                         {p.unit ? ` ${p.unit}` : ''}
                       </span>
                       {p.source === 'image' && (
-                        <Camera className="h-3 w-3 text-[#0F7B6C]" aria-label="Imported from image" />
+                        <Camera className="h-3 w-3 text-[#132B22]" aria-label="Imported from image" />
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                       {p.category && (
-                        <span className="rounded-full bg-[#0F7B6C]/10 text-[#0F7B6C] text-[10px] font-medium px-2 py-0.5">
+                        <span className="rounded-full bg-[#132B22]/10 text-[#132B22] text-[10px] font-medium px-2 py-0.5">
                           {p.category}
                         </span>
                       )}
@@ -161,19 +161,19 @@ export function PurchaseList({ initialPurchases, categories }: PurchaseListProps
                       >
                         {p.source}
                       </span>
-                      <span className="text-[#1B3A5C]/35 text-xs">{formatDate(p.createdAt)}</span>
+                      <span className="text-[#132B22]/35 text-xs">{formatDate(p.createdAt)}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     {p.price != null && (
-                      <span className="text-sm font-semibold text-[#1B3A5C]">
+                      <span className="text-sm font-semibold text-[#132B22]">
                         {formatCurrency(p.price)}
                       </span>
                     )}
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-7 w-7 text-[#1B3A5C]/30 hover:text-[#EF4444] hover:bg-[#EF4444]/10"
+                      className="h-7 w-7 text-[#132B22]/30 hover:text-[#EF4444] hover:bg-[#EF4444]/10"
                       onClick={() => handleDelete(p.id)}
                       disabled={deleting === p.id}
                       aria-label={`Delete ${p.item}`}

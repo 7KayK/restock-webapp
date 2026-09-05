@@ -9,7 +9,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
-    <div className="flex h-screen bg-[#F8FAFC] overflow-hidden">
+    <div className="flex h-screen bg-[#F7F2E7] overflow-hidden">
       <Sidebar />
 
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">

@@ -258,7 +258,7 @@ function SpendChartCards({
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <Card className="lg:col-span-2 bg-white border-gray-100 shadow-none">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base text-[#1B3A5C]">Spend Trend</CardTitle>
+          <CardTitle className="text-base text-[#132B22]">Spend Trend</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           <SpendTrendChart data={trendData} />
@@ -266,7 +266,7 @@ function SpendChartCards({
       </Card>
       <Card className="bg-white border-gray-100 shadow-none">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base text-[#1B3A5C]">By Category</CardTitle>
+          <CardTitle className="text-base text-[#132B22]">By Category</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           <CategoryChart data={categoryData} />
@@ -325,7 +325,7 @@ async function RecentPurchases() {
     return (
       <Card className="bg-white border-gray-100 shadow-none">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base text-[#1B3A5C]">Recent Purchases</CardTitle>
+          <CardTitle className="text-base text-[#132B22]">Recent Purchases</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
           <ul className="divide-y divide-gray-50">
@@ -335,30 +335,30 @@ async function RecentPurchases() {
                 <li key={p.id} className="flex items-center justify-between py-3 gap-4">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="flex flex-col min-w-0">
-                      <span className="text-sm font-medium text-[#1B3A5C] truncate">
+                      <span className="text-sm font-medium text-[#132B22] truncate">
                         {p.item}
-                        <span className="font-normal text-[#1B3A5C]/50 ml-1.5">
+                        <span className="font-normal text-[#132B22]/50 ml-1.5">
                           × {p.quantity}
                           {p.unit ? ` ${p.unit}` : ''}
                         </span>
                       </span>
                       <div className="flex items-center gap-2 mt-0.5">
                         {p.category && (
-                          <span className="inline-block rounded-full bg-[#0F7B6C]/10 text-[#0F7B6C] text-[10px] font-medium px-2 py-0.5">
+                          <span className="inline-block rounded-full bg-[#132B22]/10 text-[#132B22] text-[10px] font-medium px-2 py-0.5">
                             {p.category}
                           </span>
                         )}
                         <span className={`inline-block rounded-full text-[10px] font-medium px-2 py-0.5 ${sourceStyle}`}>
                           {p.source}
                         </span>
-                        <span className="text-[#1B3A5C]/35 text-xs">
+                        <span className="text-[#132B22]/35 text-xs">
                           {format(p.createdAt, 'MMM d')}
                         </span>
                       </div>
                     </div>
                   </div>
                   {p.price != null && (
-                    <span className="text-sm font-semibold text-[#1B3A5C] shrink-0">
+                    <span className="text-sm font-semibold text-[#132B22] shrink-0">
                       {formatCurrency(p.price)}
                     </span>
                   )}
@@ -378,10 +378,10 @@ function EmptyRecentPurchases() {
   return (
     <Card className="bg-white border-gray-100 shadow-none">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base text-[#1B3A5C]">Recent Purchases</CardTitle>
+        <CardTitle className="text-base text-[#132B22]">Recent Purchases</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-[#1B3A5C]/50 py-4 text-center">
+        <p className="text-sm text-[#132B22]/50 py-4 text-center">
           No purchases yet — log your first via Telegram or WhatsApp
         </p>
       </CardContent>
@@ -462,12 +462,12 @@ async function PantrySummary() {
         <Card className="bg-white border-gray-100 shadow-none hover:shadow-sm transition-shadow cursor-pointer">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base text-[#1B3A5C] flex items-center gap-2">
-                <Warehouse className="h-4 w-4 text-[#0F7B6C]" />
+              <CardTitle className="text-base text-[#132B22] flex items-center gap-2">
+                <Warehouse className="h-4 w-4 text-[#132B22]" />
                 Pantry Status
               </CardTitle>
               {(out > 0 || low > 0) && (
-                <AlertTriangle className="h-4 w-4 text-[#FF6B35]" />
+                <AlertTriangle className="h-4 w-4 text-[#C9A15A]" />
               )}
             </div>
           </CardHeader>
@@ -475,18 +475,18 @@ async function PantrySummary() {
             <div className="flex items-center gap-5">
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-[#22C55E]" />
-                <span className="text-sm text-[#1B3A5C]/70">{stocked} stocked</span>
+                <span className="text-sm text-[#132B22]/70">{stocked} stocked</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#FF6B35]" />
-                <span className="text-sm text-[#1B3A5C]/70">{low} low</span>
+                <span className="w-2 h-2 rounded-full bg-[#C9A15A]" />
+                <span className="text-sm text-[#132B22]/70">{low} low</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
-                <span className="text-sm text-[#1B3A5C]/70">{out} out</span>
+                <span className="text-sm text-[#132B22]/70">{out} out</span>
               </div>
             </div>
-            <p className="text-xs text-[#0F7B6C] mt-3 font-medium">View full pantry →</p>
+            <p className="text-xs text-[#132B22] mt-3 font-medium">View full pantry →</p>
           </CardContent>
         </Card>
       </Link>
@@ -518,15 +518,15 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 max-w-7xl">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Dashboard</h1>
-        <p className="text-sm text-[#1B3A5C]/50 mt-0.5">Your restocking overview</p>
+        <h1 className="text-xl md:text-2xl font-bold text-[#132B22]">Dashboard</h1>
+        <p className="text-sm text-[#132B22]/50 mt-0.5">Your restocking overview</p>
       </div>
 
       <ContinuityBanner />
 
       <Button
         variant="outline"
-        className="gap-2 border-[#0F7B6C] text-[#0F7B6C] hover:bg-[#0F7B6C]/5"
+        className="gap-2 border-[#132B22] text-[#132B22] hover:bg-[#132B22]/5"
         asChild
       >
         <Link href="/dashboard/shopping">

@@ -13,7 +13,7 @@ const PLAYFAIR: React.CSSProperties = {
 
 const STATUS_COLOR: Record<PantryStatus, string> = {
   stocked: '#22C55E',
-  low: '#FF6B35',
+  low: '#C9A15A',
   out: '#EF4444',
 }
 
@@ -24,7 +24,7 @@ const STATUS_BG: Record<PantryStatus, string> = {
 }
 
 const CONFIDENCE_BG: Record<string, string> = {
-  high: 'bg-[#0F7B6C]/10 text-[#0F7B6C]',
+  high: 'bg-[#132B22]/10 text-[#132B22]',
   medium: 'bg-yellow-50 text-yellow-700',
   low: 'bg-gray-100 text-gray-500',
 }
@@ -75,8 +75,8 @@ function DepletionLabel({ isoDate }: { isoDate: string }) {
     days < 0 || days <= 3
       ? 'text-[#EF4444]'
       : days <= 7
-      ? 'text-[#FF6B35]'
-      : 'text-[#1B3A5C]/40'
+      ? 'text-[#C9A15A]'
+      : 'text-[#132B22]/40'
   return <span className={cn('text-[11px]', color)}>{label}</span>
 }
 
@@ -106,9 +106,9 @@ function PantryCard({ item, onRanOut }: { item: PantryItem; onRanOut: (name: str
       <div className="flex items-start gap-3">
         <CircularProgress pct={item.estimatedRemaining} status={item.status} />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-[#1B3A5C] leading-snug truncate">{item.name}</p>
+          <p className="text-sm font-semibold text-[#132B22] leading-snug truncate">{item.name}</p>
           {item.category && (
-            <p className="text-[11px] text-[#1B3A5C]/45 mt-0.5 truncate">{item.category}</p>
+            <p className="text-[11px] text-[#132B22]/45 mt-0.5 truncate">{item.category}</p>
           )}
         </div>
       </div>
@@ -125,7 +125,7 @@ function PantryCard({ item, onRanOut }: { item: PantryItem; onRanOut: (name: str
 
       {/* Dates */}
       <div className="flex flex-col gap-0.5">
-        <span className="text-[11px] text-[#1B3A5C]/40">
+        <span className="text-[11px] text-[#132B22]/40">
           Last bought: {format(new Date(item.lastPurchasedAt), 'MMM d, yyyy')}
         </span>
         <DepletionLabel isoDate={item.predictedDepletionDate} />
@@ -139,7 +139,7 @@ function PantryCard({ item, onRanOut }: { item: PantryItem; onRanOut: (name: str
           'w-full flex items-center justify-center gap-1.5 rounded-md py-1.5 text-[11px] font-medium transition-colors border',
           done
             ? 'border-[#EF4444]/20 bg-[#EF4444]/5 text-[#EF4444] cursor-default'
-            : 'border-gray-100 text-[#1B3A5C]/50 hover:border-[#EF4444]/30 hover:text-[#EF4444] hover:bg-[#EF4444]/5'
+            : 'border-gray-100 text-[#132B22]/50 hover:border-[#EF4444]/30 hover:text-[#EF4444] hover:bg-[#EF4444]/5'
         )}
       >
         <PackageX className="h-3 w-3" />
@@ -163,7 +163,7 @@ function SummaryStatCard({
       <span className="text-2xl font-bold" style={{ color }}>
         {count}
       </span>
-      <span className="text-sm text-[#1B3A5C]/60">{label}</span>
+      <span className="text-sm text-[#132B22]/60">{label}</span>
     </div>
   )
 }
@@ -217,13 +217,13 @@ export default function PantryPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1
-            className="text-2xl md:text-3xl text-[#1B3A5C] font-semibold"
+            className="text-2xl md:text-3xl text-[#132B22] font-semibold"
             style={PLAYFAIR}
           >
             Your Pantry
           </h1>
           {!loading && (
-            <p className="text-sm text-[#1B3A5C]/50 mt-1">
+            <p className="text-sm text-[#132B22]/50 mt-1">
               {counts.out > 0 && `${counts.out} out · `}
               {counts.low > 0 && `${counts.low} running low · `}
               {counts.stocked} stocked
@@ -232,7 +232,7 @@ export default function PantryPage() {
         </div>
         <Link
           href="/dashboard/history"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0F7B6C] text-white text-sm font-medium hover:bg-[#0A6459] transition-colors shrink-0"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#132B22] text-white text-sm font-medium hover:bg-[#0A6459] transition-colors shrink-0"
         >
           <Camera className="h-4 w-4" />
           Smart Import
@@ -242,7 +242,7 @@ export default function PantryPage() {
       {/* Summary stat cards */}
       <div className="grid grid-cols-3 gap-4">
         <SummaryStatCard label="Stocked" count={counts.stocked} color="#22C55E" />
-        <SummaryStatCard label="Running Low" count={counts.low} color="#FF6B35" />
+        <SummaryStatCard label="Running Low" count={counts.low} color="#C9A15A" />
         <SummaryStatCard label="Out" count={counts.out} color="#EF4444" />
       </div>
 
@@ -255,8 +255,8 @@ export default function PantryPage() {
             className={cn(
               'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
               filter === key
-                ? 'border-[#0F7B6C] text-[#0F7B6C]'
-                : 'border-transparent text-[#1B3A5C]/50 hover:text-[#1B3A5C]'
+                ? 'border-[#132B22] text-[#132B22]'
+                : 'border-transparent text-[#132B22]/50 hover:text-[#132B22]'
             )}
           >
             {label}
@@ -280,14 +280,14 @@ export default function PantryPage() {
             <Package className="h-7 w-7 text-gray-400" />
           </div>
           <div>
-            <p className="text-sm font-medium text-[#1B3A5C]">Your pantry is empty</p>
-            <p className="text-sm text-[#1B3A5C]/45 mt-1">
+            <p className="text-sm font-medium text-[#132B22]">Your pantry is empty</p>
+            <p className="text-sm text-[#132B22]/45 mt-1">
               Log a purchase to start tracking your stock.
             </p>
           </div>
           <Link
             href="/dashboard/history"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0F7B6C] text-white text-sm font-medium hover:bg-[#0A6459] transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#132B22] text-white text-sm font-medium hover:bg-[#0A6459] transition-colors"
           >
             <Camera className="h-4 w-4" />
             Smart Import
@@ -297,7 +297,7 @@ export default function PantryPage() {
 
       {/* Filtered empty */}
       {!loading && items.length > 0 && filtered.length === 0 && (
-        <p className="text-sm text-[#1B3A5C]/45 py-10 text-center">
+        <p className="text-sm text-[#132B22]/45 py-10 text-center">
           No items with status &ldquo;{filter}&rdquo;.
         </p>
       )}

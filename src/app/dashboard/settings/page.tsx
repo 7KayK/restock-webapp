@@ -123,7 +123,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-48">
-        <Loader2 className="h-6 w-6 animate-spin text-[#0F7B6C]" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#132B22]" />
       </div>
     )
   }
@@ -131,7 +131,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#1B3A5C]">Settings</h1>
+        <h1 className="text-xl md:text-2xl font-bold text-[#132B22]">Settings</h1>
         <p className="text-sm text-muted-foreground mt-1">Manage your account and bot connections.</p>
       </div>
 
@@ -139,18 +139,18 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <User className="h-5 w-5 text-[#0F7B6C]" />
+            <User className="h-5 w-5 text-[#132B22]" />
             <CardTitle className="text-base">Account</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Email</span>
-            <span className="font-medium text-[#1B3A5C]">{settings?.email ?? '—'}</span>
+            <span className="font-medium text-[#132B22]">{settings?.email ?? '—'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Member since</span>
-            <span className="font-medium text-[#1B3A5C]">
+            <span className="font-medium text-[#132B22]">
               {settings?.createdAt
                 ? new Date(settings.createdAt).toLocaleDateString('en-CA', {
                     year: 'numeric',
@@ -168,7 +168,7 @@ export default function SettingsPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5 text-[#0F7B6C]" />
+              <MessageCircle className="h-5 w-5 text-[#132B22]" />
               <CardTitle className="text-base">Telegram</CardTitle>
             </div>
             {settings?.telegramId ? (
@@ -187,12 +187,12 @@ export default function SettingsPage() {
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Chat ID</span>
-                <span className="font-mono font-medium text-[#1B3A5C]">{settings.telegramId}</span>
+                <span className="font-mono font-medium text-[#132B22]">{settings.telegramId}</span>
               </div>
               {channelData?.telegramLastAt && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Last activity</span>
-                  <span className="text-[#1B3A5C]/70">{formatDate(channelData.telegramLastAt)}</span>
+                  <span className="text-[#132B22]/70">{formatDate(channelData.telegramLastAt)}</span>
                 </div>
               )}
               {TELEGRAM_BOT && (
@@ -216,9 +216,9 @@ export default function SettingsPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              <div className="rounded-lg bg-[#0F7B6C]/5 border border-[#0F7B6C]/10 p-3 text-sm space-y-2">
-                <p className="font-medium text-[#1B3A5C]">How to find your Chat ID</p>
-                <ol className="list-decimal list-inside space-y-1 text-[#1B3A5C]/70">
+              <div className="rounded-lg bg-[#132B22]/5 border border-[#132B22]/10 p-3 text-sm space-y-2">
+                <p className="font-medium text-[#132B22]">How to find your Chat ID</p>
+                <ol className="list-decimal list-inside space-y-1 text-[#132B22]/70">
                   <li>Open Telegram and message <span className="font-mono">@userinfobot</span></li>
                   <li>It replies with your numeric Chat ID</li>
                   <li>Paste it below and click Connect</li>
@@ -237,7 +237,7 @@ export default function SettingsPage() {
                   <Button
                     onClick={connectTelegram}
                     disabled={!telegramInput.trim() || telegramSaving}
-                    className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 shrink-0"
+                    className="bg-[#132B22] hover:bg-[#132B22]/90 shrink-0"
                   >
                     {telegramSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Connect'}
                   </Button>
@@ -274,7 +274,7 @@ export default function SettingsPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CalendarDays className="h-5 w-5 text-[#0F7B6C]" />
+              <CalendarDays className="h-5 w-5 text-[#132B22]" />
               <CardTitle className="text-base">Google Calendar</CardTitle>
             </div>
             {!calLoading && (
@@ -294,12 +294,12 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {calLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin text-[#0F7B6C]" />
+            <Loader2 className="h-4 w-4 animate-spin text-[#132B22]" />
           ) : calIntegration ? (
             <div className="space-y-4">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Connected since</span>
-                <span className="text-[#1B3A5C]/70">
+                <span className="text-[#132B22]/70">
                   {new Date(calIntegration.connectedAt).toLocaleDateString('en-CA', {
                     year: 'numeric', month: 'long', day: 'numeric',
                   })}
@@ -307,7 +307,7 @@ export default function SettingsPage() {
               </div>
               <div className="flex items-center justify-between py-2 border-t border-gray-100">
                 <div>
-                  <p className="text-sm font-medium text-[#1B3A5C]">Auto-create events for reminders</p>
+                  <p className="text-sm font-medium text-[#132B22]">Auto-create events for reminders</p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     Automatically add a calendar event when a restock reminder is due
                   </p>
@@ -328,10 +328,10 @@ export default function SettingsPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              <p className="text-sm text-[#1B3A5C]/70">
+              <p className="text-sm text-[#132B22]/70">
                 Connect your Google Calendar to schedule shopping trips and get reminder events automatically.
               </p>
-              <Button asChild className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white gap-2">
+              <Button asChild className="bg-[#132B22] hover:bg-[#132B22]/90 text-white gap-2">
                 <a href="/api/auth/google-calendar">
                   <CalendarDays className="h-4 w-4" />
                   Connect Google Calendar

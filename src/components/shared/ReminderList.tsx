@@ -35,8 +35,8 @@ const STATUS_CONFIG = {
     label: 'Due soon',
   },
   upcoming: {
-    dot: 'bg-[#0F7B6C]',
-    badge: 'bg-[#0F7B6C]/10 text-[#0F7B6C]',
+    dot: 'bg-[#132B22]',
+    badge: 'bg-[#132B22]/10 text-[#132B22]',
     label: 'Upcoming',
   },
   snoozed: {
@@ -111,7 +111,7 @@ export function ReminderList({ initialReminders }: ReminderListProps) {
   if (reminders.length === 0) {
     return (
       <div className="py-16 text-center">
-        <p className="text-sm text-[#1B3A5C]/45">
+        <p className="text-sm text-[#132B22]/45">
           No active reminders — log at least 2 purchases of the same item to generate predictions
         </p>
       </div>
@@ -160,12 +160,12 @@ export function ReminderList({ initialReminders }: ReminderListProps) {
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm font-semibold text-[#1B3A5C]">{r.item}</span>
+                  <span className="text-sm font-semibold text-[#132B22]">{r.item}</span>
                   <span className={cn('text-[10px] font-medium rounded-full px-2 py-0.5', cfg.badge)}>
                     {cfg.label}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 mt-1 flex-wrap text-xs text-[#1B3A5C]/50">
+                <div className="flex items-center gap-2 mt-1 flex-wrap text-xs text-[#132B22]/50">
                   <span>Due {formatDate(r.predictedDate)}</span>
                   <span>·</span>
                   <span>{formatRelativeDate(r.predictedDate)}</span>
@@ -185,7 +185,7 @@ export function ReminderList({ initialReminders }: ReminderListProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-2.5 text-xs text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:bg-gray-100"
+                  className="h-7 px-2.5 text-xs text-[#132B22]/60 hover:text-[#132B22] hover:bg-gray-100"
                   onClick={() => snooze(r.id)}
                   disabled={isBusy}
                   title="Snooze 7 days"
@@ -196,7 +196,7 @@ export function ReminderList({ initialReminders }: ReminderListProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-2.5 text-xs text-[#1B3A5C]/60 hover:text-[#EF4444] hover:bg-[#EF4444]/10"
+                  className="h-7 px-2.5 text-xs text-[#132B22]/60 hover:text-[#EF4444] hover:bg-[#EF4444]/10"
                   onClick={() => ranOut(r.id, r.item)}
                   disabled={isBusy}
                   title="I ran out of this item"
@@ -207,7 +207,7 @@ export function ReminderList({ initialReminders }: ReminderListProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-2.5 text-xs text-[#1B3A5C]/60 hover:text-[#1B3A5C] hover:bg-gray-100"
+                  className="h-7 px-2.5 text-xs text-[#132B22]/60 hover:text-[#132B22] hover:bg-gray-100"
                   onClick={() => dismiss(r.id)}
                   disabled={isBusy}
                   title="Dismiss reminder"

@@ -38,7 +38,7 @@ function ProgressDots({ total, current }: { total: number; current: number }) {
           key={i}
           animate={{
             width: i + 1 === current ? 20 : 6,
-            backgroundColor: i + 1 === current ? '#0F7B6C' : '#D1D5DB',
+            backgroundColor: i + 1 === current ? '#132B22' : '#D1D5DB',
           }}
           transition={{ duration: 0.25 }}
           className="h-1.5 rounded-full"
@@ -84,7 +84,7 @@ export function WelcomeOnboarding() {
               <Step key="step-1">
                 <StepBody>
                   {/* Icon */}
-                  <div className="w-14 h-14 rounded-2xl bg-[#0F7B6C] flex items-center justify-center mx-auto">
+                  <div className="w-14 h-14 rounded-2xl bg-[#132B22] flex items-center justify-center mx-auto">
                     <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
                       <path d="M14 4C8.477 4 4 8.477 4 14s4.477 10 10 10 10-4.477 10-10S19.523 4 14 4z" fill="white" fillOpacity="0.2" />
                       <path d="M10 14l3 3 5-6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -92,7 +92,7 @@ export function WelcomeOnboarding() {
                   </div>
 
                   <div className="text-center space-y-2">
-                    <h2 className="text-[#1B3A5C] text-2xl" style={PLAYFAIR}>
+                    <h2 className="text-[#132B22] text-2xl" style={PLAYFAIR}>
                       Welcome to Restock!
                     </h2>
                     <p className="text-[#4A5568] text-[15px] leading-relaxed">
@@ -102,7 +102,7 @@ export function WelcomeOnboarding() {
 
                   <Button
                     onClick={() => setStep(2)}
-                    className="w-full bg-[#0F7B6C] hover:bg-[#0A6459] text-white font-semibold py-5 rounded-full text-[15px]"
+                    className="w-full bg-[#132B22] hover:bg-[#0A6459] text-white font-semibold py-5 rounded-full text-[15px]"
                   >
                     Let&apos;s go →
                   </Button>
@@ -118,7 +118,7 @@ export function WelcomeOnboarding() {
               <Step key="step-2">
                 <StepBody>
                   <div className="text-center space-y-1">
-                    <h2 className="text-[#1B3A5C] text-2xl" style={PLAYFAIR}>
+                    <h2 className="text-[#132B22] text-2xl" style={PLAYFAIR}>
                       Connect where you already are
                     </h2>
                   </div>
@@ -130,14 +130,14 @@ export function WelcomeOnboarding() {
                       href="https://t.me/restockchatbot"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex flex-col items-center gap-3 p-4 rounded-xl border border-[#0F7B6C]/20 bg-[#F0FBF9] hover:bg-[#E6F7F5] transition-colors group"
+                      className="flex flex-col items-center gap-3 p-4 rounded-xl border border-[#132B22]/20 bg-[#F0FBF9] hover:bg-[#E6F7F5] transition-colors group"
                     >
                       <div className="w-10 h-10 rounded-full bg-[#229ED9] flex items-center justify-center text-white">
                         <TelegramIcon size={20} />
                       </div>
                       <div className="text-center">
-                        <p className="text-sm font-semibold text-[#1B3A5C]">Telegram</p>
-                        <p className="text-[11px] text-[#0F7B6C] mt-0.5">@restockchatbot →</p>
+                        <p className="text-sm font-semibold text-[#132B22]">Telegram</p>
+                        <p className="text-[11px] text-[#132B22] mt-0.5">@restockchatbot →</p>
                       </div>
                     </a>
 
@@ -147,7 +147,7 @@ export function WelcomeOnboarding() {
                         <WhatsAppIcon size={20} />
                       </div>
                       <div className="text-center">
-                        <p className="text-sm font-semibold text-[#1B3A5C]">WhatsApp</p>
+                        <p className="text-sm font-semibold text-[#132B22]">WhatsApp</p>
                         <p className="text-[11px] text-[#6B7280] mt-0.5">Coming soon</p>
                       </div>
                     </div>
@@ -159,14 +159,14 @@ export function WelcomeOnboarding() {
 
                   <Button
                     onClick={() => setStep(3)}
-                    className="w-full bg-[#0F7B6C] hover:bg-[#0A6459] text-white font-semibold py-5 rounded-full text-[15px]"
+                    className="w-full bg-[#132B22] hover:bg-[#0A6459] text-white font-semibold py-5 rounded-full text-[15px]"
                   >
                     Next →
                   </Button>
 
                   <button
                     onClick={() => setStep(3)}
-                    className="text-sm text-[#6B7280] hover:text-[#1B3A5C] transition-colors text-center w-full"
+                    className="text-sm text-[#6B7280] hover:text-[#132B22] transition-colors text-center w-full"
                   >
                     I&apos;ll do this later
                   </button>
@@ -182,7 +182,7 @@ export function WelcomeOnboarding() {
               <Step key="step-3">
                 <StepBody>
                   <div className="text-center space-y-1">
-                    <h2 className="text-[#1B3A5C] text-2xl" style={PLAYFAIR}>
+                    <h2 className="text-[#132B22] text-2xl" style={PLAYFAIR}>
                       Try it now
                     </h2>
                   </div>
@@ -191,11 +191,11 @@ export function WelcomeOnboarding() {
                   <div className="flex flex-col gap-2.5">
                     <button
                       onClick={handleReceiptAction}
-                      className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white hover:border-[#0F7B6C]/30 hover:bg-[#F0FBF9] transition-colors text-left group"
+                      className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white hover:border-[#132B22]/30 hover:bg-[#F0FBF9] transition-colors text-left group"
                     >
                       <span className="text-2xl">📷</span>
                       <div>
-                        <p className="text-sm font-semibold text-[#1B3A5C]">Snap a receipt</p>
+                        <p className="text-sm font-semibold text-[#132B22]">Snap a receipt</p>
                         <p className="text-[12px] text-[#6B7280]">Photo, screenshot or handwritten note</p>
                       </div>
                     </button>
@@ -203,11 +203,11 @@ export function WelcomeOnboarding() {
                     <Link
                       href="/dashboard/history"
                       onClick={complete}
-                      className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white hover:border-[#0F7B6C]/30 hover:bg-[#F0FBF9] transition-colors text-left group"
+                      className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white hover:border-[#132B22]/30 hover:bg-[#F0FBF9] transition-colors text-left group"
                     >
                       <span className="text-2xl">⌨️</span>
                       <div>
-                        <p className="text-sm font-semibold text-[#1B3A5C]">Type your first purchase</p>
+                        <p className="text-sm font-semibold text-[#132B22]">Type your first purchase</p>
                         <p className="text-[12px] text-[#6B7280]">Log manually in your purchase history</p>
                       </div>
                     </Link>
@@ -215,11 +215,11 @@ export function WelcomeOnboarding() {
                     <Link
                       href="/dashboard/shopping"
                       onClick={complete}
-                      className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white hover:border-[#0F7B6C]/30 hover:bg-[#F0FBF9] transition-colors text-left group"
+                      className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white hover:border-[#132B22]/30 hover:bg-[#F0FBF9] transition-colors text-left group"
                     >
                       <span className="text-2xl">🛒</span>
                       <div>
-                        <p className="text-sm font-semibold text-[#1B3A5C]">Start a shopping trip</p>
+                        <p className="text-sm font-semibold text-[#132B22]">Start a shopping trip</p>
                         <p className="text-[12px] text-[#6B7280]">Build a smart list from your history</p>
                       </div>
                     </Link>
@@ -227,7 +227,7 @@ export function WelcomeOnboarding() {
 
                   <Button
                     onClick={complete}
-                    className="w-full bg-[#0F7B6C] hover:bg-[#0A6459] text-white font-semibold py-5 rounded-full text-[15px]"
+                    className="w-full bg-[#132B22] hover:bg-[#0A6459] text-white font-semibold py-5 rounded-full text-[15px]"
                   >
                     Go to Dashboard
                   </Button>

@@ -102,8 +102,8 @@ export function ChatInterface() {
   return (
     <Card className="flex flex-col bg-white border-gray-100 shadow-none" style={{ height: 'calc(100vh - 290px)', minHeight: '380px' }}>
       <CardHeader className="pb-3 shrink-0">
-        <CardTitle className="flex items-center gap-2 text-base text-[#1B3A5C]">
-          <MessageSquare className="h-4 w-4 text-[#0F7B6C]" />
+        <CardTitle className="flex items-center gap-2 text-base text-[#132B22]">
+          <MessageSquare className="h-4 w-4 text-[#132B22]" />
           Chat with your data
         </CardTitle>
       </CardHeader>
@@ -124,8 +124,8 @@ export function ChatInterface() {
                   className={cn(
                     'max-w-[82%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
                     msg.role === 'user'
-                      ? 'bg-[#0F7B6C] text-white'
-                      : 'bg-[#F8FAFC] text-[#1B3A5C] border border-gray-100'
+                      ? 'bg-[#132B22] text-white'
+                      : 'bg-[#F7F2E7] text-[#132B22] border border-gray-100'
                   )}
                 >
                   {msg.content}
@@ -134,7 +134,7 @@ export function ChatInterface() {
                       {[0, 1, 2].map((dot) => (
                         <motion.span
                           key={dot}
-                          className="h-1.5 w-1.5 rounded-full bg-[#0F7B6C] inline-block"
+                          className="h-1.5 w-1.5 rounded-full bg-[#132B22] inline-block"
                           animate={{ scale: [1, 1.4, 1] }}
                           transition={{
                             repeat: Infinity,
@@ -167,7 +167,7 @@ export function ChatInterface() {
             onKeyDown={handleKeyDown}
             placeholder="Ask about your purchases, spending, or restocks…"
             disabled={streaming}
-            className="flex-1 text-[#1B3A5C] placeholder:text-[#1B3A5C]/35"
+            className="flex-1 text-[#132B22] placeholder:text-[#132B22]/35"
           />
           <motion.div
             whileTap={{ scale: 0.88 }}
@@ -177,7 +177,7 @@ export function ChatInterface() {
               type="submit"
               size="icon"
               disabled={streaming || !input.trim()}
-              className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white shrink-0"
+              className="bg-[#132B22] hover:bg-[#132B22]/90 text-white shrink-0"
             >
               <Send className="h-4 w-4" />
             </Button>

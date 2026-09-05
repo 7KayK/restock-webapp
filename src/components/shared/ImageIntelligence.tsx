@@ -29,7 +29,7 @@ interface ImageIntelligenceProps {
 
 const STATUS_STYLES: Record<string, string> = {
   out_of_stock:  'bg-[#EF4444]/10 text-[#EF4444]',
-  running_low:   'bg-[#FF6B35]/10 text-[#FF6B35]',
+  running_low:   'bg-[#C9A15A]/10 text-[#C9A15A]',
   purchased:     'bg-[#22C55E]/10 text-[#22C55E]',
 }
 
@@ -186,8 +186,8 @@ export function ImageIntelligence({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
-          <DialogTitle className="text-[#1B3A5C] flex items-center gap-2">
-            <Camera className="h-4 w-4 text-[#0F7B6C]" />
+          <DialogTitle className="text-[#132B22] flex items-center gap-2">
+            <Camera className="h-4 w-4 text-[#132B22]" />
             {mode === 'inventory' ? 'Scan Inventory' : 'Smart Import'}
           </DialogTitle>
         </DialogHeader>
@@ -203,20 +203,20 @@ export function ImageIntelligence({
               className={cn(
                 'flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed cursor-pointer py-12 px-6 transition-colors',
                 isDragging
-                  ? 'border-[#0F7B6C] bg-[#0F7B6C]/8'
-                  : 'border-[#0F7B6C]/25 hover:border-[#0F7B6C]/50 hover:bg-[#0F7B6C]/4'
+                  ? 'border-[#132B22] bg-[#132B22]/8'
+                  : 'border-[#132B22]/25 hover:border-[#132B22]/50 hover:bg-[#132B22]/4'
               )}
             >
-              <div className="rounded-full bg-[#0F7B6C]/10 p-4">
-                <Upload className="h-6 w-6 text-[#0F7B6C]" />
+              <div className="rounded-full bg-[#132B22]/10 p-4">
+                <Upload className="h-6 w-6 text-[#132B22]" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-medium text-[#1B3A5C]">
+                <p className="text-sm font-medium text-[#132B22]">
                   Drag a receipt or photo here
                 </p>
-                <p className="text-xs text-[#1B3A5C]/45 mt-0.5">or click to browse</p>
+                <p className="text-xs text-[#132B22]/45 mt-0.5">or click to browse</p>
               </div>
-              <p className="text-[10px] text-[#1B3A5C]/35 font-medium tracking-wide uppercase">
+              <p className="text-[10px] text-[#132B22]/35 font-medium tracking-wide uppercase">
                 JPEG · PNG · WebP · HEIC
               </p>
             </div>
@@ -242,10 +242,10 @@ export function ImageIntelligence({
         {/* ── Step: processing ── */}
         {step === 'processing' && (
           <div className="flex flex-col items-center gap-4 py-12">
-            <Loader2 className="h-8 w-8 text-[#0F7B6C] animate-spin" />
+            <Loader2 className="h-8 w-8 text-[#132B22] animate-spin" />
             <div className="text-center">
-              <p className="text-sm font-medium text-[#1B3A5C]">Analysing your image…</p>
-              <p className="text-xs text-[#1B3A5C]/45 mt-0.5">Claude is extracting items</p>
+              <p className="text-sm font-medium text-[#132B22]">Analysing your image…</p>
+              <p className="text-xs text-[#132B22]/45 mt-0.5">Claude is extracting items</p>
             </div>
           </div>
         )}
@@ -254,17 +254,17 @@ export function ImageIntelligence({
         {step === 'review' && result && (
           <div className="space-y-4">
             {/* Metadata */}
-            <div className="rounded-lg bg-[#F8FAFC] px-3 py-2.5 space-y-1">
+            <div className="rounded-lg bg-[#F7F2E7] px-3 py-2.5 space-y-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-[#1B3A5C]">
+                <span className="text-xs font-medium text-[#132B22]">
                   {TYPE_LABELS[result.type] ?? '📸 Image'}
                 </span>
-                <span className="text-[10px] text-[#1B3A5C]/45">
+                <span className="text-[10px] text-[#132B22]/45">
                   {Math.round((result.confidence ?? 0) * 100)}% confidence
                 </span>
               </div>
               {(result.store || result.date || result.totalAmount != null) && (
-                <div className="flex gap-3 text-[10px] text-[#1B3A5C]/60 flex-wrap">
+                <div className="flex gap-3 text-[10px] text-[#132B22]/60 flex-wrap">
                   {result.store && <span>🏪 {result.store}</span>}
                   {result.date && <span>📅 {result.date}</span>}
                   {result.totalAmount != null && <span>💰 ${result.totalAmount.toFixed(2)}</span>}
@@ -274,7 +274,7 @@ export function ImageIntelligence({
 
             {/* Editable item list */}
             <div className="space-y-2">
-              <p className="text-xs font-medium text-[#1B3A5C]/60 uppercase tracking-wide">
+              <p className="text-xs font-medium text-[#132B22]/60 uppercase tracking-wide">
                 Items found — {activeItems.length} of {items.length}
               </p>
 
@@ -291,7 +291,7 @@ export function ImageIntelligence({
                       <Input
                         value={item.name}
                         onChange={(e) => updateItem(idx, 'name', e.target.value)}
-                        className="h-8 text-xs text-[#1B3A5C]"
+                        className="h-8 text-xs text-[#132B22]"
                         placeholder="Item name"
                       />
                       <Input
@@ -300,7 +300,7 @@ export function ImageIntelligence({
                         step={0.5}
                         value={item.quantity ?? 1}
                         onChange={(e) => updateItem(idx, 'quantity', parseFloat(e.target.value) || 1)}
-                        className="h-8 text-xs text-center text-[#1B3A5C]"
+                        className="h-8 text-xs text-center text-[#132B22]"
                         placeholder="Qty"
                       />
                       <Input
@@ -309,13 +309,13 @@ export function ImageIntelligence({
                         step={0.01}
                         value={item.price ?? ''}
                         onChange={(e) => updateItem(idx, 'price', e.target.value ? parseFloat(e.target.value) : null as unknown as number)}
-                        className="h-8 text-xs text-center text-[#1B3A5C]"
+                        className="h-8 text-xs text-center text-[#132B22]"
                         placeholder="$0.00"
                       />
                     </div>
                     <button
                       onClick={() => removeItem(idx)}
-                      className="p-1 rounded text-[#1B3A5C]/25 hover:text-[#EF4444] hover:bg-[#EF4444]/8 transition-colors opacity-0 group-hover:opacity-100"
+                      className="p-1 rounded text-[#132B22]/25 hover:text-[#EF4444] hover:bg-[#EF4444]/8 transition-colors opacity-0 group-hover:opacity-100"
                       aria-label={`Remove ${item.name}`}
                     >
                       <X className="h-3.5 w-3.5" />
@@ -325,7 +325,7 @@ export function ImageIntelligence({
               })}
 
               {activeItems.length === 0 && (
-                <p className="text-xs text-[#1B3A5C]/40 text-center py-4">
+                <p className="text-xs text-[#132B22]/40 text-center py-4">
                   All items removed — go back to upload another image
                 </p>
               )}
@@ -342,7 +342,7 @@ export function ImageIntelligence({
               </Button>
               <Button
                 size="sm"
-                className="flex-1 bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white"
+                className="flex-1 bg-[#132B22] hover:bg-[#132B22]/90 text-white"
                 onClick={() => { if (mode === 'inventory') { handleSave('purchases') } else { setStep('action') } }}
                 disabled={activeItems.length === 0}
               >
@@ -355,7 +355,7 @@ export function ImageIntelligence({
         {/* ── Step: action ── */}
         {step === 'action' && (
           <div className="space-y-4">
-            <p className="text-sm font-medium text-[#1B3A5C]">
+            <p className="text-sm font-medium text-[#132B22]">
               What would you like to do with {activeItems.length} item{activeItems.length !== 1 ? 's' : ''}?
             </p>
 
@@ -367,19 +367,19 @@ export function ImageIntelligence({
                   className={cn(
                     'w-full flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors',
                     action === id
-                      ? 'border-[#0F7B6C] bg-[#0F7B6C]/6'
-                      : 'border-gray-100 hover:border-[#0F7B6C]/30 hover:bg-gray-50'
+                      ? 'border-[#132B22] bg-[#132B22]/6'
+                      : 'border-gray-100 hover:border-[#132B22]/30 hover:bg-gray-50'
                   )}
                 >
-                  <Icon className={cn('h-4 w-4 shrink-0', action === id ? 'text-[#0F7B6C]' : 'text-[#1B3A5C]/40')} />
+                  <Icon className={cn('h-4 w-4 shrink-0', action === id ? 'text-[#132B22]' : 'text-[#132B22]/40')} />
                   <div>
-                    <p className={cn('text-sm font-medium', action === id ? 'text-[#0F7B6C]' : 'text-[#1B3A5C]')}>
+                    <p className={cn('text-sm font-medium', action === id ? 'text-[#132B22]' : 'text-[#132B22]')}>
                       {label}
                     </p>
-                    <p className="text-[11px] text-[#1B3A5C]/45">{desc}</p>
+                    <p className="text-[11px] text-[#132B22]/45">{desc}</p>
                   </div>
                   {action === id && (
-                    <Check className="h-4 w-4 text-[#0F7B6C] ml-auto shrink-0" />
+                    <Check className="h-4 w-4 text-[#132B22] ml-auto shrink-0" />
                   )}
                 </button>
               ))}
@@ -387,13 +387,13 @@ export function ImageIntelligence({
 
             {action === 'calendar' && (
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-[#1B3A5C]/60">Shopping trip date</label>
+                <label className="text-xs font-medium text-[#132B22]/60">Shopping trip date</label>
                 <Input
                   type="date"
                   value={calendarDate}
                   min={new Date().toISOString().split('T')[0]}
                   onChange={(e) => setCalendarDate(e.target.value)}
-                  className="h-8 text-sm text-[#1B3A5C]"
+                  className="h-8 text-sm text-[#132B22]"
                 />
               </div>
             )}
@@ -401,38 +401,38 @@ export function ImageIntelligence({
             {/* Team selector — only for purchases and reminders */}
             {teams.length > 0 && action !== 'calendar' && (
               <div className="space-y-2 border-t border-gray-100 pt-3">
-                <p className="text-xs font-medium text-[#1B3A5C]/60">Save for</p>
+                <p className="text-xs font-medium text-[#132B22]/60">Save for</p>
                 <div className="space-y-1.5">
                   <label className={cn(
                     'flex items-center gap-2.5 rounded-lg border px-3 py-2 cursor-pointer transition-colors',
                     selectedTeamId === null
-                      ? 'border-[#0F7B6C] bg-[#0F7B6C]/6'
-                      : 'border-gray-100 hover:border-[#0F7B6C]/30'
+                      ? 'border-[#132B22] bg-[#132B22]/6'
+                      : 'border-gray-100 hover:border-[#132B22]/30'
                   )}>
                     <input
                       type="radio"
                       name="team-select"
-                      className="accent-[#0F7B6C]"
+                      className="accent-[#132B22]"
                       checked={selectedTeamId === null}
                       onChange={() => setSelectedTeamId(null)}
                     />
-                    <span className="text-sm text-[#1B3A5C]">Personal</span>
+                    <span className="text-sm text-[#132B22]">Personal</span>
                   </label>
                   {teams.map((t) => (
                     <label key={t.id} className={cn(
                       'flex items-center gap-2.5 rounded-lg border px-3 py-2 cursor-pointer transition-colors',
                       selectedTeamId === t.id
-                        ? 'border-[#0F7B6C] bg-[#0F7B6C]/6'
-                        : 'border-gray-100 hover:border-[#0F7B6C]/30'
+                        ? 'border-[#132B22] bg-[#132B22]/6'
+                        : 'border-gray-100 hover:border-[#132B22]/30'
                     )}>
                       <input
                         type="radio"
                         name="team-select"
-                        className="accent-[#0F7B6C]"
+                        className="accent-[#132B22]"
                         checked={selectedTeamId === t.id}
                         onChange={() => setSelectedTeamId(t.id)}
                       />
-                      <span className="text-sm text-[#1B3A5C]">{t.name}</span>
+                      <span className="text-sm text-[#132B22]">{t.name}</span>
                     </label>
                   ))}
                 </div>
@@ -454,7 +454,7 @@ export function ImageIntelligence({
               </Button>
               <Button
                 size="sm"
-                className="flex-1 bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white"
+                className="flex-1 bg-[#132B22] hover:bg-[#132B22]/90 text-white"
                 onClick={() => handleSave()}
                 disabled={action === 'calendar' && !calendarDate}
               >
@@ -467,8 +467,8 @@ export function ImageIntelligence({
         {/* ── Step: saving ── */}
         {step === 'saving' && (
           <div className="flex flex-col items-center gap-4 py-12">
-            <Loader2 className="h-8 w-8 text-[#0F7B6C] animate-spin" />
-            <p className="text-sm text-[#1B3A5C]/60">Saving…</p>
+            <Loader2 className="h-8 w-8 text-[#132B22] animate-spin" />
+            <p className="text-sm text-[#132B22]/60">Saving…</p>
           </div>
         )}
 
@@ -481,24 +481,24 @@ export function ImageIntelligence({
               </div>
               {action === 'purchases' && (
                 <div className="text-center">
-                  <p className="text-base font-semibold text-[#1B3A5C]">
+                  <p className="text-base font-semibold text-[#132B22]">
                     {successCount} item{successCount !== 1 ? 's' : ''} logged!
                   </p>
-                  <p className="text-xs text-[#1B3A5C]/45 mt-0.5">Added to your purchase history</p>
+                  <p className="text-xs text-[#132B22]/45 mt-0.5">Added to your purchase history</p>
                 </div>
               )}
               {action === 'reminders' && (
                 <div className="text-center">
-                  <p className="text-base font-semibold text-[#1B3A5C]">
+                  <p className="text-base font-semibold text-[#132B22]">
                     {successCount} reminder{successCount !== 1 ? 's' : ''} created!
                   </p>
-                  <p className="text-xs text-[#1B3A5C]/45 mt-0.5">You'll be notified when to restock</p>
+                  <p className="text-xs text-[#132B22]/45 mt-0.5">You'll be notified when to restock</p>
                 </div>
               )}
               {action === 'calendar' && (
                 <div className="text-center">
-                  <p className="text-base font-semibold text-[#1B3A5C]">Shopping trip ready!</p>
-                  <p className="text-xs text-[#1B3A5C]/45 mt-0.5">Open the link to add to Google Calendar</p>
+                  <p className="text-base font-semibold text-[#132B22]">Shopping trip ready!</p>
+                  <p className="text-xs text-[#132B22]/45 mt-0.5">Open the link to add to Google Calendar</p>
                 </div>
               )}
             </div>
@@ -507,7 +507,7 @@ export function ImageIntelligence({
               {action === 'purchases' && (
                 <Button
                   size="sm"
-                  className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white"
+                  className="bg-[#132B22] hover:bg-[#132B22]/90 text-white"
                   onClick={() => handleClose(false)}
                 >
                   Done
@@ -516,7 +516,7 @@ export function ImageIntelligence({
               {action === 'reminders' && (
                 <Button
                   size="sm"
-                  className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white"
+                  className="bg-[#132B22] hover:bg-[#132B22]/90 text-white"
                   asChild
                 >
                   <a href="/dashboard/reminders">View Reminders</a>
@@ -525,7 +525,7 @@ export function ImageIntelligence({
               {action === 'calendar' && calendarUrl && (
                 <Button
                   size="sm"
-                  className="bg-[#0F7B6C] hover:bg-[#0F7B6C]/90 text-white"
+                  className="bg-[#132B22] hover:bg-[#132B22]/90 text-white"
                   onClick={() => window.open(calendarUrl, '_blank', 'noopener,noreferrer')}
                 >
                   <CalendarDays className="h-4 w-4 mr-2" />
@@ -535,7 +535,7 @@ export function ImageIntelligence({
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-[#1B3A5C]/50 hover:text-[#1B3A5C]"
+                className="text-[#132B22]/50 hover:text-[#132B22]"
                 onClick={() => reset()}
               >
                 <RotateCcw className="h-3.5 w-3.5 mr-1.5" />

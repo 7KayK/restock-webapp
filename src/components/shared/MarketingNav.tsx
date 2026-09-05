@@ -10,29 +10,26 @@ export function MarketingNav() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header
-      className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100"
-      style={{ isolation: 'isolate' }}
-    >
+    <header className="sticky top-0 z-50 bg-[#132B22]" style={{ isolation: 'isolate' }}>
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Left: Logo */}
-        <Link href="/" className="shrink-0">
+        <Link href="/" className="shrink-0 flex items-center gap-2">
           <Image
             src="/logo.jpg"
             alt="Restock"
-            width={36}
-            height={36}
+            width={32}
+            height={32}
             className="object-contain"
-            style={{ mixBlendMode: 'multiply' }}
+            style={{ mixBlendMode: 'screen' }}
           />
+          <span className="text-white font-semibold text-lg hidden sm:inline" style={{ fontFamily: 'var(--font-playfair), "Fraunces", serif' }}>
+            restock
+          </span>
         </Link>
 
-        {/* Right: Nav links + Telegram icon */}
+        {/* Right: Nav links + actions */}
         <nav className="hidden md:flex items-center gap-7">
-          <Link
-            href="/how-it-works"
-            className="text-sm text-[#6B7280] hover:text-[#1B3A5C] transition-colors"
-          >
+          <Link href="/how-it-works" className="text-sm text-white/80 hover:text-white transition-colors">
             How it works
           </Link>
           <a
@@ -44,18 +41,24 @@ export function MarketingNav() {
           >
             <TelegramIcon size={16} />
           </a>
-          <Link
-            href="/blog"
-            className="text-sm text-[#6B7280] hover:text-[#1B3A5C] transition-colors"
-          >
+          <Link href="/blog" className="text-sm text-white/80 hover:text-white transition-colors">
             Blog
+          </Link>
+          <Link href="/sign-in" className="text-sm text-white/80 hover:text-white transition-colors">
+            Sign in
+          </Link>
+          <Link
+            href="/sign-up"
+            className="text-[13.5px] font-semibold px-4 py-2 rounded-full bg-[#E4C07D] text-[#132B22] hover:bg-[#C9A15A] transition-colors"
+          >
+            Get started
           </Link>
         </nav>
 
         {/* Mobile hamburger */}
         <button
           onClick={() => setMenuOpen(true)}
-          className="md:hidden p-2 -mr-2 text-[#1B3A5C]/55 hover:text-[#1B3A5C] transition-colors"
+          className="md:hidden p-2 -mr-2 text-white/70 hover:text-white transition-colors"
           aria-label="Open menu"
         >
           <Menu className="h-5 w-5" />
@@ -70,7 +73,7 @@ export function MarketingNav() {
             onClick={() => setMenuOpen(false)}
             aria-hidden="true"
           />
-          <div className="fixed top-0 right-0 bottom-0 z-50 w-64 bg-white shadow-xl md:hidden flex flex-col p-6 gap-6">
+          <div className="fixed top-0 right-0 bottom-0 z-50 w-64 bg-[#132B22] shadow-xl md:hidden flex flex-col p-6 gap-6">
             <div className="flex items-center justify-between">
               <Image
                 src="/logo.jpg"
@@ -78,11 +81,11 @@ export function MarketingNav() {
                 width={30}
                 height={30}
                 className="object-contain"
-                style={{ mixBlendMode: 'multiply' }}
+                style={{ mixBlendMode: 'screen' }}
               />
               <button
                 onClick={() => setMenuOpen(false)}
-                className="p-1 text-[#1B3A5C]/35 hover:text-[#1B3A5C] transition-colors"
+                className="p-1 text-white/50 hover:text-white transition-colors"
                 aria-label="Close menu"
               >
                 <X className="h-5 w-5" />
@@ -93,23 +96,37 @@ export function MarketingNav() {
               <Link
                 href="/how-it-works"
                 onClick={() => setMenuOpen(false)}
-                className="text-sm font-medium text-[#1B3A5C] hover:text-[#0F7B6C] transition-colors"
+                className="text-sm font-medium text-white hover:text-[#E4C07D] transition-colors"
               >
                 How it works
               </Link>
               <Link
                 href="/blog"
                 onClick={() => setMenuOpen(false)}
-                className="text-sm font-medium text-[#1B3A5C] hover:text-[#0F7B6C] transition-colors"
+                className="text-sm font-medium text-white hover:text-[#E4C07D] transition-colors"
               >
                 Blog
+              </Link>
+              <Link
+                href="/sign-in"
+                onClick={() => setMenuOpen(false)}
+                className="text-sm font-medium text-white hover:text-[#E4C07D] transition-colors"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/sign-up"
+                onClick={() => setMenuOpen(false)}
+                className="text-sm font-semibold px-4 py-2 rounded-full bg-[#E4C07D] text-[#132B22] text-center"
+              >
+                Get started
               </Link>
               <a
                 href="https://t.me/restockchatbot"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 text-sm font-medium text-[#1B3A5C] hover:text-[#0088cc] transition-colors"
+                className="flex items-center gap-3 text-sm font-medium text-white hover:text-[#0088cc] transition-colors"
               >
                 <div className="w-7 h-7 rounded-full bg-[#0088cc] flex items-center justify-center text-white shrink-0">
                   <TelegramIcon size={14} />

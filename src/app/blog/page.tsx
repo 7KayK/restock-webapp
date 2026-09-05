@@ -7,13 +7,13 @@ const PLAYFAIR: React.CSSProperties = {
 
 export default function BlogPage() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#FAFAF8' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: '#F7F2E7' }}>
       <MarketingNav />
 
       <main className="flex-1 px-6 py-20">
         <div className="max-w-2xl mx-auto text-center">
           <h1
-            className="text-[#1B3A5C] leading-tight mb-4"
+            className="text-[#132B22] leading-tight mb-4"
             style={{ ...PLAYFAIR, fontSize: 'clamp(32px, 4vw, 48px)' }}
           >
             Blog
@@ -28,11 +28,11 @@ export default function BlogPage() {
             className="rounded-2xl px-8 py-12 flex flex-col items-center gap-4"
             style={{ background: '#F0FBF9', border: '1px solid rgba(15,123,108,0.12)' }}
           >
-            <div className="w-12 h-12 rounded-full bg-[#0F7B6C]/10 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-[#132B22]/10 flex items-center justify-center">
               <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-                <rect x="3" y="5" width="16" height="2" rx="1" fill="#0F7B6C" fillOpacity="0.6" />
-                <rect x="3" y="10" width="12" height="2" rx="1" fill="#0F7B6C" fillOpacity="0.4" />
-                <rect x="3" y="15" width="9" height="2" rx="1" fill="#0F7B6C" fillOpacity="0.25" />
+                <rect x="3" y="5" width="16" height="2" rx="1" fill="#132B22" fillOpacity="0.6" />
+                <rect x="3" y="10" width="12" height="2" rx="1" fill="#132B22" fillOpacity="0.4" />
+                <rect x="3" y="15" width="9" height="2" rx="1" fill="#132B22" fillOpacity="0.25" />
               </svg>
             </div>
             <p className="text-[#4A5568] text-sm">
