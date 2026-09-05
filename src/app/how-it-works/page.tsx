@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { MarketingNav } from '@/components/shared/MarketingNav'
 import { MarketingFooter } from '@/components/shared/MarketingFooter'
 
@@ -77,7 +78,7 @@ export default function HowItWorksPage() {
           {/* Bottom CTA */}
           <div
             className="mt-20 rounded-2xl px-8 py-10 text-center"
-            style={{ background: '#EFE7D6', border: '1px solid rgba(15,123,108,0.12)' }}
+            style={{ background: '#EFE7D6', border: '1px solid rgba(19,43,34,0.12)' }}
           >
             <h3
               className="text-[#132B22] mb-2"
@@ -88,12 +89,12 @@ export default function HowItWorksPage() {
             <p className="text-[#3a473e] text-sm mb-6">
               Sign in and Restock learns your patterns from your first purchase.
             </p>
-            <a
-              href="/"
+            <Link
+              href="/sign-up"
               className="inline-block bg-[#132B22] hover:bg-[#0d1f17] text-white font-semibold text-sm px-8 py-3 rounded-full transition-colors"
             >
               Get started
-            </a>
+            </Link>
           </div>
         </div>
       </main>

@@ -26,7 +26,7 @@ export default function BlogPage() {
           {/* Empty state */}
           <div
             className="rounded-2xl px-8 py-12 flex flex-col items-center gap-4"
-            style={{ background: '#EFE7D6', border: '1px solid rgba(15,123,108,0.12)' }}
+            style={{ background: '#EFE7D6', border: '1px solid rgba(19,43,34,0.12)' }}
           >
             <div className="w-12 h-12 rounded-full bg-[#132B22]/10 flex items-center justify-center">
               <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">

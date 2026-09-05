@@ -63,9 +63,9 @@ export function MarketingFooter() {
           <div className="flex flex-col gap-3">
             <h4 className="text-white font-semibold text-xs uppercase tracking-wide">Company</h4>
             {[
-              { label: 'About', href: '#' },
-              { label: 'Privacy', href: '#' },
-              { label: 'Terms', href: '#' },
+              { label: 'About', href: '/about' },
+              { label: 'Privacy', href: '/privacy' },
+              { label: 'Terms', href: '/terms' },
               { label: 'Blog', href: '/blog' },
             ].map(({ label, href }) => (
               <Link key={label} href={href} className="text-white/60 text-sm hover:text-white transition-colors">
@@ -76,7 +76,7 @@ export function MarketingFooter() {
         </div>
 
         <div className="border-t border-white/15 pt-5 flex justify-between items-center flex-wrap gap-3">
-          <p className="text-xs text-white/45">&copy; 2026 Restock Hub Solutions</p>
+          <p className="text-xs text-white/45">&copy; 2026 Restock Solutions</p>
           <Link
             href="/sign-up"
             className="text-[13.5px] font-semibold px-4 py-2 rounded-full bg-[#E4C07D] text-[#132B22] hover:bg-[#C9A15A] transition-colors"
