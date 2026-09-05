@@ -77,7 +77,7 @@ export default function TeamsPage() {
           <Loader2 className="h-6 w-6 animate-spin text-[#132B22]" />
         </div>
       ) : teams.length === 0 ? (
-        <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+        <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
           <CardContent className="flex flex-col items-center justify-center py-20 gap-5">
             <div className="rounded-full bg-[#132B22]/8 p-6">
               <Users className="h-10 w-10 text-[#132B22]/60" />
@@ -103,7 +103,7 @@ export default function TeamsPage() {
             const isOwner = team.owner.email === userEmail
             return (
               <Link key={team.id} href={`/dashboard/teams/${team.id}`}>
-                <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none hover:border-[#132B22]/30 hover:shadow-sm transition-all cursor-pointer group">
+                <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)] hover:border-[#132B22]/30 hover:shadow-sm transition-all cursor-pointer group">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="space-y-1 min-w-0">

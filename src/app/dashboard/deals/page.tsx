@@ -33,7 +33,7 @@ async function ProductsContent() {
 
   if (topItems.length === 0) {
     return (
-      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardContent className="py-16 text-center">
           <ShoppingBag className="h-8 w-8 mx-auto mb-3 text-[#132B22]/20" />
           <p className="text-sm text-[#132B22]/45">
@@ -60,7 +60,7 @@ async function ProductsContent() {
 
   if (products.length === 0) {
     return (
-      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardContent className="py-16 text-center">
           <Package className="h-8 w-8 mx-auto mb-3 text-[#132B22]/20" />
           <p className="text-sm text-[#132B22]/45">No product matches found for your items yet</p>
@@ -73,7 +73,7 @@ async function ProductsContent() {
   }
 
   return (
-    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base text-[#132B22]">Your Items</CardTitle>
@@ -140,7 +140,7 @@ function ProductCard({ product }: { product: FoodProduct }) {
 
 function ProductsSkeleton() {
   return (
-    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
       <CardHeader className="pb-3">
         <Skeleton className="h-5 w-32" />
       </CardHeader>

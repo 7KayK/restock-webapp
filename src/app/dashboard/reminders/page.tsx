@@ -91,7 +91,7 @@ async function ActiveReminders() {
     }).length
 
     return (
-      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base text-[#132B22]">Active Reminders</CardTitle>
@@ -110,7 +110,7 @@ async function ActiveReminders() {
   } catch (err) {
     console.error('[reminders page]', err)
     return (
-      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardContent className="py-12 text-center text-sm text-[#132B22]/45">
           Failed to load reminders
         </CardContent>
@@ -121,7 +121,7 @@ async function ActiveReminders() {
 
 function RemindersSkeleton() {
   return (
-    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
       <CardHeader className="pb-3">
         <Skeleton className="h-5 w-36" />
       </CardHeader>

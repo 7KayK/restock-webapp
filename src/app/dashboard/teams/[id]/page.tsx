@@ -212,7 +212,7 @@ export default function TeamDetailPage() {
               <Loader2 className="h-6 w-6 animate-spin text-[#132B22]" />
             </div>
           ) : !inventory || (inventory.out.length === 0 && inventory.low.length === 0 && inventory.ok.length === 0) ? (
-            <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+            <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
               <CardContent className="flex flex-col items-center py-16 gap-3">
                 <PackageSearch className="h-10 w-10 text-[#132B22]/20" />
                 <p className="text-sm text-[#132B22]/45 text-center max-w-xs">
@@ -267,7 +267,7 @@ export default function TeamDetailPage() {
 
       {/* ── Purchases tab ── */}
       {tab === 'purchases' && (
-        <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+        <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
           <CardHeader className="pb-3">
             <CardTitle className="text-base text-[#132B22]">Team Purchases</CardTitle>
           </CardHeader>
@@ -326,7 +326,7 @@ export default function TeamDetailPage() {
       {/* ── Members tab ── */}
       {tab === 'members' && (
         <div className="space-y-4">
-          <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+          <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
             <CardContent className="p-0">
               <ul className="divide-y divide-[rgba(19,43,34,0.08)]">
                 {team.members.map((m) => {
@@ -387,7 +387,7 @@ export default function TeamDetailPage() {
 
           {/* Invite (owner only) */}
           {isOwner && (
-            <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+            <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm text-[#132B22]">Invite by email</CardTitle>
               </CardHeader>
@@ -438,7 +438,7 @@ interface InventorySectionProps {
 
 function InventorySection({ title, color, bg, dot, items, label }: InventorySectionProps) {
   return (
-    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
       <CardHeader className="pb-2">
         <div className="flex items-center gap-2">
           <div className={`h-2 w-2 rounded-full ${dot}`} />

@@ -256,7 +256,7 @@ function SpendChartCards({
 }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <Card className="lg:col-span-2 bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+      <Card className="lg:col-span-2 bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardHeader className="pb-2">
           <CardTitle className="text-base text-[#132B22]">Spend Trend</CardTitle>
         </CardHeader>
@@ -264,7 +264,7 @@ function SpendChartCards({
           <SpendTrendChart data={trendData} />
         </CardContent>
       </Card>
-      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardHeader className="pb-2">
           <CardTitle className="text-base text-[#132B22]">By Category</CardTitle>
         </CardHeader>
@@ -279,7 +279,7 @@ function SpendChartCards({
 function ChartsSkeleton() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <Card className="lg:col-span-2 bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+      <Card className="lg:col-span-2 bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardHeader className="pb-2">
           <Skeleton className="h-5 w-28" />
         </CardHeader>
@@ -287,7 +287,7 @@ function ChartsSkeleton() {
           <Skeleton className="h-[220px] w-full rounded-lg" />
         </CardContent>
       </Card>
-      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardHeader className="pb-2">
           <Skeleton className="h-5 w-24" />
         </CardHeader>
@@ -323,7 +323,7 @@ async function RecentPurchases() {
     if (!purchases.length) return <EmptyRecentPurchases />
 
     return (
-      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardHeader className="pb-2">
           <CardTitle className="text-base text-[#132B22]">Recent Purchases</CardTitle>
         </CardHeader>
@@ -376,7 +376,7 @@ async function RecentPurchases() {
 
 function EmptyRecentPurchases() {
   return (
-    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
       <CardHeader className="pb-2">
         <CardTitle className="text-base text-[#132B22]">Recent Purchases</CardTitle>
       </CardHeader>
@@ -391,7 +391,7 @@ function EmptyRecentPurchases() {
 
 function RecentSkeleton() {
   return (
-    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
       <CardHeader className="pb-2">
         <Skeleton className="h-5 w-36" />
       </CardHeader>
@@ -459,7 +459,7 @@ async function PantrySummary() {
 
     return (
       <Link href="/dashboard/pantry">
-        <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none hover:shadow-sm transition-shadow cursor-pointer">
+        <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)] hover:shadow-sm transition-shadow cursor-pointer">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base text-[#132B22] flex items-center gap-2">
@@ -498,7 +498,7 @@ async function PantrySummary() {
 
 function PantrySummarySkeleton() {
   return (
-    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
       <CardHeader className="pb-2">
         <Skeleton className="h-5 w-32" />
       </CardHeader>

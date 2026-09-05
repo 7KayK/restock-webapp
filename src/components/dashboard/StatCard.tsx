@@ -41,7 +41,7 @@ export function StatCard({ title, value, sub, icon }: StatCardProps) {
       whileHover={{ y: -2, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
       transition={{ duration: 0.2 }}
     >
-      <Card className="bg-white border border-[rgba(19,43,34,0.10)] shadow-none hover:border-[#132B22] transition-colors duration-200 cursor-default">
+      <Card className="bg-white border border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)] hover:border-[#132B22] transition-colors duration-200 cursor-default">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-[#132B22]/60">{title}</CardTitle>
           <div className="w-8 h-8 rounded-lg bg-[#132B22]/10 flex items-center justify-center shrink-0">
@@ -61,7 +61,7 @@ export function StatCard({ title, value, sub, icon }: StatCardProps) {
 
 export function StatCardSkeleton() {
   return (
-    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <Skeleton className="h-4 w-28 bg-[#132B22]/10" />
         <Skeleton className="h-8 w-8 rounded-lg bg-[#132B22]/10" />

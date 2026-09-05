@@ -212,7 +212,7 @@ export default function ShoppingPage() {
       </div>
 
       {/* List */}
-      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-16">
@@ -339,7 +339,7 @@ export default function ShoppingPage() {
               </Button>
 
               {showDone && (
-                <Card className="bg-white border-[#132B22]/20 shadow-none">
+                <Card className="bg-white border-[#132B22]/20 shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
                   <CardContent className="p-4 space-y-3">
                     <p className="text-sm font-medium text-[#132B22]">How would you like to log this trip?</p>
                     <Button

@@ -100,7 +100,7 @@ export function ChatInterface() {
   }
 
   return (
-    <Card className="flex flex-col bg-white border-[rgba(19,43,34,0.10)] shadow-none" style={{ height: 'calc(100vh - 290px)', minHeight: '380px' }}>
+    <Card className="flex flex-col bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]" style={{ height: 'calc(100vh - 290px)', minHeight: '380px' }}>
       <CardHeader className="pb-3 shrink-0">
         <CardTitle className="flex items-center gap-2 text-base text-[#132B22]">
           <MessageSquare className="h-4 w-4 text-[#132B22]" />
