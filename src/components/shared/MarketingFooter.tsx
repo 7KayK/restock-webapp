@@ -11,12 +11,11 @@ export function MarketingFooter() {
           <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
             <div className="flex items-center gap-2">
               <Image
-                src="/logo.jpg"
+                src="/logo.png"
                 alt="Restock"
                 width={32}
                 height={32}
                 className="object-contain"
-                style={{ mixBlendMode: 'screen' }}
               />
               <span className="text-white font-semibold text-base" style={{ fontFamily: 'var(--font-playfair), "Fraunces", serif' }}>
                 restock

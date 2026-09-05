@@ -15,12 +15,11 @@ export function MarketingNav() {
         {/* Left: Logo */}
         <Link href="/" className="shrink-0 flex items-center gap-2">
           <Image
-            src="/logo.jpg"
+            src="/logo.png"
             alt="Restock"
             width={32}
             height={32}
             className="object-contain"
-            style={{ mixBlendMode: 'screen' }}
           />
           <span className="text-white font-semibold text-lg hidden sm:inline" style={{ fontFamily: 'var(--font-playfair), "Fraunces", serif' }}>
             restock
@@ -76,12 +75,11 @@ export function MarketingNav() {
           <div className="fixed top-0 right-0 bottom-0 z-50 w-64 bg-[#132B22] shadow-xl md:hidden flex flex-col p-6 gap-6">
             <div className="flex items-center justify-between">
               <Image
-                src="/logo.jpg"
+                src="/logo.png"
                 alt="Restock"
                 width={30}
                 height={30}
                 className="object-contain"
-                style={{ mixBlendMode: 'screen' }}
               />
               <button
                 onClick={() => setMenuOpen(false)}

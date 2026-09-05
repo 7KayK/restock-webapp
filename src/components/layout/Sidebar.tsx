@@ -92,12 +92,11 @@ export function Sidebar() {
           className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden bg-[#EFE7D6] border border-[rgba(19,43,34,0.10)]"
         >
           <Image
-            src="/logo.jpg"
+            src="/logo.png"
             width={36}
             height={36}
             alt="Restock"
             className="object-contain"
-            style={{ mixBlendMode: 'multiply' }}
           />
         </div>
         <span className="ml-2.5 font-semibold text-[15px] text-[#132B22]" style={{ fontFamily: 'var(--font-playfair), "Fraunces", serif' }}>

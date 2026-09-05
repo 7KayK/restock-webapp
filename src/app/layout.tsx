@@ -26,8 +26,8 @@ export const metadata: Metadata = {
   description:
     'Track purchases, predict when you run out, and find the best deals near you.',
   icons: {
-    icon: '/logo.jpg',
-    apple: '/logo.jpg',
+    icon: '/logo.png',
+    apple: '/logo.png',
   },
 }
 
