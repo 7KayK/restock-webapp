@@ -21,7 +21,7 @@ export function Header() {
   const title = pageTitles[pathname] ?? 'Dashboard'
 
   return (
-    <header className="h-14 border-b border-gray-100 bg-white flex items-center px-4 shrink-0 md:hidden">
+    <header className="h-14 border-b border-[rgba(19,43,34,0.10)] bg-white flex items-center px-4 shrink-0 md:hidden">
       <Image
         src="/logo.jpg"
         alt="Restock"
@@ -30,7 +30,7 @@ export function Header() {
         className="object-contain mr-3 shrink-0"
         style={{ mixBlendMode: 'multiply' }}
       />
-      <span className="text-[#132B22] font-semibold text-sm">{title}</span>
+      <span className="text-[#132B22] font-medium text-[15px]" style={{ fontFamily: 'var(--font-playfair), "Fraunces", serif' }}>{title}</span>
     </header>
   )
 }

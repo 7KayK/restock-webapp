@@ -44,7 +44,7 @@ function uid() { return `item-${++_idCounter}` }
 const SOURCE_LABELS: Record<string, { label: string; icon: React.ElementType; color: string }> = {
   reminder:  { label: 'Reminder',  icon: Bell,     color: 'text-[#132B22] bg-[#132B22]/10' },
   predicted: { label: 'Predicted', icon: Sparkles, color: 'text-purple-600 bg-purple-50' },
-  manual:    { label: 'Added',     icon: Plus,     color: 'text-gray-500 bg-gray-100' },
+  manual:    { label: 'Added',     icon: Plus,     color: 'text-[#5b6a5d] bg-[#EFE7D6]' },
 }
 
 export default function ShoppingPage() {
@@ -174,7 +174,7 @@ export default function ShoppingPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-[#132B22]">Shopping Trip</h1>
+          <h1 className="text-xl md:text-2xl font-medium text-[#132B22] [font-family:var(--font-playfair)]">Shopping Trip</h1>
           <p className="text-sm text-[#132B22]/50 mt-0.5">
             {loading
               ? 'Building your smart list…'
@@ -187,13 +187,13 @@ export default function ShoppingPage() {
 
       {/* Action row */}
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" size="sm" className="gap-1.5 border-gray-200 text-[#132B22]/70" asChild>
+        <Button variant="outline" size="sm" className="gap-1.5 border-[rgba(19,43,34,0.18)] text-[#132B22]/70" asChild>
           <Link href="/dashboard/stores">
             <MapPin className="h-3.5 w-3.5" />
             Nearest store
           </Link>
         </Button>
-        <Button variant="outline" size="sm" className="gap-1.5 border-gray-200 text-[#132B22]/70" asChild>
+        <Button variant="outline" size="sm" className="gap-1.5 border-[rgba(19,43,34,0.18)] text-[#132B22]/70" asChild>
           <Link href="/dashboard/deals">
             <Tag className="h-3.5 w-3.5" />
             See deals
@@ -202,7 +202,7 @@ export default function ShoppingPage() {
         <Button
           variant="outline"
           size="sm"
-          className="gap-1.5 border-gray-200 text-[#132B22]/70"
+          className="gap-1.5 border-[rgba(19,43,34,0.18)] text-[#132B22]/70"
           onClick={() => window.open(calendarUrl, '_blank', 'noopener,noreferrer')}
           disabled={activeItems.length === 0}
         >
@@ -212,7 +212,7 @@ export default function ShoppingPage() {
       </div>
 
       {/* List */}
-      <Card className="bg-white border-gray-100 shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
         <CardContent className="p-0">
           {loading ? (
             <div className="flex items-center justify-center py-16">
@@ -244,7 +244,7 @@ export default function ShoppingPage() {
               </div>
             </div>
           ) : (
-            <ul className="divide-y divide-gray-50">
+            <ul className="divide-y divide-[rgba(19,43,34,0.08)]">
               {activeItems.map((item) => (
                 <ListRow
                   key={item._id}
@@ -258,7 +258,7 @@ export default function ShoppingPage() {
 
               {doneItems.length > 0 && (
                 <>
-                  <li className="px-4 py-2 bg-gray-50">
+                  <li className="px-4 py-2 bg-[#F7F2E7]">
                     <p className="text-[10px] font-semibold text-[#132B22]/35 uppercase tracking-wider">
                       Done ({doneItems.length})
                     </p>
@@ -279,7 +279,7 @@ export default function ShoppingPage() {
           )}
 
           {/* Add item row */}
-          <div className="flex items-center gap-2 px-4 py-3 border-t border-gray-100">
+          <div className="flex items-center gap-2 px-4 py-3 border-t border-[rgba(19,43,34,0.10)]">
             <Plus className="h-4 w-4 text-[#132B22]/25 shrink-0" />
             <Input
               ref={addRef}
@@ -312,7 +312,7 @@ export default function ShoppingPage() {
               </Button>
               <Button
                 variant="outline"
-                className="w-full gap-2 border-gray-200 text-[#132B22]/70"
+                className="w-full gap-2 border-[rgba(19,43,34,0.18)] text-[#132B22]/70"
                 onClick={saveListForLater}
               >
                 {savedToast
@@ -325,7 +325,7 @@ export default function ShoppingPage() {
             <>
               <Button
                 variant="outline"
-                className="w-full gap-2 border-gray-200 text-[#132B22]/70"
+                className="w-full gap-2 border-[rgba(19,43,34,0.18)] text-[#132B22]/70"
                 onClick={() => { setPhase('building'); setShowDone(false) }}
               >
                 ← Edit list
@@ -351,7 +351,7 @@ export default function ShoppingPage() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full gap-2 border-gray-200 text-[#132B22]/70"
+                      className="w-full gap-2 border-[rgba(19,43,34,0.18)] text-[#132B22]/70"
                       onClick={markAllComplete}
                       disabled={completing || items.length === 0}
                     >
@@ -405,7 +405,7 @@ function EntryCard({
       onMouseLeave={() => setHovered(false)}
       className="flex flex-col gap-2 rounded-lg bg-white p-4 pb-5 text-left cursor-pointer transition-colors disabled:opacity-60 w-full h-full"
       style={{
-        border: `0.5px solid ${hovered ? '#132B22' : '#e5e7eb'}`,
+        border: `0.5px solid ${hovered ? '#132B22' : '#e3d9c4'}`,
         transition: 'border-color 150ms ease',
       }}
     >
@@ -431,7 +431,7 @@ function ListRow({ item, onToggle, onRemove, onUpdateName, onUpdateQty }: ListRo
           'h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors',
           item._done
             ? 'border-[#22C55E] bg-[#22C55E]'
-            : 'border-gray-200 hover:border-[#132B22]'
+            : 'border-[rgba(19,43,34,0.18)] hover:border-[#132B22]'
         )}
         aria-label={item._done ? 'Mark as not done' : 'Mark as done'}
       >

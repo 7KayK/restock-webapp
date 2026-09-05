@@ -14,7 +14,7 @@ const SOURCE_STYLES: Record<string, string> = {
   whatsapp: 'bg-green-50 text-green-700',
   receipt: 'bg-orange-50 text-orange-600',
   image: 'bg-teal-50 text-[#132B22]',
-  manual: 'bg-gray-100 text-gray-500',
+  manual: 'bg-[#EFE7D6] text-[#5b6a5d]',
 }
 
 interface PurchaseListProps {
@@ -117,7 +117,7 @@ export function PurchaseList({ initialPurchases, categories }: PurchaseListProps
             : 'No purchases match your filters'}
         </div>
       ) : (
-        <ul className="divide-y divide-gray-50">
+        <ul className="divide-y divide-[rgba(19,43,34,0.08)]">
           <AnimatePresence initial={false}>
             {filtered.map((p, i) => {
               const sourceStyle = SOURCE_STYLES[p.source] ?? SOURCE_STYLES.manual

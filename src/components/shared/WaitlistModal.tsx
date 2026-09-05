@@ -136,14 +136,14 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
                 <p className="text-[#132B22] font-semibold text-lg">
                   {position !== null ? `You're #${position} on the list!` : "You're on the list!"}
                 </p>
-                <p className="text-[#4A5568] text-sm mt-1">
+                <p className="text-[#3a473e] text-sm mt-1">
                   We&apos;ll notify you when your spot is ready.
                 </p>
               </div>
 
               <Button
                 onClick={() => handleOpenChange(false)}
-                className="bg-[#132B22] hover:bg-[#0A6459] text-white rounded-full px-8"
+                className="bg-[#132B22] hover:bg-[#0d1f17] text-white rounded-full px-8"
               >
                 Done
               </Button>
@@ -157,7 +157,7 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
               transition={{ duration: 0.35 }}
               className="flex flex-col items-center gap-5 py-6 text-center"
             >
-              <div className="w-16 h-16 rounded-full bg-[#F0FBF9] border border-[#132B22]/20 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-[#EFE7D6] border border-[#132B22]/20 flex items-center justify-center">
                 <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
                   <path d="M14 5v9M14 19v1" stroke="#132B22" strokeWidth="2.5" strokeLinecap="round" />
                   <circle cx="14" cy="14" r="12" stroke="#132B22" strokeWidth="1.5" />
@@ -165,13 +165,13 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
               </div>
               <div>
                 <p className="text-[#132B22] font-semibold text-lg">Already on the list</p>
-                <p className="text-[#4A5568] text-sm mt-1">
+                <p className="text-[#3a473e] text-sm mt-1">
                   You&apos;re already registered — we&apos;ll reach out soon!
                 </p>
               </div>
               <Button
                 onClick={() => handleOpenChange(false)}
-                className="bg-[#132B22] hover:bg-[#0A6459] text-white rounded-full px-8"
+                className="bg-[#132B22] hover:bg-[#0d1f17] text-white rounded-full px-8"
               >
                 Got it
               </Button>
@@ -188,7 +188,7 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
                 <DialogTitle className="text-[#132B22] text-xl font-semibold">
                   Join the early access list
                 </DialogTitle>
-                <DialogDescription className="text-[#4A5568] text-sm leading-relaxed">
+                <DialogDescription className="text-[#3a473e] text-sm leading-relaxed">
                   Be among the first to try Restock — we&apos;ll notify you when your spot is ready.
                 </DialogDescription>
               </DialogHeader>
@@ -205,7 +205,7 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     disabled={state === 'loading'}
-                    className="border-gray-200 focus-visible:ring-[#132B22]"
+                    className="border-[rgba(19,43,34,0.18)] focus-visible:ring-[#132B22]"
                   />
                 </div>
 
@@ -220,7 +220,7 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={state === 'loading'}
-                    className="border-gray-200 focus-visible:ring-[#132B22]"
+                    className="border-[rgba(19,43,34,0.18)] focus-visible:ring-[#132B22]"
                   />
                 </div>
 
@@ -231,7 +231,7 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
                   <Select value={country} onValueChange={(v) => setCountry(v ?? '')} disabled={state === 'loading'}>
                     <SelectTrigger
                       id="wl-country"
-                      className="border-gray-200 focus:ring-[#132B22]"
+                      className="border-[rgba(19,43,34,0.18)] focus:ring-[#132B22]"
                     >
                       <SelectValue placeholder="Select your country" />
                     </SelectTrigger>
@@ -252,7 +252,7 @@ export function WaitlistModal({ open, onOpenChange }: WaitlistModalProps) {
                 <Button
                   type="submit"
                   disabled={state === 'loading'}
-                  className="w-full bg-[#132B22] hover:bg-[#0A6459] text-white font-semibold rounded-full py-5 mt-1 transition-colors"
+                  className="w-full bg-[#132B22] hover:bg-[#0d1f17] text-white font-semibold rounded-full py-5 mt-1 transition-colors"
                 >
                   {state === 'loading' ? 'Joining…' : 'Join the waitlist'}
                 </Button>

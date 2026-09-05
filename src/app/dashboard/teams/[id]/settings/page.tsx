@@ -129,7 +129,7 @@ export default function TeamSettingsPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-[#132B22]">Team Settings</h1>
+          <h1 className="text-2xl font-medium text-[#132B22] [font-family:var(--font-playfair)]">Team Settings</h1>
           <p className="text-sm text-[#132B22]/50 mt-0.5">{team.name}</p>
         </div>
       </div>
@@ -243,7 +243,7 @@ export default function TeamSettingsPage() {
                 Coming soon
               </Badge>
             </div>
-            <p className="text-2xl font-bold text-[#132B22]">
+            <p className="text-2xl font-medium text-[#132B22] [font-family:var(--font-playfair)]">
               $30<span className="text-sm font-normal text-[#132B22]/50">/month per team</span>
             </p>
             <ul className="text-sm text-[#132B22]/60 space-y-1">

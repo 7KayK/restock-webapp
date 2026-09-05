@@ -38,7 +38,7 @@ function ProgressDots({ total, current }: { total: number; current: number }) {
           key={i}
           animate={{
             width: i + 1 === current ? 20 : 6,
-            backgroundColor: i + 1 === current ? '#132B22' : '#D1D5DB',
+            backgroundColor: i + 1 === current ? '#132B22' : '#c9bfa8',
           }}
           transition={{ duration: 0.25 }}
           className="h-1.5 rounded-full"
@@ -95,14 +95,14 @@ export function WelcomeOnboarding() {
                     <h2 className="text-[#132B22] text-2xl" style={PLAYFAIR}>
                       Welcome to Restock!
                     </h2>
-                    <p className="text-[#4A5568] text-[15px] leading-relaxed">
+                    <p className="text-[#3a473e] text-[15px] leading-relaxed">
                       You&apos;re in. Here&apos;s how to get the most out of Restock in 60 seconds.
                     </p>
                   </div>
 
                   <Button
                     onClick={() => setStep(2)}
-                    className="w-full bg-[#132B22] hover:bg-[#0A6459] text-white font-semibold py-5 rounded-full text-[15px]"
+                    className="w-full bg-[#132B22] hover:bg-[#0d1f17] text-white font-semibold py-5 rounded-full text-[15px]"
                   >
                     Let&apos;s go →
                   </Button>
@@ -130,7 +130,7 @@ export function WelcomeOnboarding() {
                       href="https://t.me/restockchatbot"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex flex-col items-center gap-3 p-4 rounded-xl border border-[#132B22]/20 bg-[#F0FBF9] hover:bg-[#E6F7F5] transition-colors group"
+                      className="flex flex-col items-center gap-3 p-4 rounded-xl border border-[#132B22]/20 bg-[#EFE7D6] hover:bg-[#EFE7D6] transition-colors group"
                     >
                       <div className="w-10 h-10 rounded-full bg-[#229ED9] flex items-center justify-center text-white">
                         <TelegramIcon size={20} />
@@ -142,31 +142,31 @@ export function WelcomeOnboarding() {
                     </a>
 
                     {/* WhatsApp — coming soon */}
-                    <div className="flex flex-col items-center gap-3 p-4 rounded-xl border border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed select-none">
+                    <div className="flex flex-col items-center gap-3 p-4 rounded-xl border border-[rgba(19,43,34,0.10)] bg-[#F7F2E7] opacity-50 cursor-not-allowed select-none">
                       <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center text-white">
                         <WhatsAppIcon size={20} />
                       </div>
                       <div className="text-center">
                         <p className="text-sm font-semibold text-[#132B22]">WhatsApp</p>
-                        <p className="text-[11px] text-[#6B7280] mt-0.5">Coming soon</p>
+                        <p className="text-[11px] text-[#5b6a5d] mt-0.5">Coming soon</p>
                       </div>
                     </div>
                   </div>
 
-                  <p className="text-center text-[13px] text-[#4A5568] leading-relaxed">
+                  <p className="text-center text-[13px] text-[#3a473e] leading-relaxed">
                     Log purchases by sending a message or snapping a receipt — no forms, no friction.
                   </p>
 
                   <Button
                     onClick={() => setStep(3)}
-                    className="w-full bg-[#132B22] hover:bg-[#0A6459] text-white font-semibold py-5 rounded-full text-[15px]"
+                    className="w-full bg-[#132B22] hover:bg-[#0d1f17] text-white font-semibold py-5 rounded-full text-[15px]"
                   >
                     Next →
                   </Button>
 
                   <button
                     onClick={() => setStep(3)}
-                    className="text-sm text-[#6B7280] hover:text-[#132B22] transition-colors text-center w-full"
+                    className="text-sm text-[#5b6a5d] hover:text-[#132B22] transition-colors text-center w-full"
                   >
                     I&apos;ll do this later
                   </button>
@@ -191,43 +191,43 @@ export function WelcomeOnboarding() {
                   <div className="flex flex-col gap-2.5">
                     <button
                       onClick={handleReceiptAction}
-                      className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white hover:border-[#132B22]/30 hover:bg-[#F0FBF9] transition-colors text-left group"
+                      className="flex items-center gap-4 p-4 rounded-xl border border-[rgba(19,43,34,0.10)] bg-white hover:border-[#132B22]/30 hover:bg-[#EFE7D6] transition-colors text-left group"
                     >
                       <span className="text-2xl">📷</span>
                       <div>
                         <p className="text-sm font-semibold text-[#132B22]">Snap a receipt</p>
-                        <p className="text-[12px] text-[#6B7280]">Photo, screenshot or handwritten note</p>
+                        <p className="text-[12px] text-[#5b6a5d]">Photo, screenshot or handwritten note</p>
                       </div>
                     </button>
 
                     <Link
                       href="/dashboard/history"
                       onClick={complete}
-                      className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white hover:border-[#132B22]/30 hover:bg-[#F0FBF9] transition-colors text-left group"
+                      className="flex items-center gap-4 p-4 rounded-xl border border-[rgba(19,43,34,0.10)] bg-white hover:border-[#132B22]/30 hover:bg-[#EFE7D6] transition-colors text-left group"
                     >
                       <span className="text-2xl">⌨️</span>
                       <div>
                         <p className="text-sm font-semibold text-[#132B22]">Type your first purchase</p>
-                        <p className="text-[12px] text-[#6B7280]">Log manually in your purchase history</p>
+                        <p className="text-[12px] text-[#5b6a5d]">Log manually in your purchase history</p>
                       </div>
                     </Link>
 
                     <Link
                       href="/dashboard/shopping"
                       onClick={complete}
-                      className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white hover:border-[#132B22]/30 hover:bg-[#F0FBF9] transition-colors text-left group"
+                      className="flex items-center gap-4 p-4 rounded-xl border border-[rgba(19,43,34,0.10)] bg-white hover:border-[#132B22]/30 hover:bg-[#EFE7D6] transition-colors text-left group"
                     >
                       <span className="text-2xl">🛒</span>
                       <div>
                         <p className="text-sm font-semibold text-[#132B22]">Start a shopping trip</p>
-                        <p className="text-[12px] text-[#6B7280]">Build a smart list from your history</p>
+                        <p className="text-[12px] text-[#5b6a5d]">Build a smart list from your history</p>
                       </div>
                     </Link>
                   </div>
 
                   <Button
                     onClick={complete}
-                    className="w-full bg-[#132B22] hover:bg-[#0A6459] text-white font-semibold py-5 rounded-full text-[15px]"
+                    className="w-full bg-[#132B22] hover:bg-[#0d1f17] text-white font-semibold py-5 rounded-full text-[15px]"
                   >
                     Go to Dashboard
                   </Button>

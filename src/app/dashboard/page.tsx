@@ -52,27 +52,27 @@ async function ChannelQuickAccess() {
           'flex items-center gap-3 rounded-xl border px-5 py-3.5 transition-all',
           telegramConnected
             ? 'border-[#229ED9]/25 bg-[#229ED9]/5 hover:border-[#229ED9]/50 hover:bg-[#229ED9]/10'
-            : 'border-gray-100 bg-white hover:bg-gray-50 opacity-55'
+            : 'border-[rgba(19,43,34,0.10)] bg-white hover:bg-[#F7F2E7] opacity-55'
         )}
       >
-        <TelegramIcon size={20} className={telegramConnected ? 'text-[#229ED9]' : 'text-gray-300'} />
+        <TelegramIcon size={20} className={telegramConnected ? 'text-[#229ED9]' : 'text-[#b9c2ba]'} />
         <div>
-          <p className={cn('text-sm font-semibold leading-none', telegramConnected ? 'text-[#229ED9]' : 'text-gray-400')}>
+          <p className={cn('text-sm font-semibold leading-none', telegramConnected ? 'text-[#229ED9]' : 'text-[#8a9389]')}>
             Telegram
           </p>
-          <p className="text-[11px] text-gray-400 mt-1">{telegramConnected ? 'Connected' : 'Connect'}</p>
+          <p className="text-[11px] text-[#8a9389] mt-1">{telegramConnected ? 'Connected' : 'Connect'}</p>
         </div>
       </a>
 
       {/* WhatsApp — pending Meta verification */}
       <div
-        className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white px-5 py-3.5 opacity-40 cursor-not-allowed select-none"
+        className="flex items-center gap-3 rounded-xl border border-[rgba(19,43,34,0.10)] bg-white px-5 py-3.5 opacity-40 cursor-not-allowed select-none"
         title="WhatsApp coming soon"
       >
-        <WhatsAppIcon size={20} className="text-gray-300" />
+        <WhatsAppIcon size={20} className="text-[#b9c2ba]" />
         <div>
-          <p className="text-sm font-semibold leading-none text-gray-400">WhatsApp</p>
-          <p className="text-[11px] text-gray-400 mt-1">Coming soon</p>
+          <p className="text-sm font-semibold leading-none text-[#8a9389]">WhatsApp</p>
+          <p className="text-[11px] text-[#8a9389] mt-1">Coming soon</p>
         </div>
       </div>
     </div>
@@ -83,7 +83,7 @@ function ChannelQuickAccessSkeleton() {
   return (
     <div className="flex flex-col sm:flex-row gap-3 mb-6">
       {[0, 1].map((i) => (
-        <div key={i} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white px-5 py-3.5">
+        <div key={i} className="flex items-center gap-3 rounded-xl border border-[rgba(19,43,34,0.10)] bg-white px-5 py-3.5">
           <Skeleton className="h-5 w-5 rounded-full shrink-0" />
           <div className="space-y-1.5">
             <Skeleton className="h-3 w-14" />
@@ -256,7 +256,7 @@ function SpendChartCards({
 }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <Card className="lg:col-span-2 bg-white border-gray-100 shadow-none">
+      <Card className="lg:col-span-2 bg-white border-[rgba(19,43,34,0.10)] shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="text-base text-[#132B22]">Spend Trend</CardTitle>
         </CardHeader>
@@ -264,7 +264,7 @@ function SpendChartCards({
           <SpendTrendChart data={trendData} />
         </CardContent>
       </Card>
-      <Card className="bg-white border-gray-100 shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="text-base text-[#132B22]">By Category</CardTitle>
         </CardHeader>
@@ -279,7 +279,7 @@ function SpendChartCards({
 function ChartsSkeleton() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <Card className="lg:col-span-2 bg-white border-gray-100 shadow-none">
+      <Card className="lg:col-span-2 bg-white border-[rgba(19,43,34,0.10)] shadow-none">
         <CardHeader className="pb-2">
           <Skeleton className="h-5 w-28" />
         </CardHeader>
@@ -287,7 +287,7 @@ function ChartsSkeleton() {
           <Skeleton className="h-[220px] w-full rounded-lg" />
         </CardContent>
       </Card>
-      <Card className="bg-white border-gray-100 shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
         <CardHeader className="pb-2">
           <Skeleton className="h-5 w-24" />
         </CardHeader>
@@ -303,7 +303,7 @@ const SOURCE_STYLES: Record<string, string> = {
   telegram: 'bg-blue-50 text-blue-600',
   whatsapp: 'bg-green-50 text-green-700',
   receipt: 'bg-orange-50 text-orange-600',
-  manual: 'bg-gray-100 text-gray-500',
+  manual: 'bg-[#EFE7D6] text-[#5b6a5d]',
 }
 
 async function RecentPurchases() {
@@ -323,12 +323,12 @@ async function RecentPurchases() {
     if (!purchases.length) return <EmptyRecentPurchases />
 
     return (
-      <Card className="bg-white border-gray-100 shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
         <CardHeader className="pb-2">
           <CardTitle className="text-base text-[#132B22]">Recent Purchases</CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <ul className="divide-y divide-gray-50">
+          <ul className="divide-y divide-[rgba(19,43,34,0.08)]">
             {purchases.map((p) => {
               const sourceStyle = SOURCE_STYLES[p.source] ?? SOURCE_STYLES.manual
               return (
@@ -376,7 +376,7 @@ async function RecentPurchases() {
 
 function EmptyRecentPurchases() {
   return (
-    <Card className="bg-white border-gray-100 shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
       <CardHeader className="pb-2">
         <CardTitle className="text-base text-[#132B22]">Recent Purchases</CardTitle>
       </CardHeader>
@@ -391,7 +391,7 @@ function EmptyRecentPurchases() {
 
 function RecentSkeleton() {
   return (
-    <Card className="bg-white border-gray-100 shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
       <CardHeader className="pb-2">
         <Skeleton className="h-5 w-36" />
       </CardHeader>
@@ -459,7 +459,7 @@ async function PantrySummary() {
 
     return (
       <Link href="/dashboard/pantry">
-        <Card className="bg-white border-gray-100 shadow-none hover:shadow-sm transition-shadow cursor-pointer">
+        <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none hover:shadow-sm transition-shadow cursor-pointer">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base text-[#132B22] flex items-center gap-2">
@@ -498,7 +498,7 @@ async function PantrySummary() {
 
 function PantrySummarySkeleton() {
   return (
-    <Card className="bg-white border-gray-100 shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
       <CardHeader className="pb-2">
         <Skeleton className="h-5 w-32" />
       </CardHeader>
@@ -518,7 +518,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 max-w-7xl">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#132B22]">Dashboard</h1>
+        <h1 className="text-xl md:text-2xl font-medium text-[#132B22] [font-family:var(--font-playfair)]">Dashboard</h1>
         <p className="text-sm text-[#132B22]/50 mt-0.5">Your restocking overview</p>
       </div>
 

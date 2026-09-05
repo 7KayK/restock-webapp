@@ -368,7 +368,7 @@ export function ImageIntelligence({
                     'w-full flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors',
                     action === id
                       ? 'border-[#132B22] bg-[#132B22]/6'
-                      : 'border-gray-100 hover:border-[#132B22]/30 hover:bg-gray-50'
+                      : 'border-[rgba(19,43,34,0.10)] hover:border-[#132B22]/30 hover:bg-[#F7F2E7]'
                   )}
                 >
                   <Icon className={cn('h-4 w-4 shrink-0', action === id ? 'text-[#132B22]' : 'text-[#132B22]/40')} />
@@ -400,14 +400,14 @@ export function ImageIntelligence({
 
             {/* Team selector — only for purchases and reminders */}
             {teams.length > 0 && action !== 'calendar' && (
-              <div className="space-y-2 border-t border-gray-100 pt-3">
+              <div className="space-y-2 border-t border-[rgba(19,43,34,0.10)] pt-3">
                 <p className="text-xs font-medium text-[#132B22]/60">Save for</p>
                 <div className="space-y-1.5">
                   <label className={cn(
                     'flex items-center gap-2.5 rounded-lg border px-3 py-2 cursor-pointer transition-colors',
                     selectedTeamId === null
                       ? 'border-[#132B22] bg-[#132B22]/6'
-                      : 'border-gray-100 hover:border-[#132B22]/30'
+                      : 'border-[rgba(19,43,34,0.10)] hover:border-[#132B22]/30'
                   )}>
                     <input
                       type="radio"
@@ -423,7 +423,7 @@ export function ImageIntelligence({
                       'flex items-center gap-2.5 rounded-lg border px-3 py-2 cursor-pointer transition-colors',
                       selectedTeamId === t.id
                         ? 'border-[#132B22] bg-[#132B22]/6'
-                        : 'border-gray-100 hover:border-[#132B22]/30'
+                        : 'border-[rgba(19,43,34,0.10)] hover:border-[#132B22]/30'
                     )}>
                       <input
                         type="radio"

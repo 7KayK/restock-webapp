@@ -118,7 +118,7 @@ async function SpendAnalysisContent() {
         </div>
 
         {/* 12-month bar chart */}
-        <Card className="bg-white border-gray-100 shadow-none">
+        <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
           <CardHeader className="pb-2">
             <CardTitle className="text-base text-[#132B22]">Monthly Spend — Last 12 Months</CardTitle>
           </CardHeader>
@@ -129,7 +129,7 @@ async function SpendAnalysisContent() {
 
         {/* Category table + Top items table */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white border-gray-100 shadow-none">
+          <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
             <CardHeader className="pb-2">
               <CardTitle className="text-base text-[#132B22]">Spend by Category</CardTitle>
             </CardHeader>
@@ -147,7 +147,7 @@ async function SpendAnalysisContent() {
                       <th className="text-right py-2 font-medium">Total</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-[rgba(19,43,34,0.08)]">
                     {byCategory.map((c) => (
                       <tr key={c.category}>
                         <td className="py-2.5">
@@ -178,7 +178,7 @@ async function SpendAnalysisContent() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-gray-100 shadow-none">
+          <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
             <CardHeader className="pb-2">
               <CardTitle className="text-base text-[#132B22]">Top Items</CardTitle>
             </CardHeader>
@@ -196,7 +196,7 @@ async function SpendAnalysisContent() {
                       <th className="text-right py-2 font-medium">Spend</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-50">
+                  <tbody className="divide-y divide-[rgba(19,43,34,0.08)]">
                     {topItems.map((item) => (
                       <tr key={item.item}>
                         <td className="py-2.5 font-medium text-[#132B22] truncate max-w-[140px]">
@@ -227,10 +227,10 @@ async function SpendAnalysisContent() {
 
 function MoMCard({ label, amount, sub }: { label: string; amount: number; sub: string }) {
   return (
-    <Card className="bg-white border-gray-100 shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
       <CardContent className="pt-5">
         <p className="text-xs text-[#132B22]/50 mb-1">{sub}</p>
-        <p className="text-2xl font-bold text-[#132B22]">{formatCurrency(amount)}</p>
+        <p className="text-2xl font-medium text-[#132B22] [font-family:var(--font-playfair)]">{formatCurrency(amount)}</p>
         <p className="text-xs text-[#132B22]/40 mt-0.5">{label}</p>
       </CardContent>
     </Card>
@@ -240,7 +240,7 @@ function MoMCard({ label, amount, sub }: { label: string; amount: number; sub: s
 function ChangeCard({ changePercent }: { changePercent: number | null }) {
   if (changePercent === null) {
     return (
-      <Card className="bg-white border-gray-100 shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
         <CardContent className="pt-5">
           <p className="text-xs text-[#132B22]/50 mb-1">Month-over-month</p>
           <div className="flex items-center gap-2">
@@ -257,7 +257,7 @@ function ChangeCard({ changePercent }: { changePercent: number | null }) {
   const isFlat = changePercent === 0
 
   return (
-    <Card className="bg-white border-gray-100 shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
       <CardContent className="pt-5">
         <p className="text-xs text-[#132B22]/50 mb-1">Month-over-month</p>
         <div className="flex items-center gap-2">
@@ -288,7 +288,7 @@ function ChangeCard({ changePercent }: { changePercent: number | null }) {
 
 function EmptyState() {
   return (
-    <Card className="bg-white border-gray-100 shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
       <CardContent className="py-16 text-center">
         <p className="text-[#132B22]/50 text-sm">
           No spend data yet — log purchases via Telegram or WhatsApp to see your analysis
@@ -300,7 +300,7 @@ function EmptyState() {
 
 function ErrorState() {
   return (
-    <Card className="bg-white border-gray-100 shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
       <CardContent className="py-16 text-center">
         <p className="text-[#132B22]/50 text-sm">Failed to load spend data</p>
       </CardContent>
@@ -313,7 +313,7 @@ function SpendSkeleton() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <Card key={i} className="bg-white border-gray-100 shadow-none">
+          <Card key={i} className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
             <CardContent className="pt-5">
               <Skeleton className="h-3 w-24 mb-2" />
               <Skeleton className="h-8 w-28" />
@@ -322,7 +322,7 @@ function SpendSkeleton() {
           </Card>
         ))}
       </div>
-      <Card className="bg-white border-gray-100 shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
         <CardHeader className="pb-2">
           <Skeleton className="h-5 w-48" />
         </CardHeader>
@@ -332,7 +332,7 @@ function SpendSkeleton() {
       </Card>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {Array.from({ length: 2 }).map((_, i) => (
-          <Card key={i} className="bg-white border-gray-100 shadow-none">
+          <Card key={i} className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
             <CardHeader className="pb-2">
               <Skeleton className="h-5 w-36" />
             </CardHeader>
@@ -352,7 +352,7 @@ export default function SpendPage() {
   return (
     <div className="space-y-6 max-w-7xl">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#132B22]">Spend Analysis</h1>
+        <h1 className="text-xl md:text-2xl font-medium text-[#132B22] [font-family:var(--font-playfair)]">Spend Analysis</h1>
         <p className="text-sm text-[#132B22]/50 mt-0.5">Track your spending patterns over time</p>
       </div>
 

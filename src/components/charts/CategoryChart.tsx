@@ -23,7 +23,7 @@ interface TooltipProps {
 function CustomTooltip({ active, payload }: TooltipProps) {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-md text-sm">
+    <div className="bg-white border border-[rgba(19,43,34,0.10)] rounded-lg px-3 py-2 shadow-md text-sm">
       <p className="text-[#132B22]/60 text-xs mb-0.5">{payload[0].name}</p>
       <p className="text-[#132B22] font-semibold">{formatCurrency(payload[0].value)}</p>
     </div>

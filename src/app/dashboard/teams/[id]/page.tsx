@@ -23,7 +23,7 @@ const SOURCE_STYLES: Record<string, string> = {
   telegram: 'bg-blue-50 text-blue-600',
   whatsapp: 'bg-green-50 text-green-700',
   image:    'bg-teal-50 text-[#132B22]',
-  manual:   'bg-gray-100 text-gray-500',
+  manual:   'bg-[#EFE7D6] text-[#5b6a5d]',
 }
 
 function initials(email: string) {
@@ -150,7 +150,7 @@ export default function TeamDetailPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-[#132B22]">{team.name}</h1>
+            <h1 className="text-2xl font-medium text-[#132B22] [font-family:var(--font-playfair)]">{team.name}</h1>
             {isOwner && (
               <Badge className="bg-[#132B22]/10 text-[#132B22] border-0 text-[10px] px-1.5">
                 <Crown className="h-2.5 w-2.5 mr-1" />
@@ -164,7 +164,7 @@ export default function TeamDetailPage() {
         </div>
         {isOwner && (
           <Link href={`/dashboard/teams/${id}/settings`}>
-            <Button variant="outline" size="sm" className="gap-2 text-[#132B22]/60 border-gray-200">
+            <Button variant="outline" size="sm" className="gap-2 text-[#132B22]/60 border-[rgba(19,43,34,0.18)]">
               <Settings className="h-3.5 w-3.5" />
               Settings
             </Button>
@@ -173,7 +173,7 @@ export default function TeamDetailPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-gray-100">
+      <div className="flex gap-1 border-b border-[rgba(19,43,34,0.10)]">
         {(['inventory', 'purchases', 'members'] as Tab[]).map((t) => (
           <button
             key={t}
@@ -212,7 +212,7 @@ export default function TeamDetailPage() {
               <Loader2 className="h-6 w-6 animate-spin text-[#132B22]" />
             </div>
           ) : !inventory || (inventory.out.length === 0 && inventory.low.length === 0 && inventory.ok.length === 0) ? (
-            <Card className="bg-white border-gray-100 shadow-none">
+            <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
               <CardContent className="flex flex-col items-center py-16 gap-3">
                 <PackageSearch className="h-10 w-10 text-[#132B22]/20" />
                 <p className="text-sm text-[#132B22]/45 text-center max-w-xs">
@@ -267,7 +267,7 @@ export default function TeamDetailPage() {
 
       {/* ── Purchases tab ── */}
       {tab === 'purchases' && (
-        <Card className="bg-white border-gray-100 shadow-none">
+        <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
           <CardHeader className="pb-3">
             <CardTitle className="text-base text-[#132B22]">Team Purchases</CardTitle>
           </CardHeader>
@@ -281,7 +281,7 @@ export default function TeamDetailPage() {
                 No team purchases yet
               </p>
             ) : (
-              <ul className="divide-y divide-gray-50">
+              <ul className="divide-y divide-[rgba(19,43,34,0.08)]">
                 {purchases.map((p) => {
                   const sourceStyle = SOURCE_STYLES[p.source] ?? SOURCE_STYLES.manual
                   return (
@@ -326,9 +326,9 @@ export default function TeamDetailPage() {
       {/* ── Members tab ── */}
       {tab === 'members' && (
         <div className="space-y-4">
-          <Card className="bg-white border-gray-100 shadow-none">
+          <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
             <CardContent className="p-0">
-              <ul className="divide-y divide-gray-50">
+              <ul className="divide-y divide-[rgba(19,43,34,0.08)]">
                 {team.members.map((m) => {
                   const isSelf  = m.user.email === userEmail
                   const canRemove = isOwner ? m.role !== 'owner' : isSelf && m.role !== 'owner'
@@ -387,7 +387,7 @@ export default function TeamDetailPage() {
 
           {/* Invite (owner only) */}
           {isOwner && (
-            <Card className="bg-white border-gray-100 shadow-none">
+            <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm text-[#132B22]">Invite by email</CardTitle>
               </CardHeader>
@@ -438,7 +438,7 @@ interface InventorySectionProps {
 
 function InventorySection({ title, color, bg, dot, items, label }: InventorySectionProps) {
   return (
-    <Card className="bg-white border-gray-100 shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
       <CardHeader className="pb-2">
         <div className="flex items-center gap-2">
           <div className={`h-2 w-2 rounded-full ${dot}`} />
@@ -449,7 +449,7 @@ function InventorySection({ title, color, bg, dot, items, label }: InventorySect
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        <ul className="divide-y divide-gray-50">
+        <ul className="divide-y divide-[rgba(19,43,34,0.08)]">
           {items.map((entry) => (
             <li key={entry.id} className="flex items-center justify-between py-2.5">
               <span className="text-sm font-medium text-[#132B22] capitalize">{entry.item}</span>

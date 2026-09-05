@@ -40,8 +40,8 @@ const STATUS_CONFIG = {
     label: 'Upcoming',
   },
   snoozed: {
-    dot: 'bg-gray-300',
-    badge: 'bg-gray-100 text-gray-500',
+    dot: 'bg-[#b9c2ba]',
+    badge: 'bg-[#EFE7D6] text-[#5b6a5d]',
     label: 'Snoozed',
   },
 }
@@ -150,7 +150,7 @@ export function ReminderList({ initialReminders }: ReminderListProps) {
                 overflow: 'hidden',
                 transition: { type: 'spring', bounce: 0, duration: 0.35 },
               }}
-              className="flex items-start gap-4 rounded-xl border border-gray-100 bg-white px-4 py-3.5"
+              className="flex items-start gap-4 rounded-xl border border-[rgba(19,43,34,0.10)] bg-white px-4 py-3.5"
             >
               {/* Status dot */}
               <div className="mt-1.5 shrink-0">
@@ -185,7 +185,7 @@ export function ReminderList({ initialReminders }: ReminderListProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-2.5 text-xs text-[#132B22]/60 hover:text-[#132B22] hover:bg-gray-100"
+                  className="h-7 px-2.5 text-xs text-[#132B22]/60 hover:text-[#132B22] hover:bg-[#EFE7D6]"
                   onClick={() => snooze(r.id)}
                   disabled={isBusy}
                   title="Snooze 7 days"
@@ -207,7 +207,7 @@ export function ReminderList({ initialReminders }: ReminderListProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-2.5 text-xs text-[#132B22]/60 hover:text-[#132B22] hover:bg-gray-100"
+                  className="h-7 px-2.5 text-xs text-[#132B22]/60 hover:text-[#132B22] hover:bg-[#EFE7D6]"
                   onClick={() => dismiss(r.id)}
                   disabled={isBusy}
                   title="Dismiss reminder"

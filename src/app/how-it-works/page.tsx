@@ -38,7 +38,7 @@ export default function HowItWorksPage() {
             >
               How it works
             </h1>
-            <p className="text-[17px] text-[#4A5568] leading-relaxed max-w-lg mx-auto">
+            <p className="text-[17px] text-[#3a473e] leading-relaxed max-w-lg mx-auto">
               Three steps. No friction. Works wherever you already message.
             </p>
           </div>
@@ -63,11 +63,11 @@ export default function HowItWorksPage() {
                   >
                     {title}
                   </h2>
-                  <p className="text-[#4A5568] leading-relaxed">{desc}</p>
+                  <p className="text-[#3a473e] leading-relaxed">{desc}</p>
 
                   {/* Connector line — not shown on last step */}
                   {i < STEPS.length - 1 && (
-                    <div className="mt-10 h-px bg-[#E5E7EB] md:hidden" />
+                    <div className="mt-10 h-px bg-[#e3d9c4] md:hidden" />
                   )}
                 </div>
               </div>
@@ -77,7 +77,7 @@ export default function HowItWorksPage() {
           {/* Bottom CTA */}
           <div
             className="mt-20 rounded-2xl px-8 py-10 text-center"
-            style={{ background: '#F0FBF9', border: '1px solid rgba(15,123,108,0.12)' }}
+            style={{ background: '#EFE7D6', border: '1px solid rgba(15,123,108,0.12)' }}
           >
             <h3
               className="text-[#132B22] mb-2"
@@ -85,12 +85,12 @@ export default function HowItWorksPage() {
             >
               Ready to try it?
             </h3>
-            <p className="text-[#4A5568] text-sm mb-6">
+            <p className="text-[#3a473e] text-sm mb-6">
               Sign in and Restock learns your patterns from your first purchase.
             </p>
             <a
               href="/"
-              className="inline-block bg-[#132B22] hover:bg-[#0A6459] text-white font-semibold text-sm px-8 py-3 rounded-full transition-colors"
+              className="inline-block bg-[#132B22] hover:bg-[#0d1f17] text-white font-semibold text-sm px-8 py-3 rounded-full transition-colors"
             >
               Get started
             </a>

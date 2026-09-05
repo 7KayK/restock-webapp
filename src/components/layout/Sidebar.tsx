@@ -85,12 +85,11 @@ export function Sidebar() {
   const hasAnyBot = hasTelegram || hasWhatsApp
 
   return (
-    <aside className="hidden md:flex flex-col w-60 bg-white border-r border-gray-100 shrink-0">
+    <aside className="hidden md:flex flex-col w-60 bg-white border-r border-[rgba(19,43,34,0.10)] shrink-0">
       {/* Logo */}
-      <div className="flex items-center px-5 h-16 border-b border-gray-100 shrink-0">
+      <div className="flex items-center px-5 h-16 border-b border-[rgba(19,43,34,0.10)] shrink-0">
         <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden"
-          style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}
+          className="w-9 h-9 rounded-lg flex items-center justify-center overflow-hidden bg-[#EFE7D6] border border-[rgba(19,43,34,0.10)]"
         >
           <Image
             src="/logo.jpg"
@@ -98,9 +97,12 @@ export function Sidebar() {
             height={36}
             alt="Restock"
             className="object-contain"
-            style={{ mixBlendMode: 'screen' }}
+            style={{ mixBlendMode: 'multiply' }}
           />
         </div>
+        <span className="ml-2.5 font-semibold text-[15px] text-[#132B22]" style={{ fontFamily: 'var(--font-playfair), "Fraunces", serif' }}>
+          restock
+        </span>
       </div>
 
       {/* Navigation */}
@@ -137,7 +139,7 @@ export function Sidebar() {
 
       {/* Channel quick-access */}
       {channels !== null && (
-        <div className="px-3 py-3 border-t border-gray-100 shrink-0">
+        <div className="px-3 py-3 border-t border-[rgba(19,43,34,0.10)] shrink-0">
           <p className="px-3 text-[10px] font-semibold text-[#132B22]/35 uppercase tracking-wider mb-1.5">
             Quick Access
           </p>
@@ -155,7 +157,7 @@ export function Sidebar() {
               ) : (
                 <Link
                   href="/dashboard/settings"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#132B22]/45 hover:bg-gray-100 hover:text-[#132B22] transition-colors"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[#132B22]/45 hover:bg-[#EFE7D6] hover:text-[#132B22] transition-colors"
                 >
                   Connect Telegram
                 </Link>
@@ -171,7 +173,7 @@ export function Sidebar() {
       )}
 
       {/* User */}
-      <div className="px-5 py-4 border-t border-gray-100 shrink-0">
+      <div className="px-5 py-4 border-t border-[rgba(19,43,34,0.10)] shrink-0">
         <UserButton />
       </div>
     </aside>
@@ -201,7 +203,7 @@ export function BottomNav() {
 
       {/* More drawer */}
       {moreOpen && (
-        <div className="fixed bottom-16 inset-x-0 z-50 md:hidden bg-white border-t border-gray-100 rounded-t-2xl shadow-xl">
+        <div className="fixed bottom-16 inset-x-0 z-50 md:hidden bg-white border-t border-[rgba(19,43,34,0.10)] rounded-t-2xl shadow-xl">
           <div className="px-4 pt-4 pb-3">
             <p className="text-[10px] font-semibold text-[#132B22]/35 uppercase tracking-wider mb-2">
               More
@@ -232,7 +234,7 @@ export function BottomNav() {
       )}
 
       {/* Bottom nav bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-50 md:hidden h-16 bg-white border-t border-gray-100 flex items-stretch">
+      <nav className="fixed bottom-0 inset-x-0 z-50 md:hidden h-16 bg-white border-t border-[rgba(19,43,34,0.10)] flex items-stretch">
         {BOTTOM_NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
           const active = isActive(href, exact)
           return (

@@ -21,7 +21,7 @@ interface TooltipProps {
 function CustomTooltip({ active, payload, label }: TooltipProps) {
   if (!active || !payload?.length) return null
   return (
-    <div className="bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-md text-sm">
+    <div className="bg-white border border-[rgba(19,43,34,0.10)] rounded-lg px-3 py-2 shadow-md text-sm">
       <p className="text-[#132B22]/60 text-xs mb-0.5">{label}</p>
       <p className="text-[#132B22] font-semibold">{formatCurrency(payload[0].value)}</p>
     </div>
@@ -47,7 +47,7 @@ export function SpendTrendChart({ data }: SpendTrendChartProps) {
     <div className="h-[220px]">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e3d9c4" vertical={false} />
           <XAxis
             dataKey="label"
             tick={{ fontSize: 11, fill: '#132B22', opacity: 0.5 }}

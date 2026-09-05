@@ -91,7 +91,7 @@ async function ActiveReminders() {
     }).length
 
     return (
-      <Card className="bg-white border-gray-100 shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base text-[#132B22]">Active Reminders</CardTitle>
@@ -110,7 +110,7 @@ async function ActiveReminders() {
   } catch (err) {
     console.error('[reminders page]', err)
     return (
-      <Card className="bg-white border-gray-100 shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
         <CardContent className="py-12 text-center text-sm text-[#132B22]/45">
           Failed to load reminders
         </CardContent>
@@ -121,13 +121,13 @@ async function ActiveReminders() {
 
 function RemindersSkeleton() {
   return (
-    <Card className="bg-white border-gray-100 shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
       <CardHeader className="pb-3">
         <Skeleton className="h-5 w-36" />
       </CardHeader>
       <CardContent className="space-y-3 pt-0">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="rounded-xl border border-gray-100 p-4">
+          <div key={i} className="rounded-xl border border-[rgba(19,43,34,0.10)] p-4">
             <div className="flex items-start gap-3">
               <Skeleton className="h-2.5 w-2.5 rounded-full mt-1.5 shrink-0" />
               <div className="flex-1 space-y-2">
@@ -151,7 +151,7 @@ export default function RemindersPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#132B22]">Reminders</h1>
+        <h1 className="text-xl md:text-2xl font-medium text-[#132B22] [font-family:var(--font-playfair)]">Reminders</h1>
         <p className="text-sm text-[#132B22]/50 mt-0.5">
           Restock dates predicted from your purchase history — updates each time you visit
         </p>

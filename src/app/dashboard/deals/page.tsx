@@ -12,7 +12,7 @@ import type { FoodProduct } from '@/types'
 const NUTRISCORE_STYLES: Record<string, string> = {
   a: 'bg-green-600 text-white',
   b: 'bg-green-400 text-white',
-  c: 'bg-yellow-400 text-gray-800',
+  c: 'bg-yellow-400 text-[#16211B]',
   d: 'bg-orange-400 text-white',
   e: 'bg-red-500 text-white',
 }
@@ -33,7 +33,7 @@ async function ProductsContent() {
 
   if (topItems.length === 0) {
     return (
-      <Card className="bg-white border-gray-100 shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
         <CardContent className="py-16 text-center">
           <ShoppingBag className="h-8 w-8 mx-auto mb-3 text-[#132B22]/20" />
           <p className="text-sm text-[#132B22]/45">
@@ -60,7 +60,7 @@ async function ProductsContent() {
 
   if (products.length === 0) {
     return (
-      <Card className="bg-white border-gray-100 shadow-none">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
         <CardContent className="py-16 text-center">
           <Package className="h-8 w-8 mx-auto mb-3 text-[#132B22]/20" />
           <p className="text-sm text-[#132B22]/45">No product matches found for your items yet</p>
@@ -73,7 +73,7 @@ async function ProductsContent() {
   }
 
   return (
-    <Card className="bg-white border-gray-100 shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base text-[#132B22]">Your Items</CardTitle>
@@ -93,14 +93,14 @@ async function ProductsContent() {
 
 function ProductCard({ product }: { product: FoodProduct }) {
   const nutriStyle = product.nutriscoreGrade
-    ? NUTRISCORE_STYLES[product.nutriscoreGrade] ?? 'bg-gray-200 text-gray-600'
+    ? NUTRISCORE_STYLES[product.nutriscoreGrade] ?? 'bg-[#EFE7D6] text-[#3a473e]'
     : null
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white p-4 flex flex-col gap-3">
+    <div className="rounded-xl border border-[rgba(19,43,34,0.10)] bg-white p-4 flex flex-col gap-3">
       {/* Product image */}
       {product.imageUrl && (
-        <div className="h-24 w-full flex items-center justify-center rounded-lg bg-gray-50 overflow-hidden">
+        <div className="h-24 w-full flex items-center justify-center rounded-lg bg-[#F7F2E7] overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={product.imageUrl}
@@ -140,14 +140,14 @@ function ProductCard({ product }: { product: FoodProduct }) {
 
 function ProductsSkeleton() {
   return (
-    <Card className="bg-white border-gray-100 shadow-none">
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-none">
       <CardHeader className="pb-3">
         <Skeleton className="h-5 w-32" />
       </CardHeader>
       <CardContent className="pt-0">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-gray-100 p-4 space-y-3">
+            <div key={i} className="rounded-xl border border-[rgba(19,43,34,0.10)] p-4 space-y-3">
               <Skeleton className="h-24 w-full rounded-lg" />
               <div className="space-y-1.5">
                 <Skeleton className="h-3 w-16" />
@@ -167,7 +167,7 @@ export default function DealsPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#132B22]">Deals</h1>
+        <h1 className="text-xl md:text-2xl font-medium text-[#132B22] [font-family:var(--font-playfair)]">Deals</h1>
         <p className="text-sm text-[#132B22]/50 mt-0.5">
           Product information for your most purchased items
         </p>

@@ -26,7 +26,7 @@ const STATUS_BG: Record<PantryStatus, string> = {
 const CONFIDENCE_BG: Record<string, string> = {
   high: 'bg-[#132B22]/10 text-[#132B22]',
   medium: 'bg-yellow-50 text-yellow-700',
-  low: 'bg-gray-100 text-gray-500',
+  low: 'bg-[#EFE7D6] text-[#5b6a5d]',
 }
 
 type Filter = 'all' | PantryStatus
@@ -39,7 +39,7 @@ function CircularProgress({ pct, status }: { pct: number; status: PantryStatus }
 
   return (
     <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
-      <circle cx="24" cy="24" r={r} fill="none" stroke="#F3F4F6" strokeWidth="4" />
+      <circle cx="24" cy="24" r={r} fill="none" stroke="#EFE7D6" strokeWidth="4" />
       <circle
         cx="24"
         cy="24"
@@ -101,7 +101,7 @@ function PantryCard({ item, onRanOut }: { item: PantryItem; onRanOut: (name: str
   }
 
   return (
-    <div className="bg-white border border-gray-100 rounded-lg p-4 flex flex-col gap-3 hover:shadow-sm transition-shadow">
+    <div className="bg-white border border-[rgba(19,43,34,0.10)] rounded-lg p-4 flex flex-col gap-3 hover:shadow-sm transition-shadow">
       {/* Top row: progress ring + name/category */}
       <div className="flex items-start gap-3">
         <CircularProgress pct={item.estimatedRemaining} status={item.status} />
@@ -139,7 +139,7 @@ function PantryCard({ item, onRanOut }: { item: PantryItem; onRanOut: (name: str
           'w-full flex items-center justify-center gap-1.5 rounded-md py-1.5 text-[11px] font-medium transition-colors border',
           done
             ? 'border-[#EF4444]/20 bg-[#EF4444]/5 text-[#EF4444] cursor-default'
-            : 'border-gray-100 text-[#132B22]/50 hover:border-[#EF4444]/30 hover:text-[#EF4444] hover:bg-[#EF4444]/5'
+            : 'border-[rgba(19,43,34,0.10)] text-[#132B22]/50 hover:border-[#EF4444]/30 hover:text-[#EF4444] hover:bg-[#EF4444]/5'
         )}
       >
         <PackageX className="h-3 w-3" />
@@ -159,7 +159,7 @@ function SummaryStatCard({
   color: string
 }) {
   return (
-    <div className="bg-white border border-gray-100 rounded-lg px-5 py-4 flex items-center gap-4">
+    <div className="bg-white border border-[rgba(19,43,34,0.10)] rounded-lg px-5 py-4 flex items-center gap-4">
       <span className="text-2xl font-bold" style={{ color }}>
         {count}
       </span>
@@ -232,7 +232,7 @@ export default function PantryPage() {
         </div>
         <Link
           href="/dashboard/history"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#132B22] text-white text-sm font-medium hover:bg-[#0A6459] transition-colors shrink-0"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#132B22] text-white text-sm font-medium hover:bg-[#0d1f17] transition-colors shrink-0"
         >
           <Camera className="h-4 w-4" />
           Smart Import
@@ -247,7 +247,7 @@ export default function PantryPage() {
       </div>
 
       {/* Filter tabs */}
-      <div className="flex items-center gap-1 border-b border-gray-100">
+      <div className="flex items-center gap-1 border-b border-[rgba(19,43,34,0.10)]">
         {FILTERS.map(({ key, label }) => (
           <button
             key={key}
@@ -268,7 +268,7 @@ export default function PantryPage() {
       {loading && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="bg-white border border-gray-100 rounded-lg p-4 h-36 animate-pulse" />
+            <div key={i} className="bg-white border border-[rgba(19,43,34,0.10)] rounded-lg p-4 h-36 animate-pulse" />
           ))}
         </div>
       )}
@@ -276,8 +276,8 @@ export default function PantryPage() {
       {/* Empty state */}
       {!loading && items.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center">
-            <Package className="h-7 w-7 text-gray-400" />
+          <div className="w-14 h-14 rounded-full bg-[#EFE7D6] flex items-center justify-center">
+            <Package className="h-7 w-7 text-[#8a9389]" />
           </div>
           <div>
             <p className="text-sm font-medium text-[#132B22]">Your pantry is empty</p>
@@ -287,7 +287,7 @@ export default function PantryPage() {
           </div>
           <Link
             href="/dashboard/history"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#132B22] text-white text-sm font-medium hover:bg-[#0A6459] transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#132B22] text-white text-sm font-medium hover:bg-[#0d1f17] transition-colors"
           >
             <Camera className="h-4 w-4" />
             Smart Import

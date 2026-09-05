@@ -131,7 +131,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#132B22]">Settings</h1>
+        <h1 className="text-xl md:text-2xl font-medium text-[#132B22] [font-family:var(--font-playfair)]">Settings</h1>
         <p className="text-sm text-muted-foreground mt-1">Manage your account and bot connections.</p>
       </div>
 
@@ -254,15 +254,15 @@ export default function SettingsPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Phone className="h-5 w-5 text-[#6B7280]" />
-              <CardTitle className="text-base text-[#6B7280]">WhatsApp</CardTitle>
+              <Phone className="h-5 w-5 text-[#5b6a5d]" />
+              <CardTitle className="text-base text-[#5b6a5d]">WhatsApp</CardTitle>
             </div>
-            <Badge variant="outline" className="text-[#9CA3AF] border-gray-200">Coming soon</Badge>
+            <Badge variant="outline" className="text-[#8a9389] border-[rgba(19,43,34,0.18)]">Coming soon</Badge>
           </div>
           <CardDescription>Log purchases and receive reminders on WhatsApp.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-lg bg-gray-50 border border-gray-100 p-4 text-sm text-[#6B7280] leading-relaxed">
+          <div className="rounded-lg bg-[#F7F2E7] border border-[rgba(19,43,34,0.10)] p-4 text-sm text-[#5b6a5d] leading-relaxed">
             Coming soon — pending Meta Business Verification. WhatsApp will be available once our
             business account is approved. Use Telegram in the meantime — it works identically.
           </div>
@@ -305,7 +305,7 @@ export default function SettingsPage() {
                   })}
                 </span>
               </div>
-              <div className="flex items-center justify-between py-2 border-t border-gray-100">
+              <div className="flex items-center justify-between py-2 border-t border-[rgba(19,43,34,0.10)]">
                 <div>
                   <p className="text-sm font-medium text-[#132B22]">Auto-create events for reminders</p>
                   <p className="text-xs text-muted-foreground mt-0.5">

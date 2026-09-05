@@ -132,7 +132,7 @@ export function StoreMap() {
               'w-full text-left rounded-xl border p-3 transition-colors',
               activeIdx === idx
                 ? 'border-[#132B22] bg-[#132B22]/5'
-                : 'border-gray-100 bg-white hover:border-[#132B22]/30 hover:bg-[#132B22]/5'
+                : 'border-[rgba(19,43,34,0.10)] bg-white hover:border-[#132B22]/30 hover:bg-[#132B22]/5'
             )}
           >
             <div className="flex items-start justify-between gap-2">
@@ -159,7 +159,7 @@ export function StoreMap() {
       </div>
 
       {/* Map */}
-      <div className="flex-1 rounded-xl overflow-hidden border border-gray-100 min-h-[400px]">
+      <div className="flex-1 rounded-xl overflow-hidden border border-[rgba(19,43,34,0.10)] min-h-[400px]">
         {center && (
           <GoogleMap
             mapContainerStyle={MAP_CONTAINER_STYLE}
@@ -217,13 +217,13 @@ export function StoreMap() {
               >
                 <div className="p-1 min-w-[180px]">
                   <p className="font-semibold text-sm text-[#132B22]">{selected.name}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{selected.address}</p>
-                  <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
+                  <p className="text-xs text-[#5b6a5d] mt-0.5">{selected.address}</p>
+                  <div className="flex items-center gap-1 mt-1 text-xs text-[#5b6a5d]">
                     <Clock className="h-3 w-3" />
                     <span>{selected.hoursToday}</span>
                   </div>
                   {selected.rating !== undefined && (
-                    <div className="flex items-center gap-1 mt-0.5 text-xs text-gray-500">
+                    <div className="flex items-center gap-1 mt-0.5 text-xs text-[#5b6a5d]">
                       <Star className="h-3 w-3 fill-[#EAB308] text-[#EAB308]" />
                       <span>{selected.rating.toFixed(1)} rating</span>
                     </div>
