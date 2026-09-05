@@ -22,7 +22,7 @@ export function MarketingNav() {
             className="object-contain"
           />
           <span className="text-white font-semibold text-lg hidden sm:inline" style={{ fontFamily: 'var(--font-playfair), "Fraunces", serif' }}>
-            restock
+            Restock
           </span>
         </Link>
 

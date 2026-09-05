@@ -100,7 +100,7 @@ export function Sidebar() {
           />
         </div>
         <span className="ml-2.5 font-semibold text-[15px] text-[#132B22]" style={{ fontFamily: 'var(--font-playfair), "Fraunces", serif' }}>
-          restock
+          Restock
         </span>
       </div>
 

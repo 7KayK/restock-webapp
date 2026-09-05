@@ -109,7 +109,7 @@ function PhoneMock() {
           <span>&bull;&bull;&bull; 100%</span>
         </div>
         <div className="flex items-center gap-1.5 mb-3.5 font-semibold text-[14px] text-[#132B22]" style={FRAUNCES}>
-          <span className="w-1.5 h-1.5 rounded-[2px] bg-[#C9A15A] inline-block" /> restock
+          <span className="w-1.5 h-1.5 rounded-[2px] bg-[#C9A15A] inline-block" /> Restock
         </div>
         <div className="flex justify-between items-center text-[10.5px] text-[#5b6a5d] mb-2.5">
           <span>This week&rsquo;s shelf</span>

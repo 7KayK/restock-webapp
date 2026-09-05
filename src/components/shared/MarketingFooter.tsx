@@ -18,7 +18,7 @@ export function MarketingFooter() {
                 className="object-contain"
               />
               <span className="text-white font-semibold text-base" style={{ fontFamily: 'var(--font-playfair), "Fraunces", serif' }}>
-                restock
+                Restock
               </span>
             </div>
             <p className="text-xs text-white/55 leading-relaxed max-w-[220px]">
