@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono, Fraunces } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from '@/components/ui/sonner'
+import { AssessmentProvider } from '@/components/providers/AssessmentProvider'
 import './globals.css'
 
 const geistSans = Inter({
@@ -44,7 +45,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} h-full antialiased`}
       >
         <body className="min-h-full flex flex-col bg-[#F7F2E7] text-foreground">
-          {children}
+          <AssessmentProvider>
+            {children}
+          </AssessmentProvider>
           <Toaster />
         </body>
       </html>

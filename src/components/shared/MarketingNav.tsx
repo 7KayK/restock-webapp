@@ -5,9 +5,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 import { TelegramIcon } from '@/components/shared/ChannelIcons'
+import { useAssessment } from '@/components/providers/AssessmentProvider'
 
 export function MarketingNav() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const { enabled: assessmentEnabled, open: openAssessment } = useAssessment()
 
   return (
     <header className="sticky top-0 z-50 bg-[#132B22]" style={{ isolation: 'isolate' }}>
@@ -43,6 +45,15 @@ export function MarketingNav() {
           <Link href="/blog" className="text-sm text-white/80 hover:text-white transition-colors">
             Blog
           </Link>
+          {assessmentEnabled && (
+            <button
+              type="button"
+              onClick={openAssessment}
+              className="text-sm text-white/80 hover:text-white transition-colors"
+            >
+              Take the Readiness Quiz
+            </button>
+          )}
           <Link href="/sign-in" className="text-sm text-white/80 hover:text-white transition-colors">
             Sign in
           </Link>
@@ -105,6 +116,18 @@ export function MarketingNav() {
               >
                 Blog
               </Link>
+              {assessmentEnabled && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false)
+                    openAssessment()
+                  }}
+                  className="text-left text-sm font-medium text-white hover:text-[#E4C07D] transition-colors"
+                >
+                  Take the Readiness Quiz
+                </button>
+              )}
               <Link
                 href="/sign-in"
                 onClick={() => setMenuOpen(false)}

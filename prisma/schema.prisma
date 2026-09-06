@@ -91,6 +91,10 @@ model Waitlist {
   id        String   @id @default(cuid())
   name      String
   email     String   @unique
-  country   String
+  country   String?
+  phone     String?
+  segment   String?
+  score     Int?
+  answers   Json?
   createdAt DateTime @default(now())
 }
