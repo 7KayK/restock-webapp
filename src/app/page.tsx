@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { MarketingNav } from '@/components/shared/MarketingNav'
 import { MarketingFooter } from '@/components/shared/MarketingFooter'
 
@@ -298,6 +299,29 @@ export default function Home() {
           Groceries here, cleaning supplies there — Restock ties it into one picture of what your
           household or shop actually spends on staying stocked.
         </p>
+      </div>
+
+      {/* PHOTO BAND */}
+      <div className="relative flex items-center justify-center overflow-hidden" style={{ background: '#132B22', height: '60vh', minHeight: '420px' }}>
+        <Image
+          src="/photo-band-pantry.jpg"
+          alt=""
+          fill
+          className="object-cover"
+          style={{ opacity: 0.7 }}
+          sizes="100vw"
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(180deg, rgba(10,20,16,.35), rgba(10,20,16,.65))' }}
+        />
+        <div className="relative z-[2] text-center px-6">
+          <h2 className="text-white" style={{ ...FRAUNCES, fontSize: 'clamp(28px,4vw,48px)' }}>
+            The same assistant,
+            <br />
+            wherever you shop.
+          </h2>
+        </div>
       </div>
 
       {/* COMING SOON: MOBILE APP */}
