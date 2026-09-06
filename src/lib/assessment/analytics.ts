@@ -21,7 +21,7 @@ export type AssessmentEventName =
 export interface AssessmentEventPayload {
   step?: number
   questionId?: string
-  trigger?: 'auto' | 'manual'
+  trigger?: 'auto' | 'manual' | 'direct_link'
   score?: number
   segment?: string
   lastStep?: number
