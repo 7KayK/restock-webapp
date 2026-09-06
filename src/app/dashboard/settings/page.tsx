@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { CheckCircle2, MessageCircle, Phone, User, Loader2, AlertCircle, CalendarDays } from 'lucide-react'
 import { TelegramIcon } from '@/components/shared/ChannelIcons'
+import { LocationSettingsCard } from '@/components/shared/LocationSettingsCard'
 import { formatDate } from '@/lib/utils'
 import type { UserSettings, ChannelStatus, Integration } from '@/types'
 
@@ -162,6 +163,12 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Location */}
+      <LocationSettingsCard
+        settings={settings}
+        onUpdated={(data) => setSettings((prev) => (prev ? { ...prev, ...data } : prev))}
+      />
 
       {/* Telegram */}
       <Card>

@@ -115,6 +115,9 @@ export interface UserSettings {
   telegramId: string | null
   whatsappNumber: string | null
   createdAt: string
+  locationLabel: string | null
+  locationLat: number | null
+  locationLng: number | null
 }
 
 export interface BotActivity {

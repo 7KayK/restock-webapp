@@ -7,17 +7,25 @@ datasource db {
 }
 
 model User {
-  id              String            @id @default(cuid())
-  clerkId         String            @unique
-  email           String            @unique
-  telegramId      String?           @unique
-  whatsappNumber  String?           @unique
-  createdAt       DateTime          @default(now())
-  purchases       Purchase[]
-  reminders       Reminder[]
-  teamsOwned      Team[]            @relation("TeamOwner")
-  teamMemberships TeamMember[]
-  integrations    UserIntegration[]
+  id                String            @id @default(cuid())
+  clerkId           String            @unique
+  email             String            @unique
+  telegramId        String?           @unique
+  whatsappNumber    String?           @unique
+  // Single "current location" (kept deliberately simple — no saved
+  // address book yet). locationLabel is a coarse, human-readable
+  // city/region/country string for display; lat/lng are the precise
+  // coordinates actually used for nearby-store distance calculations.
+  locationLabel     String?
+  locationLat       Float?
+  locationLng       Float?
+  locationUpdatedAt DateTime?
+  createdAt         DateTime          @default(now())
+  purchases         Purchase[]
+  reminders         Reminder[]
+  teamsOwned        Team[]            @relation("TeamOwner")
+  teamMemberships   TeamMember[]
+  integrations      UserIntegration[]
 }
 
 model Purchase {

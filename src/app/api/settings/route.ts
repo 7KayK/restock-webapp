@@ -16,6 +16,9 @@ export async function GET() {
         telegramId: user.telegramId,
         whatsappNumber: user.whatsappNumber,
         createdAt: user.createdAt,
+        locationLabel: user.locationLabel,
+        locationLat: user.locationLat,
+        locationLng: user.locationLng,
       },
     })
   } catch {
@@ -31,7 +34,14 @@ export async function PATCH(request: NextRequest) {
     const body = (await request.json()) as Record<string, unknown>
     const user = await getOrCreateUser(userId)
 
-    const update: { telegramId?: string | null; whatsappNumber?: string | null } = {}
+    const update: {
+      telegramId?: string | null
+      whatsappNumber?: string | null
+      locationLabel?: string | null
+      locationLat?: number | null
+      locationLng?: number | null
+      locationUpdatedAt?: Date | null
+    } = {}
 
     if ('telegramId' in body) {
       const val = body.telegramId
@@ -54,6 +64,33 @@ export async function PATCH(request: NextRequest) {
       }
     }
 
+    // Location is a single "current location" — either clear it entirely
+    // (locationLabel: null) or set all three fields together.
+    if ('locationLabel' in body || 'locationLat' in body || 'locationLng' in body) {
+      const { locationLabel, locationLat, locationLng } = body
+
+      if (locationLabel === null) {
+        update.locationLabel = null
+        update.locationLat = null
+        update.locationLng = null
+        update.locationUpdatedAt = null
+      } else {
+        if (typeof locationLabel !== 'string' || locationLabel.trim().length === 0) {
+          return Response.json({ error: 'locationLabel is required to set a location' }, { status: 400 })
+        }
+        if (typeof locationLat !== 'number' || locationLat < -90 || locationLat > 90) {
+          return Response.json({ error: 'locationLat must be a number between -90 and 90' }, { status: 400 })
+        }
+        if (typeof locationLng !== 'number' || locationLng < -180 || locationLng > 180) {
+          return Response.json({ error: 'locationLng must be a number between -180 and 180' }, { status: 400 })
+        }
+        update.locationLabel = locationLabel.trim()
+        update.locationLat = locationLat
+        update.locationLng = locationLng
+        update.locationUpdatedAt = new Date()
+      }
+    }
+
     const updated = await prisma.user.update({
       where: { id: user.id },
       data: update,
@@ -65,6 +102,9 @@ export async function PATCH(request: NextRequest) {
         telegramId: updated.telegramId,
         whatsappNumber: updated.whatsappNumber,
         createdAt: updated.createdAt,
+        locationLabel: updated.locationLabel,
+        locationLat: updated.locationLat,
+        locationLng: updated.locationLng,
       },
     })
   } catch (err) {
