@@ -34,15 +34,35 @@ function buildMonthPoints(
   return points
 }
 
-async function SpendAnalysisContent() {
-  const { userId } = await auth()
-  if (!userId) return null
+// All data-fetching and number-crunching for the spend page lives here,
+// behind a single try/catch, and returns a plain discriminated result
+// instead of JSX. react-hooks/error-boundaries flags constructing JSX
+// inside a try/catch (a thrown render error wouldn't be catchable that
+// way in a client component), so SpendAnalysisContent below builds the
+// JSX only after this function has already resolved — nothing gets
+// rendered while still inside the try.
+type SpendData = {
+  byMonth: MonthlySpendPoint[]
+  byCategory: CategorySpend[]
+  topItems: TopItem[]
+  currentMonthSpend: number
+  previousMonthSpend: number
+  changePercent: number | null
+  now: Date
+  totalCategorySpend: number
+}
 
+type SpendLoadResult =
+  | { status: 'ok'; data: SpendData }
+  | { status: 'empty' }
+  | { status: 'error' }
+
+async function loadSpendData(userId: string): Promise<SpendLoadResult> {
   try {
     const user = await prisma.user.findUnique({ where: { clerkId: userId } })
 
     if (!user) {
-      return <EmptyState />
+      return { status: 'empty' }
     }
 
     const twelveMonthsAgo = startOfMonth(subMonths(new Date(), 11))
@@ -100,8 +120,46 @@ async function SpendAnalysisContent() {
 
     const totalCategorySpend = byCategory.reduce((s, c) => s + c.total, 0)
 
-    return (
-      <div className="space-y-6">
+    return {
+      status: 'ok',
+      data: {
+        byMonth,
+        byCategory,
+        topItems,
+        currentMonthSpend,
+        previousMonthSpend,
+        changePercent,
+        now,
+        totalCategorySpend,
+      },
+    }
+  } catch {
+    return { status: 'error' }
+  }
+}
+
+async function SpendAnalysisContent() {
+  const { userId } = await auth()
+  if (!userId) return null
+
+  const result = await loadSpendData(userId)
+
+  if (result.status === 'empty') return <EmptyState />
+  if (result.status === 'error') return <ErrorState />
+
+  const {
+    byMonth,
+    byCategory,
+    topItems,
+    currentMonthSpend,
+    previousMonthSpend,
+    changePercent,
+    now,
+    totalCategorySpend,
+  } = result.data
+
+  return (
+    <div className="space-y-6">
         {/* Month-over-month card */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <MoMCard
@@ -220,9 +278,6 @@ async function SpendAnalysisContent() {
         </div>
       </div>
     )
-  } catch {
-    return <ErrorState />
-  }
 }
 
 function MoMCard({ label, amount, sub }: { label: string; amount: number; sub: string }) {

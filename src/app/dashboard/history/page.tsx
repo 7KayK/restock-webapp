@@ -8,10 +8,16 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { PurchaseList } from '@/components/shared/PurchaseList'
 import type { Purchase } from '@/types'
 
-async function PurchaseHistory() {
-  const { userId } = await auth()
-  if (!userId) return null
+// All data access lives here, behind the try/catch, and returns a plain
+// result instead of JSX — react-hooks/error-boundaries flags constructing
+// JSX inside a try/catch (a render error there wouldn't actually be
+// catchable in a client component), so PurchaseHistory below only builds
+// JSX after this has already resolved.
+type HistoryLoadResult =
+  | { status: 'ok'; purchases: Purchase[]; categories: string[] }
+  | { status: 'error' }
 
+async function loadHistory(userId: string): Promise<HistoryLoadResult> {
   try {
     const user = await prisma.user.findUnique({ where: { clerkId: userId } })
 
@@ -37,22 +43,19 @@ async function PurchaseHistory() {
       ).sort()
     }
 
-    return (
-      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base text-[#132B22]">All Purchases</CardTitle>
-            <span className="text-xs text-[#132B22]/40 font-normal">
-              {purchases.length} total
-            </span>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <PurchaseList initialPurchases={purchases} categories={categories} />
-        </CardContent>
-      </Card>
-    )
+    return { status: 'ok', purchases, categories }
   } catch {
+    return { status: 'error' }
+  }
+}
+
+async function PurchaseHistory() {
+  const { userId } = await auth()
+  if (!userId) return null
+
+  const result = await loadHistory(userId)
+
+  if (result.status === 'error') {
     return (
       <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardContent className="py-12 text-center text-sm text-[#132B22]/45">
@@ -61,6 +64,24 @@ async function PurchaseHistory() {
       </Card>
     )
   }
+
+  const { purchases, categories } = result
+
+  return (
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base text-[#132B22]">All Purchases</CardTitle>
+          <span className="text-xs text-[#132B22]/40 font-normal">
+            {purchases.length} total
+          </span>
+        </div>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <PurchaseList initialPurchases={purchases} categories={categories} />
+      </CardContent>
+    </Card>
+  )
 }
 
 function HistorySkeleton() {

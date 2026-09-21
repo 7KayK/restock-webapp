@@ -295,7 +295,7 @@ export default function TeamSettingsPage() {
           <div className="space-y-4">
             <p className="text-sm text-[#132B22]/70">
               This will permanently delete <strong>{team.name}</strong> and remove all members.
-              Existing purchases will remain in each member's personal history.
+              Existing purchases will remain in each member&apos;s personal history.
             </p>
             {deleteErr && (
               <p className="text-sm text-[#EF4444]">{deleteErr}</p>

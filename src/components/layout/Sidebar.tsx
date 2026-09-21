@@ -12,7 +12,6 @@ import {
   History,
   Bell,
   ShoppingBag,
-  Tag,
   MapPin,
   Users,
   MessageSquare,
@@ -31,7 +30,6 @@ const navItems = [
   { href: '/dashboard/history', label: 'History', icon: History },
   { href: '/dashboard/reminders', label: 'Reminders', icon: Bell },
   { href: '/dashboard/shopping', label: 'Shopping Trip', icon: ShoppingBag },
-  { href: '/dashboard/deals', label: 'Deals', icon: Tag },
   { href: '/dashboard/teams', label: 'Teams', icon: Users },
   { href: '/dashboard/stores', label: 'Nearest Store', icon: MapPin },
   { href: '/dashboard/assistant', label: 'AI Assistant', icon: MessageSquare },
@@ -49,14 +47,12 @@ const BOTTOM_NAV_ITEMS = [
 const MORE_ITEMS = [
   { href: '/dashboard/pantry', label: 'Pantry', icon: Warehouse },
   { href: '/dashboard/spend', label: 'Spend Analysis', icon: BarChart3 },
-  { href: '/dashboard/deals', label: 'Deals', icon: Tag },
   { href: '/dashboard/teams', label: 'Teams', icon: Users },
   { href: '/dashboard/stores', label: 'Nearest Store', icon: MapPin },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
 
 const TELEGRAM_BOT = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
-const WHATSAPP_PHONE = process.env.NEXT_PUBLIC_WHATSAPP_PHONE_NUMBER
 
 export function Sidebar() {
   const pathname = usePathname()
@@ -81,8 +77,6 @@ export function Sidebar() {
   }
 
   const hasTelegram = !!channels?.telegramId && !!TELEGRAM_BOT
-  const hasWhatsApp = !!channels?.whatsappNumber && !!WHATSAPP_PHONE
-  const hasAnyBot = hasTelegram || hasWhatsApp
 
   return (
     <aside className="hidden md:flex flex-col w-60 bg-white border-r border-[rgba(19,43,34,0.10)] shrink-0">

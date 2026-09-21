@@ -1,5 +1,14 @@
 import type { FoodProduct } from '@/types'
 
+// NOTE: despite the filename, this does not call the Kroger API — it wraps
+// Open Food Facts, a free crowdsourced product-metadata database. It
+// returns product name/brand/image/Nutri-Score only; there is no price
+// field here at all. Real-time pricing (the Cart Builder on the Deals
+// page, and per-item prices on the Shopping list) comes from crowdsourced
+// PriceSighting reports instead (src/lib/priceSightings.ts) — a real
+// Kroger integration would only cover the US, which doesn't help Canada
+// (the primary market) or the other markets Restock is being tested in.
+
 const OFF_SEARCH = 'https://world.openfoodfacts.org/cgi/search.pl'
 const USER_AGENT = 'Restock/1.0 (restock.chat)'
 

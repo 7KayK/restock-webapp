@@ -26,6 +26,9 @@ model User {
   teamsOwned        Team[]            @relation("TeamOwner")
   teamMemberships   TeamMember[]
   integrations      UserIntegration[]
+  priceSightings    PriceSighting[]
+  shoppingListItems ShoppingListItem[]
+  shoppingList      ShoppingList?
 }
 
 model Purchase {
@@ -93,6 +96,82 @@ model UserIntegration {
   updatedAt    DateTime  @updatedAt
 
   @@unique([userId, provider])
+}
+
+// A single reported (or, later, scraped) price for an item at a store.
+// Crowdsourced sightings are the primary source for now — a user taps
+// "I saw this here for $X" while shopping. storeLat/storeLng are captured
+// at report time (from Places, when the store was picked from search) so
+// distance-based ranking can be added later without a backfill.
+// `source` distinguishes a crowdsourced report from a future store-website
+// price feed or a manually-seeded reference price, so both can coexist.
+model PriceSighting {
+  id           String   @id @default(cuid())
+  item         String
+  storeName    String
+  storePlaceId String?
+  storeLat     Float?
+  storeLng     Float?
+  price        Float
+  currency     String
+  unit         String?
+  source       String   @default("crowdsourced")
+  reportedById String?
+  reportedBy   User?    @relation(fields: [reportedById], references: [id])
+  createdAt    DateTime @default(now())
+
+  @@index([item])
+  @@index([storePlaceId])
+}
+
+// The shopper's actual current shopping list, as they've edited it. Seeded
+// once from the auto-generated "smart" suggestions (due reminders +
+// overdue-by-average-interval predicted items) the first time the list is
+// empty, then the client syncs the whole list here on every change — so
+// manual adds/edits/removes survive a reload or a switch to another device,
+// instead of only living in that browser tab's React state. `position`
+// preserves on-screen order across a delete-all-and-recreate sync, which is
+// simpler and safe at this list's size than diffing individual rows.
+model ShoppingListItem {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  name       String
+  quantity   Int      @default(1)
+  unit       String?
+  category   String?
+  source     String   @default("manual")
+  reminderId String?
+  // Short, human-readable context for why this item is on the list — e.g.
+  // "Running low - about 3 days remaining" from Pantry, or "Usually bought
+  // every 12 days" from the smart-list predictor. Null for a plain manual
+  // add, where there's nothing to explain.
+  reason     String?
+  done       Boolean  @default(false)
+  position   Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Optimistic-concurrency counter for a shopper's persisted list. Every write
+// to their ShoppingListItem rows (edit sync, regenerate, trip completion)
+// bumps `revision` under the same lock; a client saving from an older
+// revision than the current one is rejected instead of overwriting whatever
+// another device saved in between. A missing row means revision 0 (nothing
+// has been written since this table existed). Its own table, rather than a
+// column on User, so the shared User table the bots read is untouched.
+model ShoppingList {
+  userId    String   @id
+  user      User     @relation(fields: [userId], references: [id])
+  revision  Int      @default(0)
+  // Whether an empty list should be refilled with suggestions on the next
+  // load. True for a brand-new list and after a completed trip (the system
+  // emptied it); false once the shopper saves an empty list themselves, so
+  // clearing the list on purpose isn't undone by a reload.
+  reseedWhenEmpty Boolean @default(true)
+  updatedAt DateTime @updatedAt
 }
 
 model Waitlist {

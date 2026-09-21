@@ -67,10 +67,15 @@ async function syncReminders(userId: string) {
   return user.id
 }
 
-async function ActiveReminders() {
-  const { userId } = await auth()
-  if (!userId) return null
+// Data access lives here, behind the try/catch, returning a plain result —
+// see the note on loadHistory/loadSpendData in the history/spend pages for
+// why: react-hooks/error-boundaries flags JSX built inside a try/catch, so
+// ActiveReminders below only builds JSX once this has already resolved.
+type RemindersLoadResult =
+  | { status: 'ok'; reminders: Reminder[]; activeCount: number }
+  | { status: 'error' }
 
+async function loadReminders(userId: string): Promise<RemindersLoadResult> {
   try {
     // Auto-generate/refresh predictions from purchase history on every page load
     const internalUserId = await syncReminders(userId)
@@ -90,25 +95,20 @@ async function ActiveReminders() {
       return !snoozed || snoozed <= new Date()
     }).length
 
-    return (
-      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base text-[#132B22]">Active Reminders</CardTitle>
-            {activeCount > 0 && (
-              <span className="text-xs font-medium rounded-full bg-[#132B22]/10 text-[#132B22] px-2.5 py-0.5">
-                {activeCount} active
-              </span>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <ReminderList initialReminders={reminders} />
-        </CardContent>
-      </Card>
-    )
+    return { status: 'ok', reminders, activeCount }
   } catch (err) {
     console.error('[reminders page]', err)
+    return { status: 'error' }
+  }
+}
+
+async function ActiveReminders() {
+  const { userId } = await auth()
+  if (!userId) return null
+
+  const result = await loadReminders(userId)
+
+  if (result.status === 'error') {
     return (
       <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardContent className="py-12 text-center text-sm text-[#132B22]/45">
@@ -117,6 +117,26 @@ async function ActiveReminders() {
       </Card>
     )
   }
+
+  const { reminders, activeCount } = result
+
+  return (
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base text-[#132B22]">Active Reminders</CardTitle>
+          {activeCount > 0 && (
+            <span className="text-xs font-medium rounded-full bg-[#132B22]/10 text-[#132B22] px-2.5 py-0.5">
+              {activeCount} active
+            </span>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <ReminderList initialReminders={reminders} />
+      </CardContent>
+    </Card>
+  )
 }
 
 function RemindersSkeleton() {

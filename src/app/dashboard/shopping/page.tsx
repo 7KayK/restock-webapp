@@ -1,18 +1,24 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { Playfair_Display } from 'next/font/google'
 import {
-  MapPin, Tag, CalendarDays, Camera, Keyboard,
-  Plus, X, Check, Loader2, Bell, Sparkles, ArrowLeft, Bookmark, BookmarkCheck,
+  MapPin, CalendarDays, Camera, Keyboard, Search,
+  Plus, X, Check, Loader2, Bell, Sparkles, ArrowLeft, Bookmark, BookmarkCheck, Warehouse,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { ImageIntelligence } from '@/components/shared/ImageIntelligence'
-import type { ShoppingItem, Purchase } from '@/types'
+import { ItemPriceInfo } from '@/components/shared/ItemPriceInfo'
+import { PriceSearchPanel } from '@/components/shared/PriceSearchPanel'
+import { CartBuilder } from '@/components/shared/CartBuilder'
+import { TripPlanner } from '@/components/shared/TripPlanner'
+import { ProductInfoPanel } from '@/components/shared/ProductInfoPanel'
+import { toCartRequestItems } from '@/lib/cartRequest'
+import type { CartRequestItem, ShoppingItem } from '@/types'
 
 const playfair = Playfair_Display({ subsets: ['latin'] })
 
@@ -41,10 +47,31 @@ function buildCalendarUrl(names: string[]): string {
 let _idCounter = 0
 function uid() { return `item-${++_idCounter}` }
 
+function toListItems(raw: ShoppingItem[]): ListItem[] {
+  return raw.map((it) => ({
+    ...it,
+    _id: uid(),
+    _done: it.done ?? false,
+    _editingName: false,
+    _editingQty: false,
+  }))
+}
+
+// What the list PUT sends per row (the on-screen-only _-fields stay behind).
+type SavedRow = Pick<ShoppingItem, 'name' | 'quantity' | 'unit' | 'category' | 'source' | 'reminderId' | 'reason'> & { done: boolean }
+
+type SyncIssue = 'failed' | 'conflict' | 'load-failed'
+const SYNC_MESSAGES: Record<SyncIssue, string> = {
+  'failed':      "Couldn't sync your list — your changes are still here, and we'll retry on your next edit.",
+  'conflict':    'This list was changed on another device, so we loaded the latest version. Your last edit here was not saved.',
+  'load-failed': "Couldn't load your saved list, so changes here won't be saved. Reload the page to try again.",
+}
+
 const SOURCE_LABELS: Record<string, { label: string; icon: React.ElementType; color: string }> = {
-  reminder:  { label: 'Reminder',  icon: Bell,     color: 'text-[#132B22] bg-[#132B22]/10' },
-  predicted: { label: 'Predicted', icon: Sparkles, color: 'text-purple-600 bg-purple-50' },
-  manual:    { label: 'Added',     icon: Plus,     color: 'text-[#5b6a5d] bg-[#EFE7D6]' },
+  reminder:  { label: 'Reminder',  icon: Bell,       color: 'text-[#132B22] bg-[#132B22]/10' },
+  predicted: { label: 'Predicted', icon: Sparkles,   color: 'text-purple-600 bg-purple-50' },
+  manual:    { label: 'Added',     icon: Plus,       color: 'text-[#5b6a5d] bg-[#EFE7D6]' },
+  pantry:    { label: 'Pantry',    icon: Warehouse,  color: 'text-[#21834E] bg-[#21834E]/10' },
 }
 
 export default function ShoppingPage() {
@@ -57,36 +84,113 @@ export default function ShoppingPage() {
   const [completing, setCompleting] = useState(false)
   const [scanOpen, setScanOpen]     = useState(false)
   const [savedToast, setSavedToast] = useState(false)
+  const [priceSearch, setPriceSearch] = useState<CartRequestItem[] | null>(null)
   const addRef = useRef<HTMLInputElement>(null)
+  // Set once the initial load below finishes, so the sync effect further
+  // down doesn't immediately write the just-loaded list straight back.
+  const hasHydratedRef = useRef(false)
+  // Save queue state — see flushSaves below.
+  const saveInFlightRef = useRef<Promise<void> | null>(null)
+  const pendingSaveRef = useRef<SavedRow[] | null>(null)
+  // The list revision this tab last saw from the server; sent with every
+  // save so a stale tab is rejected instead of overwriting another device.
+  const revisionRef = useRef<number | null>(null)
+  const [syncIssue, setSyncIssue] = useState<SyncIssue | null>(null)
 
-  // Load saved list from localStorage on mount (after API list, so API wins if non-empty)
+  // Load the shopper's persisted list on mount. /api/shopping/list now
+  // returns their actual saved list (seeding it from smart suggestions only
+  // the first time it's empty) rather than recomputing suggestions on every
+  // request, so this always reflects whatever was left here last — see
+  // src/app/api/shopping/list/route.ts.
   useEffect(() => {
     fetch('/api/shopping/list')
       .then((r) => r.json())
       .then((json) => {
-        if (json.data?.items?.length) {
-          setItems(json.data.items.map((it: ShoppingItem) => ({
-            ...it,
-            _id: uid(),
-            _done: false,
-            _editingName: false,
-            _editingQty: false,
-          })))
+        // Only start syncing once we know which revision we're editing. A
+        // failed load must not fall through to saving, or the first edit
+        // would replace the stored list with just that edit.
+        if (typeof json.data?.revision === 'number') {
+          revisionRef.current = json.data.revision
+          hasHydratedRef.current = true
         } else {
-          // Fall back to saved list if no smart suggestions
-          try {
-            const saved = localStorage.getItem('restock-saved-list')
-            if (saved) {
-              const parsed: ShoppingItem[] = JSON.parse(saved)
-              if (parsed.length) {
-                setItems(parsed.map((it) => ({ ...it, _id: uid(), _done: false, _editingName: false, _editingQty: false })))
-              }
-            }
-          } catch { /* ignore */ }
+          setSyncIssue('load-failed')
+        }
+        if (json.data?.items?.length) {
+          const loaded = toListItems(json.data.items)
+          setItems((prev) => (prev.length > 0 ? prev : loaded))
         }
       })
+      .catch(() => setSyncIssue('load-failed'))
       .finally(() => setLoading(false))
   }, [])
+
+  // Sync the list to the database whenever it changes, so adds/edits/
+  // removes survive a reload or a switch to another device instead of only
+  // living in this tab's memory. Debounced, and skipped until the initial
+  // load above finishes.
+  //
+  // Saves are single-flight: at most one PUT is ever on the wire, and edits
+  // that arrive meanwhile collapse into one pending snapshot that goes out
+  // when the current request finishes. Without that, a slow older PUT could
+  // land after a newer one and overwrite it with stale data.
+  const flushSaves = useCallback(() => {
+    if (saveInFlightRef.current) return // the running loop picks up the pending snapshot
+    saveInFlightRef.current = (async () => {
+      try {
+        while (pendingSaveRef.current) {
+          const rows = pendingSaveRef.current
+          pendingSaveRef.current = null
+          try {
+            const r = await fetch('/api/shopping/list', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ items: rows, baseRevision: revisionRef.current }),
+            })
+            const json = (await r.json().catch(() => null)) as
+              | { data?: { revision?: number; items?: ShoppingItem[] } }
+              | null
+            const revision = json?.data?.revision
+
+            if (r.ok) {
+              if (typeof revision === 'number') revisionRef.current = revision
+              setSyncIssue(null)
+            } else if (r.status === 409 && typeof revision === 'number' && json?.data?.items) {
+              // Another device saved first. Show what's actually stored, and
+              // drop any queued snapshot — it was built on the stale list.
+              revisionRef.current = revision
+              pendingSaveRef.current = null
+              setItems(toListItems(json.data.items))
+              setSyncIssue('conflict')
+            } else {
+              setSyncIssue('failed')
+            }
+          } catch {
+            setSyncIssue('failed')
+          }
+        }
+      } finally {
+        saveInFlightRef.current = null
+      }
+    })()
+  }, [])
+
+  useEffect(() => {
+    if (!hasHydratedRef.current) return
+    const timeout = setTimeout(() => {
+      pendingSaveRef.current = items.map((it) => ({
+        name: it.name,
+        quantity: it.quantity,
+        unit: it.unit,
+        category: it.category,
+        source: it.source,
+        reminderId: it.reminderId,
+        reason: it.reason ?? null,
+        done: it._done,
+      }))
+      flushSaves()
+    }, 600)
+    return () => clearTimeout(timeout)
+  }, [items, flushSaves])
 
   function addItem() {
     const name = addInput.trim().toLowerCase()
@@ -118,16 +222,16 @@ export default function ShoppingPage() {
   async function handleBuildFromHistory() {
     setLoadingHistory(true)
     try {
-      const r = await fetch('/api/shopping/list')
+      // Let any save already on the wire land first, so it can't finish
+      // after (and overwrite) the regenerated list.
+      await saveInFlightRef.current
+      const r = await fetch('/api/shopping/list?regenerate=1')
       const json = await r.json()
+      // Regenerating rewrites the stored list server-side, which moves its
+      // revision on — keep ours in step so the next save isn't rejected.
+      if (typeof json.data?.revision === 'number') revisionRef.current = json.data.revision
       if (json.data?.items?.length) {
-        setItems(json.data.items.map((it: ShoppingItem) => ({
-          ...it,
-          _id: uid(),
-          _done: false,
-          _editingName: false,
-          _editingQty: false,
-        })))
+        setItems(toListItems(json.data.items))
       }
     } finally {
       setLoadingHistory(false)
@@ -193,12 +297,6 @@ export default function ShoppingPage() {
             Nearest store
           </Link>
         </Button>
-        <Button variant="outline" size="sm" className="gap-1.5 border-[rgba(19,43,34,0.18)] text-[#132B22]/70" asChild>
-          <Link href="/dashboard/deals">
-            <Tag className="h-3.5 w-3.5" />
-            See deals
-          </Link>
-        </Button>
         <Button
           variant="outline"
           size="sm"
@@ -209,7 +307,21 @@ export default function ShoppingPage() {
           <CalendarDays className="h-3.5 w-3.5" />
           Add to Calendar
         </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 border-[rgba(19,43,34,0.18)] text-[#132B22]/70"
+          onClick={() => setPriceSearch(toCartRequestItems(activeItems))}
+          disabled={activeItems.length === 0}
+        >
+          <Search className="h-3.5 w-3.5" />
+          Find prices near me
+        </Button>
       </div>
+
+      {priceSearch && (
+        <PriceSearchPanel items={priceSearch} onClose={() => setPriceSearch(null)} />
+      )}
 
       {/* List */}
       <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
@@ -239,7 +351,7 @@ export default function ShoppingPage() {
                     ? <Loader2 className="h-6 w-6 text-[#132B22] animate-spin" />
                     : <Sparkles className="h-6 w-6 text-[#132B22]" />}
                   <span className="text-sm font-semibold text-[#132B22]">Build from history</span>
-                  <span className="text-[11px] text-[#132B22]/50 leading-tight">We'll suggest what you're running low on</span>
+                  <span className="text-[11px] text-[#132B22]/50 leading-tight">We&apos;ll suggest what you&apos;re running low on</span>
                 </EntryCard>
               </div>
             </div>
@@ -297,6 +409,12 @@ export default function ShoppingPage() {
           </div>
         </CardContent>
       </Card>
+
+      {syncIssue && (
+        <p role="alert" className={cn('text-xs', syncIssue === 'conflict' ? 'text-[#EAB308]' : 'text-[#EF4444]/80')}>
+          {SYNC_MESSAGES[syncIssue]}
+        </p>
+      )}
 
       {/* Phase-aware bottom actions */}
       {items.length > 0 && (
@@ -368,10 +486,27 @@ export default function ShoppingPage() {
         </div>
       )}
 
+      {/* Make a cart — pricing + product info, folded in from the old
+          Deals page so it lives next to the list it's pricing. */}
+      {items.length > 0 && (
+        <div className="space-y-8 pt-2">
+          <section className="space-y-3">
+            <h2 className="text-sm font-semibold text-[#132B22]/70 uppercase tracking-wide">Make a cart</h2>
+            <CartBuilder items={items} />
+            <TripPlanner items={items} />
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="text-sm font-semibold text-[#132B22]/70 uppercase tracking-wide">Product info</h2>
+            <ProductInfoPanel />
+          </section>
+        </div>
+      )}
+
       <ImageIntelligence
         open={scanOpen}
         onOpenChange={setScanOpen}
-        onImport={(_purchases: Purchase[]) => {
+        onImport={() => {
           window.location.href = '/dashboard/history'
         }}
       />
@@ -417,6 +552,15 @@ function EntryCard({
 function ListRow({ item, onToggle, onRemove, onUpdateName, onUpdateQty }: ListRowProps) {
   const [nameVal, setNameVal] = useState(item.name)
   const [qtyVal, setQtyVal]   = useState(String(item.quantity))
+  // Editing is tracked locally rather than by mutating `item._editingName` /
+  // `item._editingQty` in place — React props/state are read-only, and
+  // mutating them directly doesn't trigger a re-render (and trips
+  // react-hooks/immutability). This also fixes the actual bug that came
+  // with it: onUpdateName/onUpdateQty (called on blur/Enter) reset those
+  // fields to false via a real setItems call, which raced ahead of the
+  // mutation and meant the name/qty input never really stayed open.
+  const [editingName, setEditingName] = useState(false)
+  const [editingQty, setEditingQty] = useState(false)
   const src = SOURCE_LABELS[item.source] ?? SOURCE_LABELS.manual
   const SrcIcon = src.icon
 
@@ -439,13 +583,15 @@ function ListRow({ item, onToggle, onRemove, onUpdateName, onUpdateQty }: ListRo
       </button>
 
       <div className="flex-1 min-w-0">
-        {item._editingName ? (
+        {editingName ? (
           <Input
             autoFocus
             value={nameVal}
             onChange={(e) => setNameVal(e.target.value)}
-            onBlur={() => onUpdateName(item._id, nameVal || item.name)}
-            onKeyDown={(e) => { if (e.key === 'Enter') onUpdateName(item._id, nameVal || item.name) }}
+            onBlur={() => { onUpdateName(item._id, nameVal || item.name); setEditingName(false) }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') { onUpdateName(item._id, nameVal || item.name); setEditingName(false) }
+            }}
             className="h-7 text-sm py-0 px-1 text-[#132B22]"
           />
         ) : (
@@ -455,9 +601,8 @@ function ListRow({ item, onToggle, onRemove, onUpdateName, onUpdateQty }: ListRo
               item._done && 'line-through'
             )}
             onClick={() => {
-              item._editingName = true
               setNameVal(item.name)
-              onUpdateName(item._id, item.name) // trigger re-render via parent? no...
+              setEditingName(true)
             }}
           >
             {item.name}
@@ -472,23 +617,29 @@ function ListRow({ item, onToggle, onRemove, onUpdateName, onUpdateQty }: ListRo
             <span className="text-[10px] text-[#132B22]/40">{item.category}</span>
           )}
         </div>
+        {!item._done && item.reason && (
+          <p className="text-[11px] text-[#132B22]/45 mt-0.5">{item.reason}</p>
+        )}
+        {!item._done && <ItemPriceInfo itemName={item.name} initialPrices={item.prices} />}
       </div>
 
       {/* Quantity */}
-      {item._editingQty ? (
+      {editingQty ? (
         <Input
           autoFocus
           type="number"
           min={1}
           value={qtyVal}
           onChange={(e) => setQtyVal(e.target.value)}
-          onBlur={() => onUpdateQty(item._id, parseInt(qtyVal) || 1)}
-          onKeyDown={(e) => { if (e.key === 'Enter') onUpdateQty(item._id, parseInt(qtyVal) || 1) }}
+          onBlur={() => { onUpdateQty(item._id, parseInt(qtyVal) || 1); setEditingQty(false) }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') { onUpdateQty(item._id, parseInt(qtyVal) || 1); setEditingQty(false) }
+          }}
           className="h-7 w-14 text-xs text-center text-[#132B22] p-0"
         />
       ) : (
         <button
-          onClick={() => { item._editingQty = true; setQtyVal(String(item.quantity)) }}
+          onClick={() => { setQtyVal(String(item.quantity)); setEditingQty(true) }}
           className="text-xs text-[#132B22]/50 hover:text-[#132B22] transition-colors min-w-[2rem] text-right"
         >
           ×{item.quantity}{item.unit ? ` ${item.unit}` : ''}

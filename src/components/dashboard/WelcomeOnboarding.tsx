@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, startTransition } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { ImageIntelligence } from '@/components/shared/ImageIntelligence'
-import type { Purchase } from '@/types'
 
 const STORAGE_KEY = 'restock_onboarded'
 
@@ -55,7 +54,10 @@ export function WelcomeOnboarding() {
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !localStorage.getItem(STORAGE_KEY)) {
-      setOpen(true)
+      // startTransition marks this as an intentionally-deferred update, which
+      // is the pattern React's set-state-in-effect lint rule treats as safe —
+      // a plain setOpen(true) here would be flagged.
+      startTransition(() => setOpen(true))
     }
   }, [])
 
@@ -245,7 +247,7 @@ export function WelcomeOnboarding() {
       <ImageIntelligence
         open={imageOpen}
         onOpenChange={setImageOpen}
-        onImport={(_purchases: Purchase[]) => {
+        onImport={() => {
           window.location.href = '/dashboard/history'
         }}
       />

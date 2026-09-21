@@ -492,7 +492,7 @@ export function ImageIntelligence({
                   <p className="text-base font-semibold text-[#132B22]">
                     {successCount} reminder{successCount !== 1 ? 's' : ''} created!
                   </p>
-                  <p className="text-xs text-[#132B22]/45 mt-0.5">You'll be notified when to restock</p>
+                  <p className="text-xs text-[#132B22]/45 mt-0.5">You&apos;ll be notified when to restock</p>
                 </div>
               )}
               {action === 'calendar' && (

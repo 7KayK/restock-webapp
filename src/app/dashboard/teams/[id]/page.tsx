@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, startTransition } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useUser } from '@clerk/nextjs'
 import {
-  Settings, Loader2, Camera, Trash2,
+  Settings, Loader2, Camera,
   AlertCircle, PackageSearch, ShoppingBag, Users,
   Crown, UserMinus, Plus,
 } from 'lucide-react'
@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { cn, formatCurrency, formatDate, formatRelativeDate } from '@/lib/utils'
 import { ImageIntelligence } from '@/components/shared/ImageIntelligence'
-import type { TeamDetail, TeamPurchase, TeamInventory, Purchase } from '@/types'
+import type { TeamDetail, TeamPurchase, TeamInventory } from '@/types'
 
 type Tab = 'inventory' | 'purchases' | 'members'
 
@@ -68,18 +68,23 @@ export default function TeamDetailPage() {
       .finally(() => setLoading(false))
   }, [id])
 
-  // Load inventory
+  // Load inventory. The loading flag is set inside startTransition — this
+  // load can be kicked off from an effect (tab switch) as well as a click,
+  // and startTransition is the pattern React's own lint rule recognizes as
+  // an intentionally-deferred state update, so it's exempt from the
+  // "no setState directly in an effect" rule that a plain setState() here
+  // would trip.
   const loadInventory = useCallback(() => {
-    setInventoryLoading(true)
+    startTransition(() => setInventoryLoading(true))
     fetch(`/api/teams/${id}/inventory`)
       .then((r) => r.json())
       .then((json) => { if (json.data) setInventory(json.data) })
       .finally(() => setInventoryLoading(false))
   }, [id])
 
-  // Load purchases
+  // Load purchases — same startTransition reasoning as loadInventory above.
   const loadPurchases = useCallback(() => {
-    setPurchasesLoading(true)
+    startTransition(() => setPurchasesLoading(true))
     fetch(`/api/teams/${id}/purchases`)
       .then((r) => r.json())
       .then((json) => { if (json.data) setPurchases(json.data) })

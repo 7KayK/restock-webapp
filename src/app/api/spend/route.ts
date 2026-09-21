@@ -101,8 +101,3 @@ function buildMonthPoints(
   }
   return points
 }
-
-function emptyAnalysis(): SpendAnalysis {
-  const byMonth = buildMonthPoints([], 12)
-  return { byMonth, byCategory: [], topItems: [], currentMonthSpend: 0, previousMonthSpend: 0, changePercent: null }
-}

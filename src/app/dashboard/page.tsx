@@ -118,26 +118,30 @@ function buildMonthPoints(
   return points
 }
 
-async function StatCards() {
-  const { userId } = await auth()
-  if (!userId) return null
+type StatCardData = {
+  title: string
+  value: string | number
+  sub: string
+  icon: 'shopping-cart' | 'dollar-sign' | 'bell' | 'package'
+}
 
+function emptyStatCards(): StatCardData[] {
+  return [
+    { title: 'Total Purchases', value: 0, sub: 'Log your first purchase', icon: 'shopping-cart' },
+    { title: 'This Month Spend', value: formatCurrency(0), sub: format(new Date(), 'MMMM yyyy'), icon: 'dollar-sign' },
+    { title: 'Active Reminders', value: 0, sub: 'No reminders yet', icon: 'bell' },
+    { title: 'Items Tracked', value: 0, sub: 'Add purchases to begin', icon: 'package' },
+  ]
+}
+
+// Data access behind the try/catch, returning plain data instead of JSX —
+// see the note on the history/spend/reminders pages: react-hooks/error-boundaries
+// flags JSX constructed inside a try/catch, so StatCards below only builds
+// JSX after this has resolved.
+async function loadStatCards(userId: string): Promise<StatCardData[]> {
   try {
     const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    if (!user) {
-      return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { title: 'Total Purchases', value: 0, sub: 'Log your first purchase', icon: 'shopping-cart' as const },
-            { title: 'This Month Spend', value: formatCurrency(0), sub: format(new Date(), 'MMMM yyyy'), icon: 'dollar-sign' as const },
-            { title: 'Active Reminders', value: 0, sub: 'No reminders yet', icon: 'bell' as const },
-            { title: 'Items Tracked', value: 0, sub: 'Add purchases to begin', icon: 'package' as const },
-          ].map((c) => (
-            <StatCard key={c.title} title={c.title} value={c.value} sub={c.sub} icon={c.icon} />
-          ))}
-        </div>
-      )
-    }
+    if (!user) return emptyStatCards()
 
     const monthStart = startOfMonth(new Date())
 
@@ -155,43 +159,51 @@ async function StatCards() {
 
     const spend = monthlySpend._sum.price ?? 0
 
-    const cards = [
+    return [
       {
         title: 'Total Purchases',
         value: totalPurchases,
         sub: totalPurchases === 0 ? 'Log your first purchase' : 'All time',
-        icon: 'shopping-cart' as const,
+        icon: 'shopping-cart',
       },
       {
         title: 'This Month Spend',
         value: formatCurrency(spend),
         sub: format(new Date(), 'MMMM yyyy'),
-        icon: 'dollar-sign' as const,
+        icon: 'dollar-sign',
       },
       {
         title: 'Active Reminders',
         value: activeReminders,
         sub: activeReminders === 0 ? 'No reminders yet' : 'Items due for restock',
-        icon: 'bell' as const,
+        icon: 'bell',
       },
       {
         title: 'Items Tracked',
         value: uniqueItems,
         sub: uniqueItems === 0 ? 'Add purchases to begin' : 'Unique items logged',
-        icon: 'package' as const,
+        icon: 'package',
       },
     ]
-
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {cards.map((c) => (
-          <StatCard key={c.title} title={c.title} value={c.value} sub={c.sub} icon={c.icon} />
-        ))}
-      </div>
-    )
   } catch {
-    return null
+    return []
   }
+}
+
+async function StatCards() {
+  const { userId } = await auth()
+  if (!userId) return null
+
+  const cards = await loadStatCards(userId)
+  if (cards.length === 0) return null
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {cards.map((c) => (
+        <StatCard key={c.title} title={c.title} value={c.value} sub={c.sub} icon={c.icon} />
+      ))}
+    </div>
+  )
 }
 
 function StatCardsSkeleton() {
@@ -204,16 +216,17 @@ function StatCardsSkeleton() {
   )
 }
 
-async function SpendChartsSection() {
-  const { userId } = await auth()
-  if (!userId) return null
-
+// Data access behind the try/catch, returning plain data instead of JSX —
+// same reasoning as loadStatCards above.
+async function loadSpendCharts(
+  userId: string
+): Promise<{ trendData: MonthlySpendPoint[]; categoryData: CategorySpend[] }> {
   const emptyTrend = buildMonthPoints([], 6)
 
   try {
     const user = await prisma.user.findUnique({ where: { clerkId: userId } })
     if (!user) {
-      return <SpendChartCards trendData={emptyTrend} categoryData={[]} />
+      return { trendData: emptyTrend, categoryData: [] }
     }
 
     const sixMonthsAgo = startOfMonth(subMonths(new Date(), 5))
@@ -241,10 +254,19 @@ async function SpendChartsSection() {
       avg: g._avg.price ?? 0,
     }))
 
-    return <SpendChartCards trendData={trendData} categoryData={categoryData} />
+    return { trendData, categoryData }
   } catch {
-    return <SpendChartCards trendData={emptyTrend} categoryData={[]} />
+    return { trendData: emptyTrend, categoryData: [] }
   }
+}
+
+async function SpendChartsSection() {
+  const { userId } = await auth()
+  if (!userId) return null
+
+  const { trendData, categoryData } = await loadSpendCharts(userId)
+
+  return <SpendChartCards trendData={trendData} categoryData={categoryData} />
 }
 
 function SpendChartCards({
@@ -306,13 +328,12 @@ const SOURCE_STYLES: Record<string, string> = {
   manual: 'bg-[#EFE7D6] text-[#5b6a5d]',
 }
 
-async function RecentPurchases() {
-  const { userId } = await auth()
-  if (!userId) return null
-
+// Data access behind the try/catch, returning plain data instead of JSX —
+// same reasoning as loadStatCards above.
+async function loadRecentPurchases(userId: string) {
   try {
     const user = await prisma.user.findUnique({ where: { clerkId: userId } })
-    if (!user) return <EmptyRecentPurchases />
+    if (!user) return { status: 'empty' as const }
 
     const purchases = await prisma.purchase.findMany({
       where: { userId: user.id },
@@ -320,10 +341,27 @@ async function RecentPurchases() {
       take: 5,
     })
 
-    if (!purchases.length) return <EmptyRecentPurchases />
+    if (!purchases.length) return { status: 'empty' as const }
 
-    return (
-      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
+    return { status: 'ok' as const, purchases }
+  } catch {
+    return { status: 'error' as const }
+  }
+}
+
+async function RecentPurchases() {
+  const { userId } = await auth()
+  if (!userId) return null
+
+  const result = await loadRecentPurchases(userId)
+
+  if (result.status === 'error') return null
+  if (result.status === 'empty') return <EmptyRecentPurchases />
+
+  const { purchases } = result
+
+  return (
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardHeader className="pb-2">
           <CardTitle className="text-base text-[#132B22]">Recent Purchases</CardTitle>
         </CardHeader>
@@ -368,10 +406,7 @@ async function RecentPurchases() {
           </ul>
         </CardContent>
       </Card>
-    )
-  } catch {
-    return null
-  }
+  )
 }
 
 function EmptyRecentPurchases() {
@@ -410,10 +445,11 @@ function RecentSkeleton() {
   )
 }
 
-async function PantrySummary() {
-  const { userId } = await auth()
-  if (!userId) return null
-
+// Data access behind the try/catch, returning plain counts instead of JSX —
+// same reasoning as loadStatCards above.
+async function loadPantrySummary(
+  userId: string
+): Promise<{ stocked: number; low: number; out: number } | null> {
   try {
     const user = await prisma.user.findUnique({ where: { clerkId: userId } })
     if (!user) return null
@@ -457,43 +493,55 @@ async function PantrySummary() {
       else stocked++
     }
 
-    return (
-      <Link href="/dashboard/pantry">
-        <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)] hover:shadow-sm transition-shadow cursor-pointer">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base text-[#132B22] flex items-center gap-2">
-                <Warehouse className="h-4 w-4 text-[#132B22]" />
-                Pantry Status
-              </CardTitle>
-              {(out > 0 || low > 0) && (
-                <AlertTriangle className="h-4 w-4 text-[#C9A15A]" />
-              )}
-            </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex items-center gap-5">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#22C55E]" />
-                <span className="text-sm text-[#132B22]/70">{stocked} stocked</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#C9A15A]" />
-                <span className="text-sm text-[#132B22]/70">{low} low</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
-                <span className="text-sm text-[#132B22]/70">{out} out</span>
-              </div>
-            </div>
-            <p className="text-xs text-[#132B22] mt-3 font-medium">View full pantry →</p>
-          </CardContent>
-        </Card>
-      </Link>
-    )
+    return { stocked, low, out }
   } catch {
     return null
   }
+}
+
+async function PantrySummary() {
+  const { userId } = await auth()
+  if (!userId) return null
+
+  const counts = await loadPantrySummary(userId)
+  if (!counts) return null
+
+  const { stocked, low, out } = counts
+
+  return (
+    <Link href="/dashboard/pantry">
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)] hover:shadow-sm transition-shadow cursor-pointer">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base text-[#132B22] flex items-center gap-2">
+              <Warehouse className="h-4 w-4 text-[#132B22]" />
+              Pantry Status
+            </CardTitle>
+            {(out > 0 || low > 0) && (
+              <AlertTriangle className="h-4 w-4 text-[#C9A15A]" />
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="flex items-center gap-5">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#22C55E]" />
+              <span className="text-sm text-[#132B22]/70">{stocked} stocked</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#C9A15A]" />
+              <span className="text-sm text-[#132B22]/70">{low} low</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
+              <span className="text-sm text-[#132B22]/70">{out} out</span>
+            </div>
+          </div>
+          <p className="text-xs text-[#132B22] mt-3 font-medium">View full pantry →</p>
+        </CardContent>
+      </Card>
+    </Link>
+  )
 }
 
 function PantrySummarySkeleton() {

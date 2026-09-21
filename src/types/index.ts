@@ -224,8 +224,88 @@ export interface ShoppingItem {
   quantity: number
   unit: string | null
   category: string | null
-  source: 'reminder' | 'predicted' | 'manual'
+  source: 'reminder' | 'predicted' | 'manual' | 'pantry'
   reminderId?: string
+  // Short, human-readable context for why this item is suggested — e.g.
+  // "Running low - about 3 days remaining" (Pantry) or "Usually bought
+  // every 12 days" (predicted). Null/undefined for a plain manual add.
+  reason?: string | null
+  done?: boolean // checked off mid-trip; persisted so it survives a reload
+  prices?: PriceSighting[] // cheapest known nearby sightings, cheapest first
+}
+
+// --- Price sightings / cart builder ---
+
+export interface PriceSighting {
+  id: string
+  item: string
+  storeName: string
+  storePlaceId: string | null
+  storeLat: number | null
+  storeLng: number | null
+  price: number
+  currency: string
+  unit: string | null
+  source: string
+  createdAt: string
+}
+
+// One list line as the cart and trip endpoints receive it — quantity and
+// unit ride along with the name so totals reflect how much is being bought.
+export interface CartRequestItem {
+  name: string
+  quantity: number
+  unit: string | null
+}
+
+export interface CartItemPrice {
+  name: string
+  quantity: number
+  // Line total: the best matching report's price × quantity (null = unpriced).
+  price: number | null
+  storeName: string | null
+  storePlaceId: string | null
+}
+
+export interface CartStoreOption {
+  storeName: string
+  storePlaceId: string | null
+  storeLat: number | null
+  storeLng: number | null
+  currency: string
+  coveredCount: number
+  totalItems: number
+  total: number
+  items: CartItemPrice[]
+}
+
+// "Make the trip" — the same store option, plus what it costs to actually
+// get there: drive time is traffic-aware (Google Routes), gasCost is a
+// round-trip estimate, and tripTotal is basket price + gasCost when both
+// are known. Any of the three is null when the store has no known location
+// or routing failed for it — it still shows up priced, just without these.
+export interface TripStoreOption extends CartStoreOption {
+  driveMinutes: number | null
+  distanceKm: number | null
+  gasCost: number | null
+  tripTotal: number | null
+}
+
+export interface TripResult {
+  stores: TripStoreOption[]
+}
+
+export interface MixedCart {
+  currency: string
+  total: number
+  items: CartItemPrice[]
+  missing: string[]
+}
+
+export interface CartBuilderResult {
+  byStore: CartStoreOption[]
+  mixed: MixedCart[]
+  unpriced: string[]
 }
 
 export interface GroceryStore {

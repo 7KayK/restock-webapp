@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { format, differenceInDays } from 'date-fns'
-import { Package, Camera, PackageX } from 'lucide-react'
+import { Package, Camera, PackageX, ShoppingBag, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { PantryItem, PantryStatus, PantryResponse } from '@/types'
 
@@ -30,6 +30,24 @@ const CONFIDENCE_BG: Record<string, string> = {
 }
 
 type Filter = 'all' | PantryStatus
+
+// Human-readable context for why an item would go on the shopping list,
+// built from the same fields the card already displays (status, days
+// remaining, confidence band) — mirrors the "reason for suggestion" rule
+// from the redesign brief without inventing a false-precision number PantryItem
+// doesn't actually have (confidence here stays high/medium/low, not a
+// fabricated percentage).
+function composeReason(item: PantryItem): string {
+  if (item.status === 'out') {
+    const daysSince = Math.max(0, differenceInDays(new Date(), new Date(item.lastPurchasedAt)))
+    return `Likely out — last purchased ${daysSince} day${daysSince === 1 ? '' : 's'} ago · ${item.confidence} confidence`
+  }
+  if (item.status === 'low') {
+    const daysLeft = Math.max(0, differenceInDays(new Date(item.predictedDepletionDate), new Date()))
+    return `Running low — about ${daysLeft} day${daysLeft === 1 ? '' : 's'} remaining · ${item.confidence} confidence`
+  }
+  return 'Added from your pantry'
+}
 
 function CircularProgress({ pct, status }: { pct: number; status: PantryStatus }) {
   const r = 18
@@ -83,6 +101,8 @@ function DepletionLabel({ isoDate }: { isoDate: string }) {
 function PantryCard({ item, onRanOut }: { item: PantryItem; onRanOut: (name: string, category: string | null) => void }) {
   const [confirming, setConfirming] = useState(false)
   const [done, setDone] = useState(false)
+  const [addingToShopping, setAddingToShopping] = useState(false)
+  const [added, setAdded] = useState(false)
 
   async function handleRanOut() {
     if (done) return
@@ -97,6 +117,32 @@ function PantryCard({ item, onRanOut }: { item: PantryItem; onRanOut: (name: str
       onRanOut(item.name, item.category ?? null)
     } finally {
       setConfirming(false)
+    }
+  }
+
+  // Bridges Pantry to Shopping: the actual join in Restock's replenishment
+  // loop (capture -> estimate stock -> identify attention -> shopping list
+  // -> trip -> improve predictions). Uses a dedicated single-item endpoint
+  // rather than the Shopping page's own list-replacing PUT, since this page
+  // never loads the shopper's current list into memory — see the doc
+  // comment on /api/shopping/add-item's route for why.
+  async function handleAddToShopping() {
+    if (addingToShopping || added) return
+    setAddingToShopping(true)
+    try {
+      await fetch('/api/shopping/add-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: item.name,
+          unit: item.unit,
+          category: item.category,
+          reason: composeReason(item),
+        }),
+      })
+      setAdded(true)
+    } finally {
+      setAddingToShopping(false)
     }
   }
 
@@ -130,6 +176,21 @@ function PantryCard({ item, onRanOut }: { item: PantryItem; onRanOut: (name: str
         </span>
         <DepletionLabel isoDate={item.predictedDepletionDate} />
       </div>
+
+      {/* Add to shopping — the Pantry -> Shopping bridge */}
+      <button
+        onClick={handleAddToShopping}
+        disabled={addingToShopping || added}
+        className={cn(
+          'w-full flex items-center justify-center gap-1.5 rounded-md py-1.5 text-[11px] font-medium transition-colors border',
+          added
+            ? 'border-[#22C55E]/25 bg-[#22C55E]/8 text-[#22C55E] cursor-default'
+            : 'border-[#132B22]/15 bg-[#132B22]/[0.03] text-[#132B22]/70 hover:border-[#132B22]/30 hover:bg-[#132B22]/8'
+        )}
+      >
+        {added ? <Check className="h-3 w-3" /> : <ShoppingBag className="h-3 w-3" />}
+        {added ? 'Added to shopping' : addingToShopping ? 'Adding…' : 'Add to shopping'}
+      </button>
 
       {/* Ran out button */}
       <button
@@ -173,7 +234,7 @@ export default function PantryPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<Filter>('all')
 
-  const handleRanOut = useCallback((name: string, category: string | null) => {
+  const handleRanOut = useCallback((name: string) => {
     // Update counts optimistically — move the item toward "out" status
     setData((prev) => {
       if (!prev) return prev

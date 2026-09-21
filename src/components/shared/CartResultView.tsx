@@ -1,0 +1,123 @@
+'use client'
+
+import Link from 'next/link'
+import { ShoppingCart, Store, Split } from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { formatPrice } from '@/lib/currency'
+import type { CartBuilderResult } from '@/types'
+
+// Shared rendering for a cart-builder result — used by the Deals page's
+// always-on Cart Builder and by the Shopping page's on-demand "Find prices
+// near me" search, so both stay visually and behaviorally identical.
+export function CartResultView({ result }: { result: CartBuilderResult }) {
+  const hasAnyPrices = result.byStore.length > 0 || result.mixed.length > 0
+
+  if (!hasAnyPrices) {
+    return (
+      <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
+        <CardContent className="py-12 text-center space-y-2">
+          <ShoppingCart className="h-8 w-8 mx-auto text-[#132B22]/20" />
+          <p className="text-sm text-[#132B22]/45">Nobody&apos;s reported prices for this list yet.</p>
+          <p className="text-xs text-[#132B22]/30">
+            Tap &ldquo;I saw this here for…&rdquo; on an item to get this started.
+          </p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      {result.mixed.map((cart) => (
+        <Card key={cart.currency} className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Split className="h-4 w-4 text-[#132B22]" />
+                <CardTitle className="text-base">Cheapest, mixed across stores</CardTitle>
+              </div>
+              <span className="text-lg font-semibold text-[#132B22]">{formatPrice(cart.total, cart.currency)}</span>
+            </div>
+            <CardDescription>
+              Buying each item at whichever reported store has it cheapest.
+              {cart.missing.length > 0 && ` ${cart.missing.length} item${cart.missing.length === 1 ? '' : 's'} not priced yet.`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <ul className="divide-y divide-[rgba(19,43,34,0.08)]">
+              {cart.items.map((it) => (
+                <li key={it.name} className="flex items-center justify-between py-1.5 text-sm">
+                  <span className="text-[#132B22]/80">
+                    <span className="capitalize">{it.name}</span>
+                    {it.quantity > 1 && <span className="text-[#132B22]/40"> ×{it.quantity}</span>}
+                  </span>
+                  {it.price !== null ? (
+                    <span className="flex items-center gap-2 text-[#132B22]">
+                      <span className="text-xs text-[#132B22]/40">{it.storeName}</span>
+                      <span className="font-medium">{formatPrice(it.price, cart.currency)}</span>
+                    </span>
+                  ) : (
+                    <span className="text-xs text-[#132B22]/35">no price yet</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      ))}
+
+      {result.byStore.length > 0 && (
+        <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Store className="h-4 w-4 text-[#132B22]" />
+              <CardTitle className="text-base">Buy it all from one store</CardTitle>
+            </div>
+            <CardDescription>Ranked by how much of your list each store covers, then price.</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0 space-y-2">
+            {result.byStore.map((store) => (
+              <div
+                key={`${store.storePlaceId ?? store.storeName}-${store.currency}`}
+                className="rounded-xl border border-[rgba(19,43,34,0.10)] p-3"
+              >
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold text-[#132B22]">{store.storeName}</p>
+                  <span className="text-sm font-semibold text-[#132B22]">
+                    {formatPrice(store.total, store.currency)}
+                  </span>
+                </div>
+                <p className="text-xs text-[#132B22]/45 mt-0.5">
+                  Covers {store.coveredCount} of {store.totalItems} items
+                  {store.coveredCount < store.totalItems &&
+                    ` — missing ${store.items.filter((it) => it.price === null).map((it) => it.name).join(', ')}`}
+                </p>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
+      {result.unpriced.length > 0 && (
+        <p className="text-xs text-[#132B22]/40 px-1">
+          No prices reported yet for: {result.unpriced.join(', ')}
+        </p>
+      )}
+    </div>
+  )
+}
+
+// Small empty-state used when there's no list to price yet.
+export function NoListToPrice() {
+  return (
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
+      <CardContent className="py-12 text-center space-y-3">
+        <ShoppingCart className="h-8 w-8 mx-auto text-[#132B22]/20" />
+        <p className="text-sm text-[#132B22]/45">Add a few items to your list first, then search for prices.</p>
+        <Link href="/dashboard/shopping" className="text-xs text-[#132B22] underline">
+          Go to Shopping list
+        </Link>
+      </CardContent>
+    </Card>
+  )
+}

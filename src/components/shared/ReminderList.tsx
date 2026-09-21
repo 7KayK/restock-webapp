@@ -10,6 +10,14 @@ import type { Reminder } from '@/types'
 
 type ReminderStatus = 'overdue' | 'due-soon' | 'upcoming' | 'snoozed'
 
+// Module-level helper (not inline in the component) so the impure
+// Date.now() read isn't inside the component's render/hook scope, where
+// react-hooks/purity flags it — it's only ever called from the snooze()
+// click handler below, well after render.
+function sevenDaysFromNow(): string {
+  return new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+}
+
 function getStatus(reminder: Reminder): ReminderStatus {
   const now = new Date()
   const snoozedUntil = reminder.snoozedUntil ? new Date(reminder.snoozedUntil) : null
@@ -56,7 +64,7 @@ export function ReminderList({ initialReminders }: ReminderListProps) {
 
   async function snooze(id: string) {
     setLoading(id)
-    const snoozedUntil = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+    const snoozedUntil = sevenDaysFromNow()
     setReminders((prev) =>
       prev.map((r) =>
         r.id === id ? { ...r, snoozedUntil: new Date(snoozedUntil) } : r

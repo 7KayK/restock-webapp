@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getOrCreateUser } from '@/lib/getOrCreateUser'
+import { withListLock, bumpListRevision } from '@/lib/shoppingList'
 
 export async function POST(request: NextRequest) {
   const { userId } = await auth()
@@ -47,6 +48,17 @@ export async function POST(request: NextRequest) {
         )
       )
     }
+
+    // Clear the persisted list so the next visit to the Shopping page
+    // regenerates a fresh smart list instead of showing what was just
+    // bought (see src/app/api/shopping/list/route.ts).
+    // Under the list lock and with a revision bump, so a device that still
+    // holds the old list gets a conflict instead of re-saving what was
+    // just bought.
+    await withListLock(user.id, async (tx) => {
+      await tx.shoppingListItem.deleteMany({ where: { userId: user.id } })
+      await bumpListRevision(tx, user.id)
+    })
 
     return Response.json({ data: { completedCount: completed.length } })
   } catch {
