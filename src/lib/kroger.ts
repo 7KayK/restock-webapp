@@ -58,3 +58,50 @@ export async function searchFoodProduct(term: string): Promise<Omit<FoodProduct,
     nutriscoreGrade: product.nutriscore_grade?.toLowerCase() ?? null,
   }
 }
+
+// Same Open Food Facts search, but returns several candidate products
+// instead of just the first match — used by /api/product-search, where a
+// free-text query like "tortilla wraps" should surface every plausible
+// product (different brands, sizes) rather than picking one for the
+// shopper. Each result carries its barcode (`code`), which is what
+// src/lib/openPrices.ts needs to look up real price observations.
+export interface OpenFoodFactsMatch {
+  code: string | null
+  productName: string
+  brand: string
+  imageUrl: string | null
+  nutriscoreGrade: string | null
+}
+
+export async function searchFoodProducts(term: string, limit = 5): Promise<OpenFoodFactsMatch[]> {
+  const params = new URLSearchParams({
+    search_terms: term,
+    search_simple: '1',
+    action: 'process',
+    json: '1',
+    page_size: String(limit),
+    lc: 'en',
+    fields: 'code,product_name,brands,nutriscore_grade,image_url',
+  })
+
+  const res = await fetch(`${OFF_SEARCH}?${params}`, {
+    headers: { 'User-Agent': USER_AGENT },
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    console.error('[openfoodfacts] multi-search failed:', res.status, term)
+    return []
+  }
+
+  const data = (await res.json()) as OFFResponse
+  return (data.products ?? [])
+    .filter((p) => p.product_name?.trim())
+    .map((p) => ({
+      code: p.code ?? null,
+      productName: p.product_name!.trim(),
+      brand: p.brands?.split(',')[0].trim() ?? '',
+      imageUrl: p.image_url ?? null,
+      nutriscoreGrade: p.nutriscore_grade?.toLowerCase() ?? null,
+    }))
+}

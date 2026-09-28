@@ -101,6 +101,40 @@ export interface ApiResponse<T> {
   error?: string
 }
 
+// --- Product search (Open Food Facts + Open Prices + Restock's own data) ---
+//
+// A free-text product search result, kept deliberately as three separate,
+// clearly-sourced arrays rather than one blended list — see
+// src/app/api/product-search/route.ts for why: mixing "a Restock user
+// reported this price nearby" with "the global community reported this
+// price somewhere" without labelling them would misrepresent what the
+// number actually means.
+
+export interface ProductMatch {
+  code: string | null       // Open Food Facts barcode, when known
+  productName: string
+  brand: string
+  imageUrl: string | null
+  nutriscoreGrade: string | null
+}
+
+export interface CommunityPrice {
+  productName: string
+  brand: string
+  imageUrl: string | null
+  price: number
+  currency: string
+  date: string | null
+  locationLabel: string | null
+}
+
+export interface ProductSearchResult {
+  query: string
+  restockReports: PriceSighting[]   // Restock's own crowdsourced/receipt data
+  communityPrices: CommunityPrice[] // Open Prices — global crowdsourced prices
+  products: ProductMatch[]          // Open Food Facts — metadata only, no price
+}
+
 export interface FoodProduct {
   item: string           // user's purchase term
   productId: string      // OFF barcode

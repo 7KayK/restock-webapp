@@ -17,6 +17,7 @@ import { PriceSearchPanel } from '@/components/shared/PriceSearchPanel'
 import { CartBuilder } from '@/components/shared/CartBuilder'
 import { TripPlanner } from '@/components/shared/TripPlanner'
 import { ProductInfoPanel } from '@/components/shared/ProductInfoPanel'
+import { ProductSearchPanel } from '@/components/shared/ProductSearchPanel'
 import { toCartRequestItems } from '@/lib/cartRequest'
 import type { CartRequestItem, ShoppingItem } from '@/types'
 
@@ -322,6 +323,12 @@ export default function ShoppingPage() {
       {priceSearch && (
         <PriceSearchPanel items={priceSearch} onClose={() => setPriceSearch(null)} />
       )}
+
+      {/* Always visible — unlike "Find prices near me" above (which only
+          searches whatever's currently on the list), this is a real
+          free-text product search that works with nothing on the list at
+          all. See src/components/shared/ProductSearchPanel.tsx. */}
+      <ProductSearchPanel />
 
       {/* List */}
       <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
