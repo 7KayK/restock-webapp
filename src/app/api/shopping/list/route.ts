@@ -9,6 +9,7 @@ import {
   loadPersistedList,
 } from '@/lib/shoppingList'
 import { priceFreshnessCutoff, toPriceSighting, dedupeCheapestPerStore } from '@/lib/priceSightings'
+import { normalizeItemKey } from '@/lib/itemName'
 import type { ShoppingItem } from '@/types'
 
 // Attaches each item's cheapest known nearby prices (crowdsourced for now —
@@ -19,21 +20,28 @@ import type { ShoppingItem } from '@/types'
 // the cheapest few reports for each item, regardless of how far the
 // reporting store is.
 async function attachPrices(items: ShoppingItem[]): Promise<ShoppingItem[]> {
-  const names = [...new Set(items.map((it) => it.name))]
-  if (names.length === 0) return items
+  const originalNames = [...new Set(items.map((it) => it.name))]
+  if (originalNames.length === 0) return items
+
+  // Sightings are matched on a normalized key (see normalizeItemKey) so a
+  // list item like "tortilla wraps" still finds a price reported as
+  // "tortilla wrap" instead of the exact-string mismatch silently looking
+  // like there's no data at all. The list item's own display name is left
+  // untouched — only the lookup key is normalized.
+  const normalizedNames = [...new Set(originalNames.map(normalizeItemKey))]
 
   const sightings = await prisma.priceSighting.findMany({
-    where: { item: { in: names }, createdAt: { gte: priceFreshnessCutoff() } },
+    where: { item: { in: normalizedNames }, createdAt: { gte: priceFreshnessCutoff() } },
     orderBy: { price: 'asc' },
   })
 
-  const byItem = new Map<string, ShoppingItem['prices']>()
-  for (const name of names) {
-    const forItem = sightings.filter((s) => s.item === name).map(toPriceSighting)
-    byItem.set(name, dedupeCheapestPerStore(forItem).slice(0, 3))
+  const byNormalized = new Map<string, ShoppingItem['prices']>()
+  for (const normalized of normalizedNames) {
+    const forItem = sightings.filter((s) => s.item === normalized).map(toPriceSighting)
+    byNormalized.set(normalized, dedupeCheapestPerStore(forItem).slice(0, 3))
   }
 
-  return items.map((it) => ({ ...it, prices: byItem.get(it.name) ?? [] }))
+  return items.map((it) => ({ ...it, prices: byNormalized.get(normalizeItemKey(it.name)) ?? [] }))
 }
 
 // Due reminders + frequently-bought items overdue by their average

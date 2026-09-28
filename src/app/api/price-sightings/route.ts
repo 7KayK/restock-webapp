@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { getOrCreateUser } from '@/lib/getOrCreateUser'
 import { isSupportedCurrency } from '@/lib/currency'
 import { priceFreshnessCutoff, toPriceSighting } from '@/lib/priceSightings'
+import { normalizeItemKey } from '@/lib/itemName'
 import type { PriceSighting } from '@/types'
 
 // GET /api/price-sightings?item=milk — recent, cheapest-first sightings for
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest) {
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { searchParams } = new URL(request.url)
-  const item = (searchParams.get('item') ?? '').trim().toLowerCase()
+  const item = normalizeItemKey(searchParams.get('item') ?? '')
   if (!item) return Response.json({ error: 'item is required' }, { status: 400 })
 
   try {
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
       unit?: unknown
     }
 
-    const item = typeof body.item === 'string' ? body.item.trim().toLowerCase() : ''
+    const item = typeof body.item === 'string' ? normalizeItemKey(body.item) : ''
     if (!item) return Response.json({ error: 'item is required' }, { status: 400 })
 
     const storeName = typeof body.storeName === 'string' ? body.storeName.trim() : ''

@@ -152,6 +152,8 @@ export function ImageIntelligence({
           items:        activeItems,
           calendarDate: calendarDate || undefined,
           teamId:       selectedTeamId ?? null,
+          store:        result?.store ?? null,
+          currency:     result?.currency ?? null,
         }),
       })
       const json = await res.json()

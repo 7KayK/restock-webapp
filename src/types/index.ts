@@ -158,6 +158,7 @@ export interface ImageIntelligenceResult {
   store: string | null
   date: string | null
   totalAmount: number | null
+  currency: string | null
   items: ImageIntelligenceItem[]
   context: string
 }

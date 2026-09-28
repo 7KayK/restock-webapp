@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { priceFreshnessCutoff, toPriceSighting, dedupeCheapestPerStore } from '@/lib/priceSightings'
 import { packsNeeded } from '@/lib/units'
+import { normalizeItemKey } from '@/lib/itemName'
 import type { CartRequestItem, CartStoreOption, PriceSighting } from '@/types'
 
 const MAX_ITEMS = 60
@@ -24,7 +25,7 @@ export function normalizeItems(raw: unknown): CartRequestItem[] {
       typeof entry === 'string' ? { name: entry } : entry && typeof entry === 'object' ? entry : null
     if (!obj || typeof obj.name !== 'string') continue
 
-    const name = obj.name.trim().toLowerCase()
+    const name = normalizeItemKey(obj.name)
     if (!name) continue
     const quantity =
       typeof obj.quantity === 'number' && Number.isFinite(obj.quantity) && obj.quantity > 0

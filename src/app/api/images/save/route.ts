@@ -2,6 +2,8 @@ import { auth } from '@clerk/nextjs/server'
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getOrCreateUser } from '@/lib/getOrCreateUser'
+import { isSupportedCurrency } from '@/lib/currency'
+import { normalizeItemKey } from '@/lib/itemName'
 import type { ImageIntelligenceItem } from '@/types'
 
 type ActionType = 'purchases' | 'reminders' | 'calendar'
@@ -36,9 +38,11 @@ export async function POST(request: NextRequest) {
       items?: ImageIntelligenceItem[]
       calendarDate?: string
       teamId?: string | null
+      store?: string | null
+      currency?: string | null
     }
 
-    const { action, items, calendarDate, teamId } = body
+    const { action, items, calendarDate, teamId, store, currency } = body
 
     if (!action || !['purchases', 'reminders', 'calendar'].includes(action)) {
       return Response.json({ error: 'action must be purchases, reminders, or calendar' }, { status: 400 })
@@ -66,6 +70,42 @@ export async function POST(request: NextRequest) {
           })
         )
       )
+
+      // Smart Import already has Claude read the price and store off the
+      // receipt for every line item — feed that straight into PriceSighting
+      // too, so a scanned receipt grows the crowdsourced price data the
+      // same way a manual "I saw this here for $X" report does, with zero
+      // extra taps from the shopper and no new API to pay for. Best-effort:
+      // a store name Claude couldn't read, or an unrecognised currency,
+      // just means that one item doesn't become a sighting — it never
+      // blocks the purchase log itself.
+      const storeName = typeof store === 'string' ? store.trim() : ''
+      if (storeName && isSupportedCurrency(currency)) {
+        const pricedItems = items.filter(
+          (item) => typeof item.price === 'number' && item.price > 0
+        )
+        if (pricedItems.length > 0) {
+          try {
+            await prisma.priceSighting.createMany({
+              data: pricedItems.map((item) => ({
+                item:         normalizeItemKey(item.name),
+                storeName,
+                storePlaceId: null,
+                storeLat:     null,
+                storeLng:     null,
+                price:        item.price as number,
+                currency,
+                unit:         item.unit ?? null,
+                source:       'receipt',
+                reportedById: user.id,
+              })),
+            })
+          } catch (err) {
+            console.error('[images save] failed to record price sightings from receipt', err)
+          }
+        }
+      }
+
       return Response.json({ data: { purchases } }, { status: 201 })
     }
 
