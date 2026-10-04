@@ -7,10 +7,11 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
-import { CheckCircle2, MessageCircle, Phone, User, Loader2, AlertCircle, CalendarDays } from 'lucide-react'
+import { CheckCircle2, MessageCircle, Phone, User, Loader2, AlertCircle, CalendarDays, BarChart3 } from 'lucide-react'
 import { TelegramIcon } from '@/components/shared/ChannelIcons'
 import { LocationSettingsCard } from '@/components/shared/LocationSettingsCard'
 import { formatDate } from '@/lib/utils'
+import { isSpendAnalysisVisible, setSpendAnalysisVisible } from '@/lib/sidebarPrefs'
 import type { UserSettings, ChannelStatus, Integration } from '@/types'
 
 const TELEGRAM_BOT = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
@@ -32,6 +33,7 @@ export default function SettingsPage() {
     }
     return false
   })
+  const [spendVisible, setSpendVisible]     = useState(() => isSpendAnalysisVisible())
 
   useEffect(() => {
     fetch('/api/settings')
@@ -68,6 +70,11 @@ export default function SettingsPage() {
   function toggleAutoCalendar(checked: boolean) {
     setAutoCalendar(checked)
     localStorage.setItem('restock_auto_calendar', String(checked))
+  }
+
+  function toggleSpendVisible(checked: boolean) {
+    setSpendVisible(checked)
+    setSpendAnalysisVisible(checked)
   }
 
   // Show success/error from OAuth callback redirect
@@ -160,6 +167,30 @@ export default function SettingsPage() {
                   })
                 : '—'}
             </span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Navigation */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-[#132B22]" />
+            <CardTitle className="text-base">Navigation</CardTitle>
+          </div>
+          <CardDescription>
+            Choose what appears in the More section of the sidebar.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between py-1">
+            <div>
+              <p className="text-sm font-medium text-[#132B22]">Show Spend Analysis</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Hide this if you do not check your spending breakdown often — this is just a display preference, and your data is not affected either way.
+              </p>
+            </div>
+            <Switch checked={spendVisible} onCheckedChange={toggleSpendVisible} />
           </div>
         </CardContent>
       </Card>

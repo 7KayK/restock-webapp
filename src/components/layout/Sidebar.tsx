@@ -17,26 +17,50 @@ import {
   MessageSquare,
   Settings,
   MoreHorizontal,
+  ChevronDown,
   Warehouse,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { WhatsAppIcon, TelegramIcon } from '@/components/shared/ChannelIcons'
+import { isSpendAnalysisVisible, onNavPrefsChanged } from '@/lib/sidebarPrefs'
 import type { ChannelStatus } from '@/types'
 
-const navItems = [
+type NavItem = {
+  href: string
+  label: string
+  icon: React.ElementType
+  exact?: boolean
+  // Marks an item that Settings can hide — see src/lib/sidebarPrefs.ts.
+  // Only Spend Analysis has one today; undefined means "always shown."
+  togglable?: 'spendAnalysis'
+}
+
+// Primary — kept deliberately small, and matching the mobile bottom nav's
+// own primary set exactly, so desktop and mobile agree on what counts as
+// a "main" feature rather than drifting into two different hierarchies.
+const PRIMARY_NAV_ITEMS: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: ShoppingCart, exact: true },
-  { href: '/dashboard/pantry', label: 'Pantry', icon: Warehouse },
-  { href: '/dashboard/spend', label: 'Spend Analysis', icon: BarChart3 },
   { href: '/dashboard/history', label: 'History', icon: History },
   { href: '/dashboard/reminders', label: 'Reminders', icon: Bell },
   { href: '/dashboard/shopping', label: 'Shopping Trip', icon: ShoppingBag },
+  { href: '/dashboard/assistant', label: 'AI Assistant', icon: MessageSquare },
+]
+
+// Secondary — shared by the desktop sidebar's collapsible "More" section
+// and the mobile "More" drawer below, so the two stay in lockstep instead
+// of silently drifting apart. Teams lives here rather than in Settings on
+// purpose: it's a collaboration mode someone needs to discover, not a
+// view preference — see the conversation that led to this change. Spend
+// Analysis additionally respects the Settings visibility toggle.
+const MORE_ITEMS: NavItem[] = [
+  { href: '/dashboard/pantry', label: 'Pantry', icon: Warehouse },
+  { href: '/dashboard/spend', label: 'Spend Analysis', icon: BarChart3, togglable: 'spendAnalysis' },
   { href: '/dashboard/teams', label: 'Teams', icon: Users },
   { href: '/dashboard/stores', label: 'Nearest Store', icon: MapPin },
-  { href: '/dashboard/assistant', label: 'AI Assistant', icon: MessageSquare },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
 
-const BOTTOM_NAV_ITEMS = [
+const BOTTOM_NAV_ITEMS: NavItem[] = [
   { href: '/dashboard', label: 'Home', icon: ShoppingCart, exact: true },
   { href: '/dashboard/history', label: 'History', icon: History },
   { href: '/dashboard/reminders', label: 'Reminders', icon: Bell },
@@ -44,19 +68,67 @@ const BOTTOM_NAV_ITEMS = [
   { href: '/dashboard/assistant', label: 'AI', icon: MessageSquare },
 ]
 
-const MORE_ITEMS = [
-  { href: '/dashboard/pantry', label: 'Pantry', icon: Warehouse },
-  { href: '/dashboard/spend', label: 'Spend Analysis', icon: BarChart3 },
-  { href: '/dashboard/teams', label: 'Teams', icon: Users },
-  { href: '/dashboard/stores', label: 'Nearest Store', icon: MapPin },
-  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
-]
-
 const TELEGRAM_BOT = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
+
+// Reads the Spend Analysis visibility preference and keeps it in sync —
+// used by both Sidebar and BottomNav so a toggle flipped on the Settings
+// page is reflected immediately in whichever nav is on screen, without a
+// reload. See src/lib/sidebarPrefs.ts for why a custom event is needed on
+// top of the native 'storage' event.
+function useVisibleMoreItems(): NavItem[] {
+  // Lazy initializer, not an effect — reads the real value on first
+  // render, same pattern Settings already uses for autoCalendar.
+  const [spendVisible, setSpendVisible] = useState(() => isSpendAnalysisVisible())
+
+  useEffect(() => {
+    // Subscription only: setState happens inside the callback when
+    // something actually changes, never synchronously in the effect body.
+    return onNavPrefsChanged(() => setSpendVisible(isSpendAnalysisVisible()))
+  }, [])
+
+  return MORE_ITEMS.filter((item) => item.togglable !== 'spendAnalysis' || spendVisible)
+}
+
+function SidebarLink({ item, active }: { item: NavItem; active: boolean }) {
+  const Icon = item.icon
+  return (
+    <Link
+      href={item.href}
+      className={cn(
+        'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+        active
+          ? 'text-white'
+          : 'text-[#132B22]/65 hover:bg-[#132B22]/10 hover:text-[#132B22]'
+      )}
+    >
+      {active && (
+        <motion.div
+          layoutId="sidebar-active"
+          className="absolute inset-0 rounded-lg bg-[#132B22] shadow-sm"
+          transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+        />
+      )}
+      {!active && (
+        <span className="absolute left-0 inset-y-1.5 w-[3px] rounded-r-full bg-[#132B22] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+      )}
+      <Icon className="relative h-4 w-4 shrink-0 z-10" />
+      <span className="relative z-10">{item.label}</span>
+    </Link>
+  )
+}
 
 export function Sidebar() {
   const pathname = usePathname()
   const [channels, setChannels] = useState<Pick<ChannelStatus, 'telegramId' | 'whatsappNumber'> | null>(null)
+  // Collapsed by default — that's the actual point of this section: a
+  // short primary list up top, with Pantry/Spend Analysis/Teams/Nearest
+  // Store/Settings tucked away until asked for.
+  // Open state is derived rather than synced via an effect: either the
+  // user's explicit toggle, or forced open because they're already on one
+  // of its pages (e.g. a bookmark straight to Teams), so the active item
+  // is never hidden inside a collapsed section.
+  const [moreOpenToggle, setMoreOpenToggle] = useState(false)
+  const moreItems = useVisibleMoreItems()
 
   useEffect(() => {
     fetch('/api/channels')
@@ -75,6 +147,9 @@ export function Sidebar() {
   function isActive(href: string, exact?: boolean) {
     return exact ? pathname === href : pathname.startsWith(href)
   }
+
+  const moreContainsActive = moreItems.some((item) => isActive(item.href, item.exact))
+  const moreOpen = moreOpenToggle || moreContainsActive
 
   const hasTelegram = !!channels?.telegramId && !!TELEGRAM_BOT
 
@@ -100,34 +175,29 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        {navItems.map(({ href, label, icon: Icon, exact }) => {
-          const active = isActive(href, exact)
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                active
-                  ? 'text-white'
-                  : 'text-[#132B22]/65 hover:bg-[#132B22]/10 hover:text-[#132B22]'
-              )}
-            >
-              {active && (
-                <motion.div
-                  layoutId="sidebar-active"
-                  className="absolute inset-0 rounded-lg bg-[#132B22] shadow-sm"
-                  transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
-                />
-              )}
-              {!active && (
-                <span className="absolute left-0 inset-y-1.5 w-[3px] rounded-r-full bg-[#132B22] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-              )}
-              <Icon className="relative h-4 w-4 shrink-0 z-10" />
-              <span className="relative z-10">{label}</span>
-            </Link>
-          )
-        })}
+        {PRIMARY_NAV_ITEMS.map((item) => (
+          <SidebarLink key={item.href} item={item} active={isActive(item.href, item.exact)} />
+        ))}
+
+        <button
+          onClick={() => setMoreOpenToggle(!moreOpen)}
+          className="w-full flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-[#132B22]/50 hover:bg-[#132B22]/5 hover:text-[#132B22]/70 transition-colors mt-1"
+          aria-expanded={moreOpen}
+        >
+          <span className="flex items-center gap-3">
+            <MoreHorizontal className="h-4 w-4 shrink-0" />
+            More
+          </span>
+          <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', moreOpen && 'rotate-180')} />
+        </button>
+
+        {moreOpen && (
+          <div className="space-y-0.5 pl-0">
+            {moreItems.map((item) => (
+              <SidebarLink key={item.href} item={item} active={isActive(item.href, item.exact)} />
+            ))}
+          </div>
+        )}
       </nav>
 
       {/* Channel quick-access */}
@@ -176,12 +246,13 @@ export function Sidebar() {
 export function BottomNav() {
   const pathname = usePathname()
   const [moreOpen, setMoreOpen] = useState(false)
+  const moreItems = useVisibleMoreItems()
 
   function isActive(href: string, exact?: boolean) {
     return exact ? pathname === href : pathname.startsWith(href)
   }
 
-  const isMoreActive = MORE_ITEMS.some((item) => pathname.startsWith(item.href))
+  const isMoreActive = moreItems.some((item) => pathname.startsWith(item.href))
 
   return (
     <>
@@ -202,7 +273,7 @@ export function BottomNav() {
               More
             </p>
             <div className="space-y-0.5">
-              {MORE_ITEMS.map(({ href, label, icon: Icon }) => {
+              {moreItems.map(({ href, label, icon: Icon }) => {
                 const active = isActive(href)
                 return (
                   <Link
