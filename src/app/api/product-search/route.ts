@@ -5,6 +5,7 @@ import { priceFreshnessCutoff, toPriceSighting, dedupeCheapestPerStore } from '@
 import { normalizeItemKey } from '@/lib/itemName'
 import { searchFoodProducts } from '@/lib/kroger'
 import { getOpenPricesForBarcode } from '@/lib/openPrices'
+import { parseRegion } from '@/lib/region'
 import type { ProductSearchResult, CommunityPrice, ProductMatch } from '@/types'
 
 // GET /api/product-search?q=tortilla wraps — a real free-text product
@@ -35,6 +36,24 @@ import type { ProductSearchResult, CommunityPrice, ProductMatch } from '@/types'
 const MAX_OFF_MATCHES = 5
 const MAX_OPEN_PRICES_LOOKUPS = 3 // cap outbound Open Prices calls per search
 
+// Country-scoped Open Food Facts search first; if that finds nothing (OFF's
+// coverage of e.g. Nigerian products is thin) fall back to the global search
+// so the shopper still gets product matches. Open Prices lookups stay
+// currency/country-scoped either way, so a global fallback never leaks
+// foreign prices into a local result.
+async function searchLocalFirst(q: string, countryTag?: string) {
+  try {
+    if (countryTag) {
+      const scoped = await searchFoodProducts(q, MAX_OFF_MATCHES, countryTag)
+      if (scoped.length > 0) return scoped
+    }
+    return await searchFoodProducts(q, MAX_OFF_MATCHES)
+  } catch (err) {
+    console.error('[product-search] Open Food Facts lookup failed', err)
+    return []
+  }
+}
+
 export async function GET(request: NextRequest) {
   const { userId } = await auth()
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -43,24 +62,28 @@ export async function GET(request: NextRequest) {
   if (!q) return Response.json({ error: 'q is required' }, { status: 400 })
   if (q.length > 100) return Response.json({ error: 'q is too long' }, { status: 400 })
 
-  const empty: ProductSearchResult = { query: q, restockReports: [], communityPrices: [], products: [] }
+  const empty: ProductSearchResult = { query: q, region: null, restockReports: [], communityPrices: [], products: [] }
 
   try {
     const normalized = normalizeItemKey(q)
+
+    // Geography: resolve the shopper's market from their saved location so
+    // prices reflect where they actually shop (Lagos/Ogun/Oyo, Saskatchewan/
+    // Manitoba, UK, Ireland). Unknown/unsaved location = unscoped, as before.
+    const me = await prisma.user.findUnique({ where: { clerkId: userId }, select: { locationLabel: true } })
+    const region = parseRegion(me?.locationLabel)
 
     const [restockRows, offMatches] = await Promise.all([
       prisma.priceSighting.findMany({
         where: {
           item: { contains: normalized, mode: 'insensitive' },
           createdAt: { gte: priceFreshnessCutoff() },
+          ...(region ? { currency: region.currency } : {}),
         },
         orderBy: { price: 'asc' },
         take: 20,
       }),
-      searchFoodProducts(q, MAX_OFF_MATCHES).catch((err) => {
-        console.error('[product-search] Open Food Facts lookup failed', err)
-        return []
-      }),
+      searchLocalFirst(q, region?.offCountryTag),
     ])
 
     const restockReports = dedupeCheapestPerStore(restockRows.map(toPriceSighting))
@@ -79,7 +102,10 @@ export async function GET(request: NextRequest) {
     const barcodedMatches = offMatches.filter((m) => m.code).slice(0, MAX_OPEN_PRICES_LOOKUPS)
     const openPricesResults = await Promise.allSettled(
       barcodedMatches.map(async (m) => {
-        const observations = await getOpenPricesForBarcode(m.code as string)
+        const observations = await getOpenPricesForBarcode(
+          m.code as string,
+          region ? { currency: region.currency, countryCode: region.countryCode } : {}
+        )
         return observations.map((o): CommunityPrice => ({
           productName: m.productName,
           brand: m.brand,
@@ -97,7 +123,15 @@ export async function GET(request: NextRequest) {
       .flatMap((r) => r.value)
       .sort((a, b) => a.price - b.price)
 
-    const data: ProductSearchResult = { query: q, restockReports, communityPrices, products }
+    const data: ProductSearchResult = {
+      query: q,
+      region: region
+        ? { country: region.country, countryCode: region.countryCode, currency: region.currency, region: region.region, city: region.city }
+        : null,
+      restockReports,
+      communityPrices,
+      products,
+    }
     return Response.json({ data })
   } catch (err) {
     console.error('[product-search GET]', err)

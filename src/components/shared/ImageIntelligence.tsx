@@ -289,11 +289,11 @@ export function ImageIntelligence({
                         {item.status === 'out_of_stock' ? 'Out' : 'Low'}
                       </span>
                     )}
-                    <div className="flex-1 grid grid-cols-[1fr_56px_64px] gap-1.5">
+                    <div className="flex-1 grid grid-cols-[1fr_60px_72px] gap-1.5">
                       <Input
                         value={item.name}
                         onChange={(e) => updateItem(idx, 'name', e.target.value)}
-                        className="h-8 text-xs text-[#132B22]"
+                        className="h-9 md:h-8 text-base md:text-xs text-[#132B22]"
                         placeholder="Item name"
                       />
                       <Input
@@ -302,7 +302,7 @@ export function ImageIntelligence({
                         step={0.5}
                         value={item.quantity ?? 1}
                         onChange={(e) => updateItem(idx, 'quantity', parseFloat(e.target.value) || 1)}
-                        className="h-8 text-xs text-center text-[#132B22]"
+                        className="h-9 md:h-8 text-base md:text-xs text-center text-[#132B22]"
                         placeholder="Qty"
                       />
                       <Input
@@ -311,13 +311,13 @@ export function ImageIntelligence({
                         step={0.01}
                         value={item.price ?? ''}
                         onChange={(e) => updateItem(idx, 'price', e.target.value ? parseFloat(e.target.value) : null as unknown as number)}
-                        className="h-8 text-xs text-center text-[#132B22]"
+                        className="h-9 md:h-8 text-base md:text-xs text-center text-[#132B22]"
                         placeholder="$0.00"
                       />
                     </div>
                     <button
                       onClick={() => removeItem(idx)}
-                      className="p-1 rounded text-[#132B22]/25 hover:text-[#EF4444] hover:bg-[#EF4444]/8 transition-colors opacity-0 group-hover:opacity-100"
+                      className="p-2 rounded text-[#132B22]/40 md:p-1 md:text-[#132B22]/25 md:opacity-0 md:group-hover:opacity-100 hover:text-[#EF4444] hover:bg-[#EF4444]/8 transition-colors"
                       aria-label={`Remove ${item.name}`}
                     >
                       <X className="h-3.5 w-3.5" />

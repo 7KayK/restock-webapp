@@ -73,7 +73,14 @@ export interface OpenFoodFactsMatch {
   nutriscoreGrade: string | null
 }
 
-export async function searchFoodProducts(term: string, limit = 5): Promise<OpenFoodFactsMatch[]> {
+export async function searchFoodProducts(
+  term: string,
+  limit = 5,
+  // Optional Open Food Facts country tag (e.g. 'canada', 'united-kingdom').
+  // When given, only products recorded as sold in that country are returned,
+  // so the barcodes handed to Open Prices are ones that can have local prices.
+  countryTag?: string
+): Promise<OpenFoodFactsMatch[]> {
   const params = new URLSearchParams({
     search_terms: term,
     search_simple: '1',
@@ -83,6 +90,11 @@ export async function searchFoodProducts(term: string, limit = 5): Promise<OpenF
     lc: 'en',
     fields: 'code,product_name,brands,nutriscore_grade,image_url',
   })
+  if (countryTag) {
+    params.set('tagtype_0', 'countries')
+    params.set('tag_contains_0', 'contains')
+    params.set('tag_0', countryTag)
+  }
 
   const res = await fetch(`${OFF_SEARCH}?${params}`, {
     headers: { 'User-Agent': USER_AGENT },

@@ -267,7 +267,7 @@ export function BottomNav() {
 
       {/* More drawer */}
       {moreOpen && (
-        <div className="fixed bottom-16 inset-x-0 z-50 md:hidden bg-white border-t border-[rgba(19,43,34,0.10)] rounded-t-2xl shadow-xl">
+        <div className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] inset-x-0 z-50 md:hidden bg-white border-t border-[rgba(19,43,34,0.10)] rounded-t-2xl shadow-xl">
           <div className="px-4 pt-4 pb-3">
             <p className="text-[10px] font-semibold text-[#132B22]/35 uppercase tracking-wider mb-2">
               More
@@ -298,7 +298,7 @@ export function BottomNav() {
       )}
 
       {/* Bottom nav bar */}
-      <nav className="fixed bottom-0 inset-x-0 z-50 md:hidden h-16 bg-white border-t border-[rgba(19,43,34,0.10)] flex items-stretch">
+      <nav className="fixed bottom-0 inset-x-0 z-50 md:hidden h-[calc(4rem+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] bg-white border-t border-[rgba(19,43,34,0.10)] flex items-stretch">
         {BOTTOM_NAV_ITEMS.map(({ href, label, icon: Icon, exact }) => {
           const active = isActive(href, exact)
           return (

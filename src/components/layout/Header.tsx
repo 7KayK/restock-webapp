@@ -21,7 +21,7 @@ export function Header() {
   const title = pageTitles[pathname] ?? 'Dashboard'
 
   return (
-    <header className="h-14 border-b border-[rgba(19,43,34,0.10)] bg-white flex items-center px-4 shrink-0 md:hidden">
+    <header className="min-h-14 border-b border-[rgba(19,43,34,0.10)] bg-white flex items-center px-4 pt-[env(safe-area-inset-top)] shrink-0 md:hidden">
       <Image
         src="/logo.png"
         alt="Restock"

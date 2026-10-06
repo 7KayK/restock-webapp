@@ -128,7 +128,18 @@ export interface CommunityPrice {
   locationLabel: string | null
 }
 
+export interface SearchRegion {
+  country: string
+  countryCode: string
+  currency: string
+  region: string | null
+  city: string | null
+}
+
 export interface ProductSearchResult {
+  // The shopper's resolved test market, when their saved location maps to
+  // one; null means results are unscoped/global.
+  region?: SearchRegion | null
   query: string
   restockReports: PriceSighting[]   // Restock's own crowdsourced/receipt data
   communityPrices: CommunityPrice[] // Open Prices — global crowdsourced prices

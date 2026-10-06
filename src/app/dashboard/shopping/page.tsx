@@ -406,10 +406,10 @@ export default function ShoppingPage() {
               value={addInput}
               onChange={(e) => setAddInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') addItem() }}
-              className="border-0 p-0 h-8 text-sm text-[#132B22] placeholder:text-[#132B22]/35 focus-visible:ring-0 bg-transparent"
+              className="border-0 p-0 h-9 md:h-8 text-base md:text-sm text-[#132B22] placeholder:text-[#132B22]/35 focus-visible:ring-0 bg-transparent"
             />
             {addInput.trim() && (
-              <Button size="sm" className="bg-[#132B22] hover:bg-[#132B22]/90 text-white h-7 px-3" onClick={addItem}>
+              <Button size="sm" className="bg-[#132B22] hover:bg-[#132B22]/90 text-white h-9 md:h-7 px-4 md:px-3" onClick={addItem}>
                 Add
               </Button>
             )}
@@ -579,7 +579,7 @@ function ListRow({ item, onToggle, onRemove, onUpdateName, onUpdateQty }: ListRo
       <button
         onClick={() => onToggle(item._id)}
         className={cn(
-          'h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors',
+          'h-6 w-6 md:h-5 md:w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors',
           item._done
             ? 'border-[#22C55E] bg-[#22C55E]'
             : 'border-[rgba(19,43,34,0.18)] hover:border-[#132B22]'
@@ -599,7 +599,7 @@ function ListRow({ item, onToggle, onRemove, onUpdateName, onUpdateQty }: ListRo
             onKeyDown={(e) => {
               if (e.key === 'Enter') { onUpdateName(item._id, nameVal || item.name); setEditingName(false) }
             }}
-            className="h-7 text-sm py-0 px-1 text-[#132B22]"
+            className="h-9 md:h-7 text-base md:text-sm py-0 px-1 text-[#132B22]"
           />
         ) : (
           <span
@@ -642,12 +642,12 @@ function ListRow({ item, onToggle, onRemove, onUpdateName, onUpdateQty }: ListRo
           onKeyDown={(e) => {
             if (e.key === 'Enter') { onUpdateQty(item._id, parseInt(qtyVal) || 1); setEditingQty(false) }
           }}
-          className="h-7 w-14 text-xs text-center text-[#132B22] p-0"
+          className="h-9 md:h-7 w-16 md:w-14 text-base md:text-xs text-center text-[#132B22] p-0"
         />
       ) : (
         <button
           onClick={() => { setQtyVal(String(item.quantity)); setEditingQty(true) }}
-          className="text-xs text-[#132B22]/50 hover:text-[#132B22] transition-colors min-w-[2rem] text-right"
+          className="text-xs text-[#132B22]/50 hover:text-[#132B22] transition-colors min-w-[2.5rem] min-h-9 text-right px-1"
         >
           ×{item.quantity}{item.unit ? ` ${item.unit}` : ''}
         </button>
@@ -655,10 +655,10 @@ function ListRow({ item, onToggle, onRemove, onUpdateName, onUpdateQty }: ListRo
 
       <button
         onClick={() => onRemove(item._id)}
-        className="opacity-0 group-hover:opacity-100 p-1 rounded text-[#132B22]/25 hover:text-[#EF4444] hover:bg-[#EF4444]/8 transition-all shrink-0"
+        className="p-2 -mr-2 rounded text-[#132B22]/40 md:text-[#132B22]/25 md:opacity-0 md:group-hover:opacity-100 hover:text-[#EF4444] hover:bg-[#EF4444]/8 transition-all shrink-0"
         aria-label={`Remove ${item.name}`}
       >
-        <X className="h-3.5 w-3.5" />
+        <X className="h-4 w-4 md:h-3.5 md:w-3.5" />
       </button>
     </li>
   )

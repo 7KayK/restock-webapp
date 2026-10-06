@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, JetBrains_Mono, Fraunces } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from '@/components/ui/sonner'
@@ -28,8 +28,24 @@ export const metadata: Metadata = {
     'Track purchases, predict when you run out, and find the best deals near you.',
   icons: {
     icon: '/logo.png',
-    apple: '/logo.png',
+    apple: '/icons/apple-touch-icon.png',
   },
+  applicationName: 'Restock',
+  appleWebApp: {
+    capable: true,
+    title: 'Restock',
+    statusBarStyle: 'default',
+  },
+  formatDetection: { telephone: false },
+}
+
+// viewportFit 'cover' lets the installed app draw under the phone's notch /
+// gesture bar; the dashboard shell then pads with env(safe-area-inset-*).
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#132B22',
 }
 
 export default function RootLayout({
