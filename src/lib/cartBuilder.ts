@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { priceFreshnessCutoff, toPriceSighting, dedupeCheapestPerStore } from '@/lib/priceSightings'
 import { packsNeeded } from '@/lib/units'
 import { normalizeItemKey } from '@/lib/itemName'
-import type { CartRequestItem, CartStoreOption, PriceSighting } from '@/types'
+import type { CartRequestItem, CartStoreOption, PriceSighting, UnpricedReason } from '@/types'
 
 const MAX_ITEMS = 60
 const MAX_QUANTITY = 1000
@@ -65,12 +65,20 @@ export async function buildByStoreOptions(items: CartRequestItem[]): Promise<{
   byStore: CartStoreOption[]
   perItemDeduped: Map<string, PricedSighting[]>
   unpriced: string[]
+  unpricedReasons: Record<string, UnpricedReason>
 }> {
+  // Case-insensitive `contains` to fetch candidates, then an exact match on
+  // the *normalized* name in code. The old `item IN (...)` was case- and
+  // wording-sensitive, so any sighting saved as "Milk" or "Eggs" (before
+  // normalization existed) never matched the list's "milk" / "egg".
   const rows = await prisma.priceSighting.findMany({
-    where: { item: { in: items.map((it) => it.name) }, createdAt: { gte: priceFreshnessCutoff() } },
+    where: {
+      OR: items.map((it) => ({ item: { contains: it.name, mode: 'insensitive' as const } })),
+      createdAt: { gte: priceFreshnessCutoff() },
+    },
     orderBy: { price: 'asc' },
   })
-  const sightings = rows.map(toPriceSighting)
+  const sightings = rows.map(toPriceSighting).map((s) => ({ ...s, item: normalizeItemKey(s.item) }))
 
   // Cheapest usable sighting per (item, store), cheapest first. "Cheapest"
   // is by what the whole list line would cost — a 4 L jug at $5 beats two 1 L
@@ -93,6 +101,21 @@ export async function buildByStoreOptions(items: CartRequestItem[]): Promise<{
   }
 
   const unpriced = items.filter((it) => (perItemDeduped.get(it.name) ?? []).length === 0).map((it) => it.name)
+
+  // Explain each gap so "no prices" is never a mystery: no reports at all,
+  // only stale ones, or fresh ones in an incomparable unit.
+  const unpricedReasons: Record<string, UnpricedReason> = {}
+  if (unpriced.length > 0) {
+    const olderRows = await prisma.priceSighting.findMany({
+      where: { OR: unpriced.map((name) => ({ item: { contains: name, mode: 'insensitive' as const } })) },
+      select: { item: true },
+    })
+    const anyEverReported = new Set(olderRows.map((r) => normalizeItemKey(r.item)))
+    for (const name of unpriced) {
+      const hasFresh = sightings.some((s) => s.item === name)
+      unpricedReasons[name] = hasFresh ? 'unit-mismatch' : anyEverReported.has(name) ? 'stale' : 'none'
+    }
+  }
 
   interface StoreAgg {
     storeName: string
@@ -144,5 +167,5 @@ export async function buildByStoreOptions(items: CartRequestItem[]): Promise<{
     .sort((a, b) => b.coveredCount - a.coveredCount || a.total - b.total)
     .slice(0, 8)
 
-  return { byStore, perItemDeduped, unpriced }
+  return { byStore, perItemDeduped, unpriced, unpricedReasons }
 }

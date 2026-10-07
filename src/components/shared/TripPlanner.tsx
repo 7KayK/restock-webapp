@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Route, Loader2, AlertCircle, Clock, Fuel } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toCartRequestItems } from '@/lib/cartRequest'
-import type { ShoppingItem, TripStoreOption } from '@/types'
+import type { ShoppingItem, TripResult, TripStoreOption } from '@/types'
 
 type PlanState = 'idle' | 'locating' | 'loading' | 'error' | 'done'
 
@@ -20,10 +20,15 @@ export function TripPlanner({ items }: { items: ShoppingItem[] }) {
   const [state, setState] = useState<PlanState>('idle')
   const [error, setError] = useState<string | null>(null)
   const [stores, setStores] = useState<TripStoreOption[]>([])
+  const [routingNote, setRoutingNote] = useState<TripResult['routingNote']>(null)
 
   function planTrip() {
     const requestItems = toCartRequestItems(items)
-    if (requestItems.length === 0) return
+    if (requestItems.length === 0) {
+      setState('error')
+      setError('Add at least one item to your list first, then tap Make the trip.')
+      return
+    }
 
     if (!('geolocation' in navigator)) {
       setState('error')
@@ -45,26 +50,41 @@ export function TripPlanner({ items }: { items: ShoppingItem[] }) {
             origin: { lat: pos.coords.latitude, lng: pos.coords.longitude },
           }),
         })
-          .then((r) => r.json())
-          .then((json: { data?: { stores: TripStoreOption[] }; error?: string }) => {
-            if (json.data) {
+          .then(async (r) => {
+            if (r.status === 401 || r.status === 404) {
+              throw new Error('Your session expired — sign in again and retry.')
+            }
+            const json = (await r.json().catch(() => null)) as
+              | { data?: TripResult; error?: string }
+              | null
+            if (json?.data) {
               setStores(json.data.stores)
+              setRoutingNote(json.data.routingNote ?? null)
               setState('done')
             } else {
-              setError(json.error ?? 'Failed to plan the trip')
-              setState('error')
+              throw new Error(json?.error ?? `Failed to plan the trip (error ${r.status})`)
             }
           })
-          .catch(() => {
-            setError('Failed to plan the trip')
+          .catch((err: unknown) => {
+            setError(err instanceof Error ? err.message : 'Failed to plan the trip')
             setState('error')
           })
       },
-      () => {
+      (geoErr) => {
         setState('error')
-        setError('Location permission was denied — allow location access to compare travel time and gas cost.')
+        // Each failure needs different advice — lumping them under
+        // "permission denied" sent phone users to the wrong fix.
+        if (geoErr.code === geoErr.PERMISSION_DENIED) {
+          setError(
+            'Location is blocked for Restock. On Android: tap the lock/tune icon in Chrome (or long-press the app icon → App info → Permissions → Location) and choose Allow, then try again.'
+          )
+        } else if (geoErr.code === geoErr.POSITION_UNAVAILABLE) {
+          setError("Couldn't get a location fix. Turn on your phone's Location (GPS) in quick settings and try again.")
+        } else {
+          setError('Finding your location took too long. Move to an open area or check that Location is on, then try again.')
+        }
       },
-      { timeout: 10_000 }
+      { timeout: 20_000, maximumAge: 60_000, enableHighAccuracy: false }
     )
   }
 
@@ -101,7 +121,19 @@ export function TripPlanner({ items }: { items: ShoppingItem[] }) {
       {state === 'done' && (
         <div className="mt-3 space-y-2">
           {stores.length === 0 && (
-            <p className="text-xs text-[#132B22]/40">No priced stores to compare yet.</p>
+            <p className="text-xs text-[#132B22]/40">
+              No stores have a reported price for these items yet. Report a price on any list item (or import a receipt) and they&apos;ll show up here.
+            </p>
+          )}
+          {routingNote === 'no-coordinates' && (
+            <p className="text-xs text-[#132B22]/50 rounded-lg bg-[#C9A15A]/15 px-3 py-2">
+              Showing prices only: none of these stores has a map location yet. Report prices by picking the store from the search box so Restock can calculate drive time and gas.
+            </p>
+          )}
+          {routingNote === 'routing-failed' && (
+            <p className="text-xs text-[#132B22]/50 rounded-lg bg-[#C9A15A]/15 px-3 py-2">
+              Showing prices only: drive time couldn&apos;t be calculated right now. Please try again shortly.
+            </p>
           )}
           {stores.map((s) => (
             <div

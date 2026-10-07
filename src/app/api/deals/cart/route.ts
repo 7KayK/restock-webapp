@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       return Response.json({ data: empty })
     }
 
-    const { byStore, perItemDeduped, unpriced } = await buildByStoreOptions(items)
+    const { byStore, perItemDeduped, unpriced, unpricedReasons } = await buildByStoreOptions(items)
 
     // --- mixed: cheapest sighting per item, grouped by currency ---
     const currencies = new Set(
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
     mixed.sort((a, b) => a.missing.length - b.missing.length)
 
-    const data: CartBuilderResult = { byStore, mixed, unpriced }
+    const data: CartBuilderResult = { byStore, mixed, unpriced, unpricedReasons }
     return Response.json({ data })
   } catch (err) {
     console.error('[deals cart POST]', err)

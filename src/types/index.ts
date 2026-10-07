@@ -339,6 +339,11 @@ export interface TripStoreOption extends CartStoreOption {
 
 export interface TripResult {
   stores: TripStoreOption[]
+  // Why drive time / gas is missing, when it is: 'no-coordinates' = none of
+  // the priced stores has a saved map location (price reported as free text
+  // or seeded from a receipt); 'routing-failed' = stores had locations but
+  // Google's Routes API returned nothing (API not enabled, billing, key).
+  routingNote?: 'no-coordinates' | 'routing-failed' | null
 }
 
 export interface MixedCart {
@@ -348,10 +353,17 @@ export interface MixedCart {
   missing: string[]
 }
 
+// Why a list item has no price: 'none' = nobody has reported one,
+// 'stale' = only reports older than the freshness window exist,
+// 'unit-mismatch' = fresh reports exist but in a unit that can't be compared
+// to the list line (e.g. list says litres, report says a count).
+export type UnpricedReason = 'none' | 'stale' | 'unit-mismatch'
+
 export interface CartBuilderResult {
   byStore: CartStoreOption[]
   mixed: MixedCart[]
   unpriced: string[]
+  unpricedReasons?: Record<string, UnpricedReason>
 }
 
 export interface GroceryStore {

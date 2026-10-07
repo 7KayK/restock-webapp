@@ -67,7 +67,16 @@ export async function POST(request: NextRequest) {
       (a, b) => b.coveredCount - a.coveredCount || (a.tripTotal ?? a.total) - (b.tripTotal ?? b.total)
     )
 
-    return Response.json({ data: { stores } satisfies TripResult })
+    const routingNote: TripResult['routingNote'] =
+      stores.length === 0
+        ? null
+        : routableCoords.length === 0
+          ? 'no-coordinates'
+          : drives.every((d) => d.durationSec === null && d.distanceMeters === null)
+            ? 'routing-failed'
+            : null
+
+    return Response.json({ data: { stores, routingNote } satisfies TripResult })
   } catch (err) {
     console.error('[deals trip POST]', err)
     return Response.json({ error: 'Failed to plan the trip' }, { status: 500 })

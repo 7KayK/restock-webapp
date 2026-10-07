@@ -99,9 +99,29 @@ export function CartResultView({ result }: { result: CartBuilderResult }) {
       )}
 
       {result.unpriced.length > 0 && (
-        <p className="text-xs text-[#132B22]/40 px-1">
-          No prices reported yet for: {result.unpriced.join(', ')}
-        </p>
+        <div className="text-xs text-[#132B22]/50 px-1 space-y-1">
+          <p className="font-medium text-[#132B22]/60">No price for these items yet:</p>
+          <ul className="space-y-0.5">
+            {result.unpriced.map((name) => {
+              const reason = result.unpricedReasons?.[name]
+              return (
+                <li key={name}>
+                  <span className="capitalize">{name}</span>
+                  <span className="text-[#132B22]/35">
+                    {reason === 'stale'
+                      ? ' — only old reports (over 3 weeks), please re-check the price'
+                      : reason === 'unit-mismatch'
+                        ? " — reports use a different unit than your list (e.g. litres vs count)"
+                        : ' — nobody has reported a price yet'}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+          <p className="text-[#132B22]/35">
+            Tap an item on your list to report what you saw it for — every report helps the next shopper.
+          </p>
+        </div>
       )}
     </div>
   )
