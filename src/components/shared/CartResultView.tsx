@@ -17,10 +17,10 @@ export function CartResultView({ result }: { result: CartBuilderResult }) {
       <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
         <CardContent className="py-12 text-center space-y-2">
           <ShoppingCart className="h-8 w-8 mx-auto text-[#132B22]/20" />
-          <p className="text-sm text-[#132B22]/45">Nobody&apos;s reported prices for this list yet.</p>
-          <p className="text-xs text-[#132B22]/30">
-            Tap &ldquo;I saw this here for…&rdquo; on an item to get this started.
-          </p>
+          <p className="text-sm text-[#132B22]/60">No prices found for this list yet.</p>
+          <div className="text-left max-w-sm mx-auto pt-2">
+            <CartNotes result={result} />
+          </div>
         </CardContent>
       </Card>
     )
@@ -98,31 +98,7 @@ export function CartResultView({ result }: { result: CartBuilderResult }) {
         </Card>
       )}
 
-      {result.unpriced.length > 0 && (
-        <div className="text-xs text-[#132B22]/50 px-1 space-y-1">
-          <p className="font-medium text-[#132B22]/60">No price for these items yet:</p>
-          <ul className="space-y-0.5">
-            {result.unpriced.map((name) => {
-              const reason = result.unpricedReasons?.[name]
-              return (
-                <li key={name}>
-                  <span className="capitalize">{name}</span>
-                  <span className="text-[#132B22]/35">
-                    {reason === 'stale'
-                      ? ' — only old reports (over 3 weeks), please re-check the price'
-                      : reason === 'unit-mismatch'
-                        ? " — reports use a different unit than your list (e.g. litres vs count)"
-                        : ' — nobody has reported a price yet'}
-                  </span>
-                </li>
-              )
-            })}
-          </ul>
-          <p className="text-[#132B22]/35">
-            Tap an item on your list to report what you saw it for — every report helps the next shopper.
-          </p>
-        </div>
-      )}
+      <CartNotes result={result} />
     </div>
   )
 }
@@ -139,5 +115,56 @@ export function NoListToPrice() {
         </Link>
       </CardContent>
     </Card>
+  )
+}
+
+// Explains, line by line, why a list item has no price — and flags any
+// price that came from a similar-but-not-identical report name — so the
+// cart never fails silently. Used in both the empty and populated states.
+function CartNotes({ result }: { result: CartBuilderResult }) {
+  const similar = result.similarMatches ?? []
+  if (result.unpriced.length === 0 && similar.length === 0) return null
+
+  return (
+    <div className="text-xs text-[#132B22]/50 px-1 space-y-2">
+      {similar.length > 0 && (
+        <div className="space-y-0.5">
+          <p className="font-medium text-[#132B22]/60">Priced from a similar item:</p>
+          <ul className="space-y-0.5">
+            {similar.map((m) => (
+              <li key={m.listItem}>
+                <span className="capitalize">{m.listItem}</span>
+                <span className="text-[#132B22]/35"> — using reports for &ldquo;{m.reportedAs}&rdquo;</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {result.unpriced.length > 0 && (
+        <div className="space-y-1">
+          <p className="font-medium text-[#132B22]/60">No price for these items yet:</p>
+          <ul className="space-y-0.5">
+            {result.unpriced.map((name) => {
+              const reason = result.unpricedReasons?.[name]
+              return (
+                <li key={name}>
+                  <span className="capitalize">{name}</span>
+                  <span className="text-[#132B22]/35">
+                    {reason === 'stale'
+                      ? ' — only old reports (over 3 weeks), please re-check the price'
+                      : reason === 'unit-mismatch'
+                        ? ' — reports use a different unit than your list (e.g. litres vs count)'
+                        : ' — nobody has reported a price yet'}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+          <p className="text-[#132B22]/35">
+            Tap an item on your list to report what you saw it for — every report helps the next shopper.
+          </p>
+        </div>
+      )}
+    </div>
   )
 }

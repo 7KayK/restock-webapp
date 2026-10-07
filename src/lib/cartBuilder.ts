@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { priceFreshnessCutoff, toPriceSighting, dedupeCheapestPerStore } from '@/lib/priceSightings'
 import { packsNeeded } from '@/lib/units'
-import { normalizeItemKey } from '@/lib/itemName'
+import { normalizeItemKey, itemTokens, matchItemNames } from '@/lib/itemName'
 import type { CartRequestItem, CartStoreOption, PriceSighting, UnpricedReason } from '@/types'
 
 const MAX_ITEMS = 60
@@ -66,19 +66,24 @@ export async function buildByStoreOptions(items: CartRequestItem[]): Promise<{
   perItemDeduped: Map<string, PricedSighting[]>
   unpriced: string[]
   unpricedReasons: Record<string, UnpricedReason>
+  similarMatches: { listItem: string; reportedAs: string }[]
 }> {
   // Case-insensitive `contains` to fetch candidates, then an exact match on
   // the *normalized* name in code. The old `item IN (...)` was case- and
   // wording-sensitive, so any sighting saved as "Milk" or "Eggs" (before
   // normalization existed) never matched the list's "milk" / "egg".
+  // Candidates: any report whose name contains one of the list line's
+  // meaningful words (so "whole milk 2l" also pulls reports named "milk").
+  const candidateTerms = [...new Set(items.flatMap((it) => [it.name, ...itemTokens(it.name)]))].filter((t) => t.length >= 3)
   const rows = await prisma.priceSighting.findMany({
     where: {
-      OR: items.map((it) => ({ item: { contains: it.name, mode: 'insensitive' as const } })),
+      OR: candidateTerms.map((t) => ({ item: { contains: t, mode: 'insensitive' as const } })),
       createdAt: { gte: priceFreshnessCutoff() },
     },
     orderBy: { price: 'asc' },
   })
-  const sightings = rows.map(toPriceSighting).map((s) => ({ ...s, item: normalizeItemKey(s.item) }))
+  const sightings = rows.map(toPriceSighting)
+  const similarMatches = new Map<string, string>() // list item -> reported name
 
   // Cheapest usable sighting per (item, store), cheapest first. "Cheapest"
   // is by what the whole list line would cost — a 4 L jug at $5 beats two 1 L
@@ -89,7 +94,9 @@ export async function buildByStoreOptions(items: CartRequestItem[]): Promise<{
   for (const item of items) {
     const priced: PricedSighting[] = []
     for (const s of sightings) {
-      if (s.item !== item.name) continue
+      const kind = matchItemNames(item.name, s.item)
+      if (!kind) continue
+      if (kind === 'similar') similarMatches.set(item.name, normalizeItemKey(s.item))
       const packs = packsNeeded(item.quantity, item.unit, s.unit)
       if (packs === null) continue
       priced.push({ ...s, packs, lineTotal: lineTotal(s.price, packs) })
@@ -112,7 +119,7 @@ export async function buildByStoreOptions(items: CartRequestItem[]): Promise<{
     })
     const anyEverReported = new Set(olderRows.map((r) => normalizeItemKey(r.item)))
     for (const name of unpriced) {
-      const hasFresh = sightings.some((s) => s.item === name)
+      const hasFresh = sightings.some((s) => matchItemNames(name, s.item) !== null)
       unpricedReasons[name] = hasFresh ? 'unit-mismatch' : anyEverReported.has(name) ? 'stale' : 'none'
     }
   }
@@ -167,5 +174,8 @@ export async function buildByStoreOptions(items: CartRequestItem[]): Promise<{
     .sort((a, b) => b.coveredCount - a.coveredCount || a.total - b.total)
     .slice(0, 8)
 
-  return { byStore, perItemDeduped, unpriced, unpricedReasons }
+  const similar = [...similarMatches.entries()]
+    .filter(([name]) => !unpriced.includes(name))
+    .map(([listItem, reportedAs]) => ({ listItem, reportedAs }))
+  return { byStore, perItemDeduped, unpriced, unpricedReasons, similarMatches: similar }
 }

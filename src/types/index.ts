@@ -364,6 +364,9 @@ export interface CartBuilderResult {
   mixed: MixedCart[]
   unpriced: string[]
   unpricedReasons?: Record<string, UnpricedReason>
+  // List lines priced from a report with a looser name (e.g. list "whole
+  // milk 2l" priced from a report for "milk") — shown so it's never silent.
+  similarMatches?: { listItem: string; reportedAs: string }[]
 }
 
 export interface GroceryStore {

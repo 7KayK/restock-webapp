@@ -34,3 +34,33 @@ export function normalizeItemKey(raw: string): string {
   // Regular plural: "wraps" -> "wrap", "eggs" -> "egg"
   return key.slice(0, -1)
 }
+
+// Words that describe size/quantity rather than the product itself, so
+// "whole milk 2l" still reduces to the tokens ["whole", "milk"].
+const NOISE_TOKENS = new Set([
+  'the', 'and', 'of', 'a', 'pack', 'packs', 'box', 'bag', 'bottle', 'bottles', 'can', 'cans', 'carton',
+  'ml', 'l', 'g', 'kg', 'lb', 'lbs', 'oz', 'pc', 'pcs', 'ct', 'dozen', 'each',
+])
+
+export function itemTokens(raw: string): string[] {
+  return raw
+    .toLowerCase()
+    .replace(/[^a-z\s]/g, ' ') // drops digits, %, punctuation
+    .split(/\s+/)
+    .filter((t) => t.length >= 2 && !NOISE_TOKENS.has(t))
+    .map(normalizeItemKey)
+}
+
+// How a crowdsourced price report's item name relates to a shopping-list
+// line: 'exact' (same after normalization), 'similar' (the report's name is
+// a plain-language subset of the list line, e.g. report "milk" for list
+// "whole milk 2l"), or null. Deliberately one-directional: a report for
+// "coconut milk" is NOT used for a list line "milk". Callers must tell the
+// shopper when a price came from a 'similar' match.
+export function matchItemNames(listName: string, reportedName: string): 'exact' | 'similar' | null {
+  if (normalizeItemKey(listName) === normalizeItemKey(reportedName)) return 'exact'
+  const listTokens = new Set(itemTokens(listName))
+  const reported = itemTokens(reportedName)
+  if (reported.length === 0 || listTokens.size === 0) return null
+  return reported.every((t) => listTokens.has(t)) ? 'similar' : null
+}
