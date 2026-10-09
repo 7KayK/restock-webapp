@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "chat.restock.app",
+    "sha256_cert_fingerprints": ["B1:75:08:F5:B2:2E:E8:E1:1F:32:B0:84:0D:DC:E8:1C:75:F3:59:1B:D0:D3:3E:E1:5C:0B:7A:4A:25:B0:A4:76"]
+  }
+}]
