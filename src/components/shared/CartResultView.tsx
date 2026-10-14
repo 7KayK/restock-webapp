@@ -1,16 +1,17 @@
 'use client'
 
 import Link from 'next/link'
-import { ShoppingCart, Store, Split } from 'lucide-react'
+import { ShoppingCart, Store, Split, BarChart3 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { formatPrice } from '@/lib/currency'
-import type { CartBuilderResult } from '@/types'
+import type { CartBuilderResult, TypicalEstimate } from '@/types'
 
 // Shared rendering for a cart-builder result — used by the Deals page's
 // always-on Cart Builder and by the Shopping page's on-demand "Find prices
 // near me" search, so both stay visually and behaviorally identical.
 export function CartResultView({ result }: { result: CartBuilderResult }) {
-  const hasAnyPrices = result.byStore.length > 0 || result.mixed.length > 0
+  const hasStorePrices = result.byStore.length > 0 || result.mixed.length > 0
+  const hasAnyPrices = hasStorePrices || !!result.typical
 
   if (!hasAnyPrices) {
     return (
@@ -18,6 +19,11 @@ export function CartResultView({ result }: { result: CartBuilderResult }) {
         <CardContent className="py-12 text-center space-y-2">
           <ShoppingCart className="h-8 w-8 mx-auto text-[#132B22]/20" />
           <p className="text-sm text-[#132B22]/60">No prices found for this list yet.</p>
+          {result.needsLocation && (
+            <p className="text-xs text-[#132B22]/45">
+              Save your location in <Link href="/dashboard/settings" className="underline">Settings</Link> to see typical prices for your area.
+            </p>
+          )}
           <div className="text-left max-w-sm mx-auto pt-2">
             <CartNotes result={result} />
           </div>
@@ -28,6 +34,8 @@ export function CartResultView({ result }: { result: CartBuilderResult }) {
 
   return (
     <div className="space-y-4">
+      {result.typical && <TypicalCard typical={result.typical} />}
+
       {result.mixed.map((cart) => (
         <Card key={cart.currency} className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
           <CardHeader className="pb-3">
@@ -103,6 +111,68 @@ export function CartResultView({ result }: { result: CartBuilderResult }) {
   )
 }
 
+// Typical prices for the shopper's area from an official source. Always
+// labelled with the source and month, and never presented as a store price.
+function TypicalCard({ typical }: { typical: TypicalEstimate }) {
+  return (
+    <Card className="bg-white border-[rgba(19,43,34,0.10)] shadow-[0_2px_10px_rgba(19,43,34,0.05)]">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4 text-[#132B22]" />
+            <CardTitle className="text-base">Typical prices in {typical.areaLabel}</CardTitle>
+          </div>
+          <span className="text-lg font-semibold text-[#132B22]">{formatPrice(typical.total, typical.currency)}</span>
+        </div>
+        <CardDescription>
+          What these usually cost in your area, from public listings and official averages. Not a price at a specific store. Sources: {typical.sources.join(', ')}.
+          {typical.covered < typical.totalItems && ` Covers ${typical.covered} of ${typical.totalItems} items.`}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="pt-0">
+        <ul className="divide-y divide-[rgba(19,43,34,0.08)]">
+          {typical.items.map((it) => (
+            <li key={it.name} className="flex items-start justify-between gap-3 py-1.5 text-sm">
+              <span className="text-[#132B22]/80">
+                <span className="capitalize">{it.name}</span>
+                {it.quantity > 1 && <span className="text-[#132B22]/40"> ×{it.quantity}</span>}
+                <span className="block text-[11px] text-[#132B22]/40">
+                  {it.basis === 'web' ? (
+                    <>
+                      {it.low !== undefined && it.high !== undefined && it.high > it.low
+                        ? `${formatPrice(it.low, it.currency)}–${formatPrice(it.high, it.currency)} across ${it.links?.length ?? 0} listing${(it.links?.length ?? 0) === 1 ? '' : 's'}`
+                        : `from ${it.links?.length ?? 1} listing${(it.links?.length ?? 1) === 1 ? '' : 's'}`}
+                      {it.packLabel && ` · ${it.packLabel}`}
+                      {it.links && it.links.length > 0 && (
+                        <span className="block">
+                          {it.links.slice(0, 3).map((l, i) => (
+                            <span key={l.url}>
+                              {i > 0 && ' · '}
+                              <a href={l.url} target="_blank" rel="noopener noreferrer" className="underline">
+                                {l.retailer}
+                              </a>
+                            </span>
+                          ))}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {it.kind === 'similar' ? `average for “${it.matchedAs}”` : it.matchedAs}
+                      {it.area !== typical.areaLabel && ` · ${it.area} average`}
+                    </>
+                  )}
+                </span>
+              </span>
+              <span className="font-medium text-[#132B22] shrink-0">{formatPrice(it.price, it.currency)}</span>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
+  )
+}
+
 // Small empty-state used when there's no list to price yet.
 export function NoListToPrice() {
   return (
@@ -123,7 +193,9 @@ export function NoListToPrice() {
 // cart never fails silently. Used in both the empty and populated states.
 function CartNotes({ result }: { result: CartBuilderResult }) {
   const similar = result.similarMatches ?? []
-  if (result.unpriced.length === 0 && similar.length === 0) return null
+  const typicalNames = new Set((result.typical?.items ?? []).map((i) => i.name))
+  const unpriced = result.unpriced.filter((name) => !typicalNames.has(name))
+  if (unpriced.length === 0 && similar.length === 0) return null
 
   return (
     <div className="text-xs text-[#132B22]/50 px-1 space-y-2">
@@ -140,29 +212,26 @@ function CartNotes({ result }: { result: CartBuilderResult }) {
           </ul>
         </div>
       )}
-      {result.unpriced.length > 0 && (
+      {unpriced.length > 0 && (
         <div className="space-y-1">
           <p className="font-medium text-[#132B22]/60">No price for these items yet:</p>
           <ul className="space-y-0.5">
-            {result.unpriced.map((name) => {
+            {unpriced.map((name) => {
               const reason = result.unpricedReasons?.[name]
               return (
                 <li key={name}>
                   <span className="capitalize">{name}</span>
                   <span className="text-[#132B22]/35">
                     {reason === 'stale'
-                      ? ' — only old reports (over 3 weeks), please re-check the price'
+                      ? ' — the only store prices we have are over 3 weeks old'
                       : reason === 'unit-mismatch'
-                        ? ' — reports use a different unit than your list (e.g. litres vs count)'
-                        : ' — nobody has reported a price yet'}
+                        ? ' — store prices use a different unit than your list (e.g. litres vs count)'
+                        : ' — no price data for this item yet'}
                   </span>
                 </li>
               )
             })}
           </ul>
-          <p className="text-[#132B22]/35">
-            Tap an item on your list to report what you saw it for — every report helps the next shopper.
-          </p>
         </div>
       )}
     </div>

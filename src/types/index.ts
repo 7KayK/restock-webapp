@@ -367,6 +367,42 @@ export interface CartBuilderResult {
   // List lines priced from a report with a looser name (e.g. list "whole
   // milk 2l" priced from a report for "milk") — shown so it's never silent.
   similarMatches?: { listItem: string; reportedAs: string }[]
+  // Typical prices for the shopper's area from official sources — an
+  // estimate of what the list usually costs, not a price at any store.
+  typical?: TypicalEstimate | null
+  // True when no typical estimate was possible because the shopper hasn't
+  // saved a location in a supported region yet.
+  needsLocation?: boolean
+}
+
+export interface TypicalPriceLine {
+  name: string
+  quantity: number
+  price: number            // line total for the quantity asked for
+  currency: string
+  packLabel: string | null // e.g. "4 L" — the pack size the source prices
+  source: string
+  period: string
+  area: string             // "Saskatchewan" or "Canada"
+  matchedAs: string        // the source's name for the item
+  kind: 'exact' | 'similar'
+  // Where the number comes from: an official statistic, or prices found on
+  // public retailer pages by a live web lookup.
+  basis: 'official' | 'web'
+  // Web lookups only: the spread across the pages found, and those pages.
+  low?: number
+  high?: number
+  links?: { retailer: string; url: string }[]
+}
+
+export interface TypicalEstimate {
+  areaLabel: string
+  currency: string
+  items: TypicalPriceLine[]
+  total: number
+  covered: number
+  totalItems: number
+  sources: string[]
 }
 
 export interface GroceryStore {

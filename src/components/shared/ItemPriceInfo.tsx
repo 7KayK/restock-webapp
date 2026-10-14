@@ -73,7 +73,7 @@ export function ItemPriceInfo({ itemName, initialPrices }: { itemName: string; i
             </ul>
           ) : (
             <p className="text-xs text-[#132B22]/45">
-              Nobody&apos;s reported a price for this yet — be the first.
+              No store prices for this yet.
             </p>
           )}
 

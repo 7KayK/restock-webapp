@@ -1,7 +1,13 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextRequest } from 'next/server'
 import { normalizeItems, buildByStoreOptions } from '@/lib/cartBuilder'
+import { buildTypicalEstimate } from '@/lib/typicalPrices'
+import { parseRegion } from '@/lib/region'
+import { prisma } from '@/lib/prisma'
 import type { CartBuilderResult, CartItemPrice, MixedCart } from '@/types'
+
+// Live web price lookups can take 10-30 s for a list; the rest of the cart is fast.
+export const maxDuration = 60
 
 // Builds two ways to look at a shopping list's cost, from crowdsourced
 // price sightings only (see src/lib/kroger.ts for why there's no live
@@ -25,7 +31,7 @@ export async function POST(request: NextRequest) {
     const items = normalizeItems(body.items)
 
     if (items.length === 0) {
-      const empty: CartBuilderResult = { byStore: [], mixed: [], unpriced: [] }
+      const empty: CartBuilderResult = { byStore: [], mixed: [], unpriced: [], typical: null }
       return Response.json({ data: empty })
     }
 
@@ -56,7 +62,20 @@ export async function POST(request: NextRequest) {
     }
     mixed.sort((a, b) => a.missing.length - b.missing.length)
 
-    const data: CartBuilderResult = { byStore, mixed, unpriced, unpricedReasons, similarMatches }
+    // Typical (official average) prices for the shopper's saved area. Never
+    // blocks the cart: if it fails, the store-based result still returns.
+    let typical: CartBuilderResult['typical'] = null
+    let needsLocation = false
+    try {
+      const me = await prisma.user.findUnique({ where: { clerkId: userId }, select: { locationLabel: true } })
+      const region = parseRegion(me?.locationLabel)
+      if (region) typical = await buildTypicalEstimate(items, region)
+      else needsLocation = true
+    } catch (err) {
+      console.error('[deals cart typical]', err)
+    }
+
+    const data: CartBuilderResult = { byStore, mixed, unpriced, unpricedReasons, similarMatches, typical, needsLocation }
     return Response.json({ data })
   } catch (err) {
     console.error('[deals cart POST]', err)

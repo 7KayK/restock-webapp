@@ -87,7 +87,7 @@ export function ProductSearchPanel() {
             <Package className="h-7 w-7 mx-auto text-[#132B22]/20" />
             <p className="text-sm text-[#132B22]/45">Nothing found for &ldquo;{result?.query}&rdquo;.</p>
             <p className="text-xs text-[#132B22]/30">
-              Try a shorter or more generic term, or report a price yourself to get it started.
+              Try a shorter or more generic term, like “pork” instead of “pork ribs”.
             </p>
           </CardContent>
         </Card>

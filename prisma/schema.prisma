@@ -185,3 +185,58 @@ model Waitlist {
   answers   Json?
   createdAt DateTime @default(now())
 }
+
+
+// Official/average "typical" retail prices for staple items, by country and
+// (where the source publishes it) province/state. These are NOT store prices:
+// they tell a shopper what an item usually costs in their area, from a named
+// source and period (e.g. Statistics Canada, Nigeria NBS), so a list can be
+// estimated before anyone has reported a price at a specific store. Imported
+// by scripts/import-typical-prices-*.mjs; never entered by shoppers.
+model TypicalPrice {
+  id          String   @id @default(cuid())
+  // Normalized key matched against list items (e.g. "milk", "pork ribs").
+  item        String
+  // Name as the source publishes it, shown when the match is looser.
+  label       String
+  countryCode String
+  // Province/state the figure applies to; null = national average.
+  region      String?
+  price       Float
+  currency    String
+  // Pack size the price is for ("4 L", "1 dozen", "1 kg"); parsed by lib/units.
+  unit        String?
+  // The pack size to use when a list line has no unit of its own.
+  isDefault   Boolean  @default(false)
+  // Month (or period) the figure describes, e.g. "2026-08".
+  period      String
+  source      String
+  sourceUrl   String?
+  importedAt  DateTime @default(now())
+
+  @@unique([item, countryCode, region, unit, period, source])
+  @@index([countryCode, item])
+}
+
+// Cache of live web price lookups (see src/lib/priceLookup.ts): for an item in
+// a country/province, the prices found on public retailer pages, normalised to
+// a standard unit. Lookups cost money, so results (including "nothing found")
+// are reused for a few days. `observations` keeps every price with its source
+// URL so the shopper can check where a number came from.
+model PriceLookup {
+  id           String   @id @default(cuid())
+  item         String   // normalized list-item name
+  areaKey      String   // "CA:saskatchewan" / "NG:lagos" / "GB:"
+  countryCode  String
+  region       String?
+  ok           Boolean  // false = searched, found nothing usable
+  unit         String?  // standard unit prices are per: "1 kg", "1 L", "1 dozen", "1 each"
+  price        Float?   // typical (median) price per unit
+  low          Float?
+  high         Float?
+  currency     String?
+  observations Json     @default("[]")
+  fetchedAt    DateTime @default(now())
+
+  @@unique([item, areaKey])
+}
