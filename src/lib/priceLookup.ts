@@ -163,6 +163,20 @@ async function searchOne(item: string, region: Region, signal: AbortSignal): Pro
   }
 }
 
+// Health-check probe: one real web lookup, nothing cached or saved.
+export async function probeWebSearch(item: string, region: Region): Promise<
+  { ok: true; model: string; observations: number; unit: string; price: number } | { ok: false; model: string; error: string }
+> {
+  const model = process.env.ANTHROPIC_LOOKUP_MODEL ?? DEFAULT_MODEL
+  try {
+    const found = await searchOne(item, region, AbortSignal.timeout(45_000))
+    if (!found) return { ok: false, model, error: 'Search ran but found no usable priced listings (or the model cannot use web search).' }
+    return { ok: true, model, observations: found.observations.length, unit: found.unit, price: found.price }
+  } catch (err) {
+    return { ok: false, model, error: err instanceof Error ? err.message.slice(0, 300) : 'unknown error' }
+  }
+}
+
 // Cache-first lookup for a list. Returns what it has; items beyond the live
 // cap, or whose lookup failed or found nothing, are simply absent.
 export async function lookupWebPrices(
