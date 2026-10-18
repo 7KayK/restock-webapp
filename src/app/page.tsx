@@ -11,7 +11,7 @@ const FRAUNCES: React.CSSProperties = {
   fontFamily: 'var(--font-playfair), "Fraunces", Georgia, serif',
 }
 const MONO: React.CSSProperties = {
-  fontFamily: 'var(--font-geist-mono), "JetBrains Mono", monospace',
+  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
 }
 
 const FAQS = [
