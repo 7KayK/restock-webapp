@@ -5,6 +5,7 @@ import { Loader2, AlertCircle } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { CartResultView, NoListToPrice } from '@/components/shared/CartResultView'
 import { toCartRequestItems } from '@/lib/cartRequest'
+import { getBrowserOrigin } from '@/lib/clientLocation'
 import type { CartBuilderResult, ShoppingItem } from '@/types'
 
 // Prices whatever's actually on the shopper's current list right now —
@@ -30,23 +31,33 @@ export function CartBuilder({ items }: { items: ShoppingItem[] }) {
     if (requestItems.length === 0) return
 
     let cancelled = false
-    fetch('/api/deals/cart', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: requestItems }),
-    })
-      .then((r) => r.json())
-      .then((json: { data?: CartBuilderResult; error?: string }) => {
+
+    async function load() {
+      const post = async (origin?: { lat: number; lng: number }) => {
+        const r = await fetch('/api/deals/cart', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: requestItems, origin }),
+        })
+        return (await r.json()) as { data?: CartBuilderResult; error?: string }
+      }
+      try {
+        let json = await post()
+        // No saved location: use the browser's current position instead.
+        if (json.data?.needsLocation) {
+          const origin = await getBrowserOrigin()
+          if (origin) json = await post(origin)
+        }
         if (cancelled) return
         if (json.data) setResult(json.data)
         else setError(json.error ?? 'Failed to build cart')
-      })
-      .catch(() => {
+      } catch {
         if (!cancelled) setError('Failed to build cart')
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false)
-      })
+      }
+    }
+    void load()
     return () => {
       cancelled = true
     }

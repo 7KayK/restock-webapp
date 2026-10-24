@@ -416,3 +416,45 @@ export interface GroceryStore {
   openNow?: boolean
   hoursToday: string  // 'Open now' | 'Closed' | 'Hours unavailable'
 }
+
+// Best-store ranking — the shopper's list priced from typical local prices,
+// then adjusted per store type, with the cost of getting there (fuel + time)
+// and which items the store probably doesn't stock.
+export type StoreTier = 'discount' | 'regular' | 'premium' | 'convenience' | 'dollar' | 'specialty'
+
+export interface BestStoreOption {
+  rank: number
+  best: boolean
+  storeName: string
+  placeId: string
+  address: string
+  lat: number
+  lng: number
+  tier: StoreTier
+  tierLabel: string
+  openNow: boolean | undefined
+  rating: number | undefined
+  currency: string
+  // Typical basket for the items this store probably carries, adjusted for store type.
+  basket: number
+  // Typical price of items the store probably does not carry (bought elsewhere).
+  missingValue: number
+  likelyMissing: string[]
+  fuelCost: number
+  timeCost: number
+  driveMinutes: number | null    // one way, traffic-aware when Google routing worked
+  distanceKm: number
+  routed: boolean                // false = distance/time are straight-line estimates
+  allIn: number                  // basket + missingValue + fuel + time (+ extra stop)
+  directionsUrl: string
+}
+
+export interface BestStoreResult {
+  areaLabel: string | null
+  currency: string | null
+  typical: TypicalEstimate | null
+  stores: BestStoreOption[]
+  // Why there is no ranking, when there is none.
+  reason?: 'no-location' | 'unsupported-region' | 'no-prices' | 'no-stores' | null
+  routingNote?: 'routing-failed' | null
+}

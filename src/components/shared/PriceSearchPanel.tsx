@@ -1,5 +1,6 @@
 'use client'
 
+import { getBrowserOrigin } from '@/lib/clientLocation'
 import { useCallback, useEffect, useState } from 'react'
 import { Loader2, AlertCircle, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -23,12 +24,22 @@ export function PriceSearchPanel({ items, onClose }: { items: CartRequestItem[];
   // effect" rule. All state writes happen inside the async .then()/.catch()
   // chain, which the linter treats as deferred, not part of the render pass.
   const fetchPrices = useCallback(() => {
-    return fetch('/api/deals/cart', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items }),
-    })
-      .then((r) => r.json())
+    const post = (origin?: { lat: number; lng: number }) =>
+      fetch('/api/deals/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, origin }),
+      }).then((r) => r.json() as Promise<{ data?: CartBuilderResult; error?: string }>)
+
+    return post()
+      .then(async (json) => {
+        // No saved location: use the browser's current position instead.
+        if (json.data?.needsLocation) {
+          const origin = await getBrowserOrigin()
+          if (origin) return post(origin)
+        }
+        return json
+      })
       .then((json: { data?: CartBuilderResult; error?: string }) => {
         if (json.data) setResult(json.data)
         else setError(json.error ?? 'Failed to search prices')

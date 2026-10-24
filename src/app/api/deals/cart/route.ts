@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server'
 import { normalizeItems, buildByStoreOptions } from '@/lib/cartBuilder'
 import { buildTypicalEstimate } from '@/lib/typicalPrices'
 import { parseRegion } from '@/lib/region'
+import { labelForCoords } from '@/lib/geocode'
 import { prisma } from '@/lib/prisma'
 import type { CartBuilderResult, CartItemPrice, MixedCart } from '@/types'
 
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const body = (await request.json()) as { items?: unknown }
+    const body = (await request.json()) as { items?: unknown; origin?: { lat?: unknown; lng?: unknown } }
     const items = normalizeItems(body.items)
 
     if (items.length === 0) {
@@ -68,7 +69,12 @@ export async function POST(request: NextRequest) {
     let needsLocation = false
     try {
       const me = await prisma.user.findUnique({ where: { clerkId: userId }, select: { locationLabel: true } })
-      const region = parseRegion(me?.locationLabel)
+      let region = parseRegion(me?.locationLabel)
+      // No usable saved location: fall back to where the browser says the
+      // shopper is right now, so testers don't have to visit Settings first.
+      if (!region && typeof body.origin?.lat === 'number' && typeof body.origin?.lng === 'number') {
+        region = parseRegion(await labelForCoords(body.origin.lat, body.origin.lng))
+      }
       if (region) typical = await buildTypicalEstimate(items, region)
       else needsLocation = true
     } catch (err) {
