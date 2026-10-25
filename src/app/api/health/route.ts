@@ -32,7 +32,13 @@ export async function GET(request: NextRequest) {
 
   // 1. Keys present (names only, never values)
   const keys = ['ANTHROPIC_API_KEY', 'GOOGLE_PLACES_API_KEY', 'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY', 'DATABASE_URL']
-  for (const k of keys) add(`env ${k}`, !!process.env[k], process.env[k] ? 'set' : 'MISSING')
+  // Last 4 characters only, so a key can be matched to the one shown in Google Cloud
+  // ("Show key") without revealing it.
+  for (const k of keys) {
+    const v = process.env[k]
+    const tail = v && k.includes('KEY') && v.length > 12 ? ` (key ends …${v.slice(-4)})` : ''
+    add(`env ${k}`, !!v, v ? `set${tail}` : 'MISSING')
+  }
   add('model used for lookups', true, process.env.ANTHROPIC_LOOKUP_MODEL ?? DEFAULT_MODEL)
 
   // 2. Database + the new tables
