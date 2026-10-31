@@ -10,6 +10,22 @@ interface PlaceResult {
   location: { latitude: number; longitude: number }
   rating?: number
   currentOpeningHours?: { openNow: boolean }
+  types?: string[]
+}
+
+// Google tags cafes, restaurants and bakeries as "food_store" too. They are not
+// places to do a grocery shop, so they are dropped unless the place is also
+// tagged as a grocery store or supermarket.
+const NOT_GROCERY = new Set([
+  'cafe', 'coffee_shop', 'restaurant', 'fast_food_restaurant', 'bakery', 'bar', 'meal_takeaway',
+  'meal_delivery', 'ice_cream_shop', 'sandwich_shop', 'pizza_restaurant', 'dessert_shop', 'candy_store',
+])
+const GROCERY = new Set(['grocery_store', 'supermarket', 'warehouse_store', 'asian_grocery_store'])
+
+function isGroceryPlace(place: PlaceResult): boolean {
+  const types = place.types ?? []
+  if (types.some((t) => GROCERY.has(t))) return true
+  return !types.some((t) => NOT_GROCERY.has(t))
 }
 
 interface PlacesResponse {
@@ -66,6 +82,7 @@ export async function findNearbyGroceryStores(lat: number, lng: number): Promise
   console.log(`[places] results: ${places.length}`)
 
   return places
+    .filter(isGroceryPlace)
     .map((place) => {
       const distanceKm =
         Math.round(haversineKm(lat, lng, place.location.latitude, place.location.longitude) * 10) / 10
