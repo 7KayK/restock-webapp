@@ -118,6 +118,21 @@ export async function GET(request: NextRequest) {
     add('live web price lookup', true, 'skipped (add &deep=1 to run one real lookup)')
   }
 
+  // 5b. Optional: &probe=Lagos,Lagos,Nigeria runs one real milk lookup for that area
+  const probeLabel = searchParams.get('probe')
+  const probeRegion = probeLabel ? parseRegion(probeLabel) : null
+  if (probeLabel) {
+    if (!probeRegion) add(`probe ${probeLabel}`, false, 'not a supported "City, Region, Country" label')
+    else {
+      const pr = await probeWebSearch('milk', probeRegion)
+      add(
+        `live web price lookup (milk, ${probeLabel})`,
+        pr.ok,
+        pr.ok ? `${pr.observations} listings, ${pr.price} ${probeRegion.currency} per ${pr.unit}` : `model ${pr.model}: ${pr.error}`
+      )
+    }
+  }
+
   const failed = checks.filter((c) => !c.ok)
   return Response.json({
     status: failed.length === 0 ? 'ALL_OK' : 'PROBLEMS',

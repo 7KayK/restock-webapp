@@ -13,19 +13,17 @@ interface PlaceResult {
   types?: string[]
 }
 
-// Google tags cafes, restaurants and bakeries as "food_store" too. They are not
-// places to do a grocery shop, so they are dropped unless the place is also
-// tagged as a grocery store or supermarket.
-const NOT_GROCERY = new Set([
-  'cafe', 'coffee_shop', 'restaurant', 'fast_food_restaurant', 'bakery', 'bar', 'meal_takeaway',
-  'meal_delivery', 'ice_cream_shop', 'sandwich_shop', 'pizza_restaurant', 'dessert_shop', 'candy_store',
-])
-const GROCERY = new Set(['grocery_store', 'supermarket', 'warehouse_store', 'asian_grocery_store'])
+// Google tags cinemas, cafes, candy shops and restaurants as "food_store" too.
+// A place counts as a grocery store only if Google also tags it as one, or if
+// its only tags are generic ones (store / food / point_of_interest), which is
+// how some small ethnic grocers are listed.
+const GROCERY = new Set(['grocery_store', 'supermarket', 'warehouse_store', 'asian_grocery_store', 'convenience_store'])
+const GENERIC = new Set(['food_store', 'food', 'store', 'point_of_interest', 'establishment'])
 
 function isGroceryPlace(place: PlaceResult): boolean {
   const types = place.types ?? []
   if (types.some((t) => GROCERY.has(t))) return true
-  return !types.some((t) => NOT_GROCERY.has(t))
+  return types.length > 0 && types.every((t) => GENERIC.has(t))
 }
 
 interface PlacesResponse {

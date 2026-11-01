@@ -78,6 +78,23 @@ function urlKey(u: string): string | null {
 }
 
 async function searchOne(item: string, region: Region, signal: AbortSignal): Promise<Omit<WebPrice, 'item' | 'fetchedAt'> | null> {
+  try {
+    return await searchOneAt(item, region, signal, true)
+  } catch (err) {
+    // The search tool can reject an unusual city/region value. Retry once with
+    // the country only rather than losing the whole lookup.
+    if (signal.aborted) throw err
+    console.error('[priceLookup] retrying with country only:', err instanceof Error ? err.message : err)
+    return await searchOneAt(item, region, signal, false)
+  }
+}
+
+async function searchOneAt(
+  item: string,
+  region: Region,
+  signal: AbortSignal,
+  fineLocation: boolean
+): Promise<Omit<WebPrice, 'item' | 'fetchedAt'> | null> {
   const place = [region.city, region.region, region.country].filter(Boolean).join(', ')
   const response = await anthropic.messages.create(
     {
@@ -92,8 +109,8 @@ async function searchOne(item: string, region: Region, signal: AbortSignal): Pro
           user_location: {
             type: 'approximate',
             country: region.countryCode,
-            ...(region.region ? { region: region.region } : {}),
-            ...(region.city ? { city: region.city } : {}),
+            ...(fineLocation && region.region ? { region: region.region } : {}),
+            ...(fineLocation && region.city ? { city: region.city } : {}),
           },
         },
       ],
