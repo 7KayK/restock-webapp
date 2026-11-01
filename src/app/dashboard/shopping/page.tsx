@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
-import { Playfair_Display } from 'next/font/google'
 import {
   MapPin, CalendarDays, Camera, Keyboard, Search,
   Plus, X, Check, Loader2, Bell, Sparkles, ArrowLeft, Bookmark, BookmarkCheck, Warehouse,
@@ -21,7 +20,6 @@ import { ProductSearchPanel } from '@/components/shared/ProductSearchPanel'
 import { toCartRequestItems } from '@/lib/cartRequest'
 import type { CartRequestItem, ShoppingItem } from '@/types'
 
-const playfair = Playfair_Display({ subsets: ['latin'] })
 
 interface ListItem extends ShoppingItem {
   _id: string
@@ -339,7 +337,7 @@ export default function ShoppingPage() {
             </div>
           ) : items.length === 0 ? (
             <div className="px-4 pt-6 pb-4 space-y-4">
-              <p className={cn(playfair.className, 'text-[#132B22] leading-snug')} style={{ fontSize: '22px' }}>
+              <p className={cn('text-[#132B22] leading-snug')} style={{ fontSize: '22px', fontFamily: 'var(--font-playfair)' }}>
                 What do you need to pick up?
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-stretch">

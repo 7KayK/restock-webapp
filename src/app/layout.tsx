@@ -1,19 +1,25 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Fraunces } from 'next/font/google'
+import localFont from 'next/font/local'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Toaster } from '@/components/ui/sonner'
 import { AssessmentProvider } from '@/components/providers/AssessmentProvider'
 import './globals.css'
 
-const geistSans = Inter({
+// Fonts are bundled with the app (src/app/fonts, SIL Open Font Licence) instead of
+// downloaded from Google during the build: Google's font download failed
+// intermittently on Vercel and broke deployments.
+const geistSans = localFont({
+  src: './fonts/inter-latin-wght-normal.woff2',
   variable: '--font-geist-sans',
-  subsets: ['latin'],
+  weight: '100 900',
+  display: 'swap',
 })
 
-const playfairDisplay = Fraunces({
+const playfairDisplay = localFont({
+  src: './fonts/fraunces-latin-wght-normal.woff2',
   variable: '--font-playfair',
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
+  weight: '100 900',
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
