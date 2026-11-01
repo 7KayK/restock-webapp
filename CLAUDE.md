@@ -313,3 +313,33 @@ Before writing any code in a new session:
 
 *This file is the single source of truth for how Restock is built.*
 *Update it when patterns change. Never let the codebase drift from it.*
+---
+
+## Price system and best-store ranking (added Oct 2026)
+
+Price ladder (never guess a price): store prices reported by shoppers (PriceSighting) -> live web lookup
+(src/lib/priceLookup.ts, Anthropic web_search tool, validated against returned URLs, median per standard
+unit, cached 7 days in PriceLookup) -> official averages (TypicalPrice table) -> no price.
+Typical estimate: src/lib/typicalPrices.ts. Region parsing: src/lib/region.ts (Canada, Nigeria, UK, Ireland,
+Zambia, Germany).
+
+Best store: POST /api/deals/best-store (src/lib/storeRanking.ts). Typical basket x store-type factor
+(discount 0.92, regular 1.0, premium 1.15, convenience 1.25, dollar 0.95, specialty 1.05), plus fuel,
+the shopper's time (rates per currency in src/lib/tripCost.ts), and a flag for items a store type probably
+does not stock. Drive times come from Google Routes (traffic-aware). These multipliers are rounded
+assumptions, not measured data. Restock has no live shelf-stock or crowd data.
+
+Location: src/lib/geocode.ts (Google Geocoding, then OpenStreetMap, then raw coordinates). Cart and price
+search fall back to browser location (src/lib/clientLocation.ts) when no location is saved.
+
+Operations: GET /api/health?token=HEALTH_TOKEN[&deep=1] checks keys, database, Google APIs and one live
+price lookup (returns the last 4 characters of API keys, never the keys). A daily Vercel cron calls
+/api/cron/health and emails if RESEND_API_KEY and ALERT_EMAIL are set (also needs CRON_SECRET).
+Run `npm run verify` (tsc + next build) before pushing. GitHub Actions type-checks every push.
+
+Fonts are bundled in src/app/fonts (next/font/local). Do NOT use next/font/google: Google's font download
+failed intermittently during Vercel builds and broke deploys.
+
+Google Cloud: server key (GOOGLE_PLACES_API_KEY, no website restriction) must allow Places API (New),
+Geocoding API and Routes API. Browser key (NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) needs Maps JavaScript API
+and the https://restock.chat/* referrer.

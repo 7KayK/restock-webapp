@@ -42,3 +42,12 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# local tooling and scratch files
+.claude/
+.playwright-mcp/
+Claude outputs/
+*.docx
+C:Users*
+UsersKorede*
+restock-src.tgz

@@ -1,0 +1,24 @@
+name: Check
+
+# Type-checks and lints every push, so a broken change is flagged on GitHub
+# even before Vercel builds it. Fonts are bundled locally, so no network is
+# needed beyond installing packages.
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://user:pass@localhost:5432/restock
+      - run: npx tsc --noEmit
+      - run: npx eslint src --max-warnings=9999
