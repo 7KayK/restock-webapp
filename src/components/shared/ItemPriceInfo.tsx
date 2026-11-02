@@ -5,7 +5,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { Tag, Loader2, Plus, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { formatPrice, SUPPORTED_CURRENCIES } from '@/lib/currency'
+import { formatPrice, currencyOptions } from '@/lib/currency'
 import type { PriceSighting } from '@/types'
 
 // Inline "known prices for this item" panel used on the Shopping list.
@@ -172,7 +172,7 @@ function ReportPriceForm({
             className="h-7 rounded-md border border-input bg-transparent px-1.5 text-xs text-[#132B22]"
           >
             <option value="">Currency</option>
-            {SUPPORTED_CURRENCIES.map((c) => (
+            {currencyOptions().map((c) => (
               <option key={c.code} value={c.code}>
                 {c.code}
               </option>

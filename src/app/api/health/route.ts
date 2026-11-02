@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
   const probeLabel = searchParams.get('probe')
   const probeRegion = probeLabel ? parseRegion(probeLabel) : null
   if (probeLabel) {
-    if (!probeRegion) add(`probe ${probeLabel}`, false, 'not a supported "City, Region, Country" label')
+    if (!probeRegion) add(`probe ${probeLabel}`, false, 'could not match the country in that "City, Region, Country" label')
     else {
       const pr = await probeWebSearch('milk', probeRegion)
       add(

@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       const drive = driveByIndex.get(i)
       const distanceKm = drive?.distanceMeters != null ? Math.round((drive.distanceMeters / 1000) * 10) / 10 : null
       const driveMinutes = drive?.durationSec != null ? Math.round(drive.durationSec / 60) : null
-      const gasCost = drive?.distanceMeters != null ? estimateGasCost(drive.distanceMeters * 2) : null
+      const gasCost = drive?.distanceMeters != null ? estimateGasCost(drive.distanceMeters * 2, s.currency) : null
       const tripTotal = gasCost !== null ? Math.round((s.total + gasCost) * 100) / 100 : null
       return { ...s, driveMinutes, distanceKm, gasCost, tripTotal }
     })

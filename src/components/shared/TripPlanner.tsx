@@ -183,7 +183,7 @@ export function TripPlanner({ items }: { items: ShoppingItem[] }) {
 
 const REASON_TEXT: Record<NonNullable<BestStoreResult['reason']>, string> = {
   'no-location': 'We need your location to find stores near you.',
-  'unsupported-region': "Restock doesn't have prices for your area yet. It currently covers Canada, Nigeria, the UK and Ireland.",
+  'unsupported-region': "We couldn't work out which country you're in from your location. Try again with location allowed, or set your city in Settings.",
   'no-prices': 'We could not find typical prices for these items yet. Try simpler item names, like “pork” instead of “pork ribs”.',
   'no-stores': 'No grocery stores were found within 10 km of you.',
 }
