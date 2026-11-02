@@ -78,24 +78,34 @@ function urlKey(u: string): string | null {
 }
 
 async function searchOne(item: string, region: Region, signal: AbortSignal): Promise<Omit<WebPrice, 'item' | 'fetchedAt'> | null> {
-  try {
-    return await searchOneAt(item, region, signal, true)
-  } catch (err) {
-    // The search tool can reject an unusual city/region value. Retry once with
-    // the country only rather than losing the whole lookup.
-    if (signal.aborted) throw err
-    console.error('[priceLookup] retrying with country only:', err instanceof Error ? err.message : err)
-    return await searchOneAt(item, region, signal, false)
+  // The search tool only accepts some country codes (it rejects e.g. NG and IE)
+  // and can reject an unusual city/region value. Step down from the most precise
+  // location hint to none at all; the shopper's area is also in the prompt text,
+  // so results are still localised.
+  const modes: LocationMode[] = ['fine', 'country', 'none']
+  let lastErr: unknown
+  for (const mode of modes) {
+    try {
+      return await searchOneAt(item, region, signal, mode)
+    } catch (err) {
+      if (signal.aborted) throw err
+      lastErr = err
+      console.error(`[priceLookup] location mode "${mode}" failed:`, err instanceof Error ? err.message : err)
+    }
   }
+  throw lastErr
 }
+
+type LocationMode = 'fine' | 'country' | 'none'
 
 async function searchOneAt(
   item: string,
   region: Region,
   signal: AbortSignal,
-  fineLocation: boolean
+  mode: LocationMode
 ): Promise<Omit<WebPrice, 'item' | 'fetchedAt'> | null> {
   const place = [region.city, region.region, region.country].filter(Boolean).join(', ')
+  const fine = mode === 'fine'
   const response = await anthropic.messages.create(
     {
       model: process.env.ANTHROPIC_LOOKUP_MODEL ?? DEFAULT_MODEL,
@@ -106,12 +116,16 @@ async function searchOneAt(
           type: 'web_search_20250305',
           name: 'web_search',
           max_uses: MAX_SEARCHES_PER_ITEM,
-          user_location: {
-            type: 'approximate',
-            country: region.countryCode,
-            ...(fineLocation && region.region ? { region: region.region } : {}),
-            ...(fineLocation && region.city ? { city: region.city } : {}),
-          },
+          ...(mode === 'none'
+            ? {}
+            : {
+                user_location: {
+                  type: 'approximate' as const,
+                  country: region.countryCode,
+                  ...(fine && region.region ? { region: region.region } : {}),
+                  ...(fine && region.city ? { city: region.city } : {}),
+                },
+              }),
         },
       ],
       messages: [{ role: 'user', content: `Item: "${item}"\nShopper's area: ${place}\nCurrency: ${region.currency}` }],
